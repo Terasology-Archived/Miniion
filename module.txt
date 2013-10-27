@@ -1,0 +1,9 @@
+{
+    "id" : "Miniion",
+    "version" : "0.1.0",
+    "author" : "Overdhose",
+    "displayName" : "Miniions",
+    "description" : "A prototype of summonable, commandable minions",
+    "dependencies" : [],
+    "isServerSideOnly" : false
+}
