@@ -18,7 +18,6 @@ package org.terasology.miniion.components;
 import org.terasology.entitySystem.Component;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.minionenum.ZoneType;
-import org.terasology.rendering.world.BlockGrid;
 
 public class ZoneSelectionComponent implements Component {
 	public Vector3i startpos;

@@ -26,14 +26,13 @@ import javax.vecmath.Vector2f;
 
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
-import org.terasology.entitySystem.EntityRef;
-import org.terasology.events.ActivateEvent;
-import org.terasology.game.CoreRegistry;
-import org.terasology.logic.LocalPlayer;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.engine.CoreRegistry;
+import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.players.LocalPlayer;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.SimpleMinionAIComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
-import org.terasology.model.inventory.Icon;
 import org.terasology.rendering.gui.framework.*;
 import org.terasology.rendering.gui.framework.events.ClickListener;
 import org.terasology.miniion.gui.UIModButton;
@@ -41,6 +40,7 @@ import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.miniion.minionenum.MinionBehaviour;
 import org.terasology.miniion.utilities.Zone;
 import org.terasology.rendering.gui.widgets.*;
+import org.terasology.rendering.icons.Icon;
 
 public class UISelectedMinion extends UICompositeScrollable {
 
@@ -388,7 +388,7 @@ public class UISelectedMinion extends UICompositeScrollable {
 	private void openInventory() {
 		if (this.cell.minion != null) {
 			this.cell.minion.send(new ActivateEvent(this.cell.minion,
-					CoreRegistry.get(LocalPlayer.class).getEntity()));
+					CoreRegistry.get(LocalPlayer.class).getCharacterEntity()));
 			this.cell.minion.getComponent(MinionComponent.class).minionBehaviour = MinionBehaviour.Stay;
 			setBehaviourToggle(butStay);
 			this.cell.minion.saveComponent(this.cell.minion
@@ -403,7 +403,7 @@ public class UISelectedMinion extends UICompositeScrollable {
 	private void setZone() {
 		uizonelist.removeAll();
 		for (Zone zone : MinionSystem.getGatherZoneList()) {
-			UIListItem listitem = new UIListItem(zone.Name, zone);
+			UIListItem listitem = new UIListItem(zone.getName(), zone);
 			listitem.setTextColor(Color.black);
 			uizonelist.addItem(listitem);
 		}
@@ -415,8 +415,8 @@ public class UISelectedMinion extends UICompositeScrollable {
 			MinionComponent minioncomp = cell.minion
 					.getComponent(MinionComponent.class);
 			for (Zone zone : MinionSystem.getGatherZoneList()) {
-				if (zone.Name.matches(uizonelist.getSelection().getText())) {
-					minioncomp.assignedzone = zone;
+				if (zone.getName().matches(uizonelist.getSelection().getText())) {
+					minioncomp.assignedzone = zone.getZoneComponent();
 				}
 			}
 			cell.minion.saveComponent(minioncomp);

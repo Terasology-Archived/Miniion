@@ -15,24 +15,24 @@
  */
 package org.terasology.miniion.utilities;
 
-import org.terasology.model.inventory.Icon;
+import org.terasology.rendering.icons.Icon;
 
 public final class ModIcons {
 	
 	private static final String MINIONICONS16 = "miniion:minionicon16";
 
 	public static void loadIcons() {
-		Icon.set("minionskull", "miniion:minionicon16", 0, 0);
-		Icon.set("minioncommand", "miniion:minionicon16", 0, 1);
-		Icon.set("emptycard", "miniion:minionicon16", 0, 2);
-		Icon.set("filledcard", "miniion:minionicon16", 0, 3);
-		Icon.set("cardbook", "miniion:minionicon16", 0, 4);
-		Icon.set("oreominionbook", "miniion:minionicon16", 0, 5);
-		Icon.set("zonebook", "miniion:minionicon16", 0, 6);
-		Icon.set("zonetool", "miniion:minionicon16", 0, 7);
+		Icon.registerIcon("minionskull", "miniion:minionicon16", 0, 0);
+		Icon.registerIcon("minioncommand", "miniion:minionicon16", 0, 1);
+		Icon.registerIcon("emptycard", "miniion:minionicon16", 0, 2);
+		Icon.registerIcon("filledcard", "miniion:minionicon16", 0, 3);
+		Icon.registerIcon("cardbook", "miniion:minionicon16", 0, 4);
+		Icon.registerIcon("oreominionbook", "miniion:minionicon16", 0, 5);
+		Icon.registerIcon("zonebook", "miniion:minionicon16", 0, 6);
+		Icon.registerIcon("zonetool", "miniion:minionicon16", 0, 7);
 		
-		Icon.set("mulch", MINIONICONS16, 1, 0);
-		Icon.set("paper", MINIONICONS16, 1, 1);
-		Icon.set("bookcover", MINIONICONS16, 1, 2);
+		Icon.registerIcon("mulch", MINIONICONS16, 1, 0);
+		Icon.registerIcon("paper", MINIONICONS16, 1, 1);
+		Icon.registerIcon("bookcover", MINIONICONS16, 1, 2);
 	}
 }

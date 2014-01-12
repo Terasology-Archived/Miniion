@@ -15,19 +15,17 @@
  */
 package org.terasology.miniion.gui;
 
-import java.util.Map.Entry;
-
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.Color;
 import org.terasology.asset.Assets;
-import org.terasology.entitySystem.EntityManager;
-import org.terasology.entitySystem.EntityRef;
-import org.terasology.events.ActivateEvent;
-import org.terasology.game.CoreRegistry;
-import org.terasology.logic.LocalPlayer;
+import org.terasology.engine.CoreRegistry;
+import org.terasology.entitySystem.entity.EntityManager;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.players.LocalPlayer;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.SimpleMinionAIComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
@@ -36,9 +34,15 @@ import org.terasology.miniion.minionenum.ZoneType;
 import org.terasology.miniion.utilities.MinionRecipe;
 import org.terasology.miniion.utilities.Zone;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
-import org.terasology.rendering.gui.framework.events.*;
+import org.terasology.rendering.gui.framework.events.ClickListener;
+import org.terasology.rendering.gui.framework.events.MouseButtonListener;
 import org.terasology.rendering.gui.layout.GridLayout;
-import org.terasology.rendering.gui.widgets.*;
+import org.terasology.rendering.gui.widgets.UIComposite;
+import org.terasology.rendering.gui.widgets.UIImage;
+import org.terasology.rendering.gui.widgets.UILabel;
+import org.terasology.rendering.gui.widgets.UIList;
+import org.terasology.rendering.gui.widgets.UIListItem;
+import org.terasology.rendering.gui.widgets.UIWindow;
 
 public class UIActiveMinion extends UIWindow{
 	
@@ -398,7 +402,7 @@ public class UIActiveMinion extends UIWindow{
 			if(MinionSystem.getActiveMinion() != null){
 				MinionComponent minioncomp = MinionSystem.getActiveMinion().getComponent(MinionComponent.class);
 				if (clickedbutton.getId() == "inve") {
-					MinionSystem.getActiveMinion().send(new ActivateEvent(MinionSystem.getActiveMinion(), CoreRegistry.get(LocalPlayer.class).getEntity()));
+					MinionSystem.getActiveMinion().send(new ActivateEvent(MinionSystem.getActiveMinion(), CoreRegistry.get(LocalPlayer.class).getCharacterEntity()));
 				}else
 				if (clickedbutton.getId() == "zone") {
 					if(uiDetailList.isVisible()){
@@ -438,8 +442,9 @@ public class UIActiveMinion extends UIWindow{
 					}
 					else{
 						EntityManager entman = CoreRegistry.get(EntityManager.class);
-						for (Entry<EntityRef, MinionComponent> minion : entman.iterateComponents(MinionComponent.class)) {
-							UIListItem listitem = new UIListItem(minion.getValue().name, minion.getKey());
+						for (EntityRef minion : entman.getEntitiesWith(MinionComponent.class)) {
+						    MinionComponent minionComponent = minion.getComponent(MinionComponent.class);
+							UIListItem listitem = new UIListItem(minionComponent.name, minion);
 							listitem.addClickListener(minionlistItemListener);
 							uiMainlist.addItem(listitem);
 						}
@@ -480,7 +485,7 @@ public class UIActiveMinion extends UIWindow{
 				case Gather: {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getGatherZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
+						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);
 					}
@@ -491,7 +496,7 @@ public class UIActiveMinion extends UIWindow{
 				case Terraform: {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getTerraformZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
+						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);
 					}
@@ -502,7 +507,7 @@ public class UIActiveMinion extends UIWindow{
 				case Work : {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getWorkZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
+						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);
 					}
@@ -513,7 +518,7 @@ public class UIActiveMinion extends UIWindow{
 				case Storage : {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getStorageZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
+						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);
 					}
@@ -524,7 +529,7 @@ public class UIActiveMinion extends UIWindow{
 				case OreonFarm : {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getOreonFarmZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
+						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);
 					}
@@ -539,7 +544,7 @@ public class UIActiveMinion extends UIWindow{
 			}else if(listitem.getValue().getClass().equals(Zone.class)){
 				Zone selectedzone = (Zone) ((UIListItem)element).getValue();
 				MinionComponent minioncomp = MinionSystem.getActiveMinion().getComponent(MinionComponent.class);
-				minioncomp.assignedzone = selectedzone;
+				minioncomp.assignedzone = selectedzone.getZoneComponent();
 				MinionSystem.getActiveMinion().saveComponent(minioncomp);
 				uiDetailList.setVisible(false);
 				refreshScreen();
@@ -614,7 +619,7 @@ public class UIActiveMinion extends UIWindow{
 					lblzone.setText("no zone assigned");
 				}else
 				{
-					lblzone.setText("workzone : " + minioncomp.assignedzone.Name);
+					lblzone.setText("workzone : " + minioncomp.assignedzone.name);
 				}
 				if(minioncomp.assignedrecipe == null){
 					lblrecipe.setText("");

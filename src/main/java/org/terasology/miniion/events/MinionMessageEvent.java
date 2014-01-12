@@ -15,7 +15,7 @@
  */
 package org.terasology.miniion.events;
 
-import org.terasology.entitySystem.AbstractEvent;
+import org.terasology.entitySystem.event.AbstractConsumableEvent;
 import org.terasology.miniion.utilities.MinionMessage;
 
 /**
@@ -25,7 +25,7 @@ import org.terasology.miniion.utilities.MinionMessage;
  * Time: 4:03
  * Message event : send info to player message queue
  */
-public class MinionMessageEvent extends AbstractEvent {
+public class MinionMessageEvent extends AbstractConsumableEvent {
 
     private MinionMessage minionMessage;
 

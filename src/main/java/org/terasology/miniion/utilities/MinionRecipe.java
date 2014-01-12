@@ -3,6 +3,9 @@ package org.terasology.miniion.utilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.terasology.classMetadata.MappedContainer;
+
+@MappedContainer
 public class MinionRecipe {
 	
 	public String Name = "unknown";

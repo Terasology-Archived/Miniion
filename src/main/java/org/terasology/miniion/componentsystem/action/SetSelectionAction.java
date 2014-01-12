@@ -18,16 +18,21 @@ package org.terasology.miniion.componentsystem.action;
 import java.util.Set;
 
 import org.terasology.entitySystem.*;
-import org.terasology.events.ActivateEvent;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.systems.ComponentSystem;
+import org.terasology.entitySystem.systems.In;
+import org.terasology.entitySystem.systems.RegisterMode;
+import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.logic.common.ActivateEvent;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.components.ZoneSelectionComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
-import org.terasology.rendering.world.BlockGrid;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 
-@RegisterComponentSystem
-public class SetSelectionAction implements EventHandlerSystem {
+@RegisterSystem(RegisterMode.AUTHORITY)
+public class SetSelectionAction implements ComponentSystem {
 
 	@In
 	private WorldProvider worldProvider;

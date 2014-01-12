@@ -19,8 +19,8 @@ import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
 import org.newdawn.slick.Color;
-import org.terasology.entitySystem.In;
-import org.terasology.game.Timer;
+import org.terasology.engine.Time;
+import org.terasology.entitySystem.systems.In;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.rendering.gui.widgets.UILabel;
@@ -29,7 +29,7 @@ import org.terasology.rendering.gui.widgets.UIWindow;
 public class UIScreenStats extends UIWindow{
 	
 	@In
-    private Timer timer;
+    private Time timer;
 	
 	private final UILabel lblstatTitle, lblstatHealth, lblstatHunger, lblstatStamina;	
    

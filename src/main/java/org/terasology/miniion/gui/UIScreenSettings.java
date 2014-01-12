@@ -18,8 +18,8 @@ package org.terasology.miniion.gui;
 import javax.vecmath.Vector2f;
 
 import org.newdawn.slick.Color;
-import org.terasology.entitySystem.In;
-import org.terasology.game.Timer;
+import org.terasology.entitySystem.systems.In;
+import org.terasology.engine.Time;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
 import org.terasology.rendering.gui.framework.events.ClickListener;
@@ -29,7 +29,7 @@ import org.terasology.rendering.gui.widgets.UIWindow;
 public class UIScreenSettings extends UIWindow{
 	
 	@In
-    private Timer timer;
+    private Time timer;
 	
 	private final UILabel lblTitle, lblselover, lblWarning;
 	private final UIModButtonMenu btnOverlay;

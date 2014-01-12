@@ -15,7 +15,7 @@
  */
 package org.terasology.miniion.utilities;
 
-import org.terasology.entitySystem.EntityRef;
+import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.miniion.minionenum.MinionMessagePriority;
 
 /**

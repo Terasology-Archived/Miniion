@@ -15,13 +15,14 @@
  */
 package org.terasology.miniion.componentsystem.controllers;
 
-import org.terasology.componentSystem.RenderSystem;
-import org.terasology.componentSystem.UpdateSubscriberSystem;
-import org.terasology.entitySystem.EntityManager;
-import org.terasology.entitySystem.RegisterComponentSystem;
-import org.terasology.game.CoreRegistry;
+import org.terasology.engine.CoreRegistry;
+import org.terasology.entitySystem.entity.EntityManager;
+import org.terasology.entitySystem.systems.RegisterMode;
+import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.entitySystem.systems.RenderSystem;
+import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 
-@RegisterComponentSystem(headedOnly = true)
+@RegisterSystem(RegisterMode.AUTHORITY)
 public class ZoneSystem implements UpdateSubscriberSystem, RenderSystem {
 
     private EntityManager entityManager;

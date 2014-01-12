@@ -18,9 +18,9 @@ package org.terasology.miniion.gui;
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.Color;
 import org.terasology.asset.Assets;
-import org.terasology.entitySystem.EntityManager;
-import org.terasology.entitySystem.EntityRef;
-import org.terasology.game.CoreRegistry;
+import org.terasology.entitySystem.entity.EntityManager;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.engine.CoreRegistry;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
@@ -115,7 +115,7 @@ public class UIScreenBookOreo extends UIWindow {
 		//container.fillInventoryCells(this);
 		uiminionlist.removeAll();
 		EntityManager entMan = CoreRegistry.get(EntityManager.class);
-		for(EntityRef minion : entMan.iteratorEntities(MinionComponent.class)){
+		for(EntityRef minion : entMan.getEntitiesWith(MinionComponent.class)){
 			UIListItem listitem = new UIListItem(minion.getComponent(MinionComponent.class).name, minion);
 			listitem.setTextColor(Color.black);
 			listitem.addClickListener(minionistener);
