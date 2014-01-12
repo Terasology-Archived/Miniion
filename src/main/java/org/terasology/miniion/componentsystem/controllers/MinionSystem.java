@@ -175,13 +175,18 @@ public class MinionSystem implements ComponentSystem {
 		if (activeminion != null) {
 			skelcomp = activeminion.getComponent(SkeletalMeshComponent.class);
 			if (skelcomp != null) {
-				skelcomp.material = Assets.getMaterial("Oreons:OreonSkin");
+			    MinionComponent minionComponent = activeminion.getComponent(MinionComponent.class);
+			    if (null != minionComponent.unselectedSkin) {
+	                        skelcomp.material = Assets.getMaterial(minionComponent.unselectedSkin);
+			    }
 			}
 		}
 		skelcomp = minion.getComponent(SkeletalMeshComponent.class);
 		if (skelcomp != null) {
-			skelcomp.material = Assets
-					.getMaterial("Oreons:OreonSkinSelected");
+                    MinionComponent minionComponent = minion.getComponent(MinionComponent.class);
+                    if (null != minionComponent.selectedSkin) {
+                        skelcomp.material = Assets.getMaterial(minionComponent.selectedSkin);
+                    }
 		}
 		activeminion = minion;
 	}
@@ -508,7 +513,10 @@ public class MinionSystem implements ComponentSystem {
 		if(activeminion != null){
 			SkeletalMeshComponent skelcomp = activeminion.getComponent(SkeletalMeshComponent.class);
 			if (skelcomp != null) {
-				skelcomp.material = Assets.getMaterial("Oreons:OreonSkin");
+                            MinionComponent minionComponent = activeminion.getComponent(MinionComponent.class);
+                            if (null != minionComponent.unselectedSkin) {
+                                skelcomp.material = Assets.getMaterial(minionComponent.unselectedSkin);
+                            }
 			}
 		}
 	}

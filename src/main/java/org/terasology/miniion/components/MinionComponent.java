@@ -34,6 +34,12 @@ public final class MinionComponent implements Component {
 	public String name = "unknown";
 	// minion type, eg : oreoBuilder, needs to be defined in prefab
 	public String flavortext = "unknown";
+        // skin to shown when minion is selected, eg : Oreons:OreonSkinSelected, needs to be defined in prefab
+        public String selectedSkin = null;
+        // skin to shown when minion is not selected, eg : Oreons:OreonSkin, needs to be defined in prefab
+        public String unselectedSkin = null;
+
+	
 	// used by minionsystem, init at stay normally
 	public MinionBehaviour minionBehaviour = MinionBehaviour.Stay;
 	

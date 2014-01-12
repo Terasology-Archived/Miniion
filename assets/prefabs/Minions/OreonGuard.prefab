@@ -1,16 +1,18 @@
 {
-	"parent": "Oreons:OreoBuilder",
-	"name" : "OreonMinions:OreoBuilder",
+	"parent": "Oreons:OreonGuard",
+	"name" : "OreonMinions:OreonGuard",
 	"Minion" : {
-	    "icon" = "minionskull",
-	    "Healthtotal" = 300,
-	    "Hungertotal" = 100,
-	    "Staminatotal" = 100
+		"icon" = "minionskull",
+		"Healthtotal" = 800,
+		"Hungertotal" = 100,
+		"Staminatotal" = 100,
+	    "unselectedSkin" = "Oreons:OreonSkin",
+	    "selectedSkin" = "Oreons:OreonSkinSelected"
 	},
 	"SimpleMinionAI" : {},
 	"Inventory": {
 		"itemSlots": [
-	        0,
+			0,
 	        0,
 	        0,
 	        0,
