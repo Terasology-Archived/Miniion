@@ -22,14 +22,14 @@ public final class ModIcons {
 	private static final String MINIONICONS16 = "miniion:minionicon16";
 
 	public static void loadIcons() {
-		Icon.registerIcon("minionskull", "miniion:minionicon16", 0, 0);
-		Icon.registerIcon("minioncommand", "miniion:minionicon16", 0, 1);
-		Icon.registerIcon("emptycard", "miniion:minionicon16", 0, 2);
-		Icon.registerIcon("filledcard", "miniion:minionicon16", 0, 3);
-		Icon.registerIcon("cardbook", "miniion:minionicon16", 0, 4);
-		Icon.registerIcon("oreominionbook", "miniion:minionicon16", 0, 5);
-		Icon.registerIcon("zonebook", "miniion:minionicon16", 0, 6);
-		Icon.registerIcon("zonetool", "miniion:minionicon16", 0, 7);
+		Icon.registerIcon("minionskull", MINIONICONS16, 0, 0);
+		Icon.registerIcon("minioncommand", MINIONICONS16, 0, 1);
+		Icon.registerIcon("emptycard", MINIONICONS16, 0, 2);
+		Icon.registerIcon("filledcard", MINIONICONS16, 0, 3);
+		Icon.registerIcon("cardbook", MINIONICONS16, 0, 4);
+		Icon.registerIcon("oreominionbook", MINIONICONS16, 0, 5);
+		Icon.registerIcon("zonebook", MINIONICONS16, 0, 6);
+		Icon.registerIcon("zonetool", MINIONICONS16, 0, 7);
 		
 		Icon.registerIcon("mulch", MINIONICONS16, 1, 0);
 		Icon.registerIcon("paper", MINIONICONS16, 1, 1);
