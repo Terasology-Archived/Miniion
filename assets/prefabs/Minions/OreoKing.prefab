@@ -1,0 +1,10 @@
+{
+	"parent": "Oreons:OreoKing",
+	"name" : "OreonMinions:OreoKing",
+	"Minion" : {
+		"icon" = "minionskull",
+		"Healthtotal" = 800,
+		"Hungertotal" = 100,
+		"Staminatotal" = 100
+	}
+}

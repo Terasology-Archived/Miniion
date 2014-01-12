@@ -1,0 +1,35 @@
+{
+	"parent": "Oreons:OreoBuilder",
+	"name" : "OreonMinions:OreoBuilder",
+	"Minion" : {
+	    "icon" = "minionskull",
+	    "Healthtotal" = 300,
+	    "Hungertotal" = 100,
+	    "Staminatotal" = 100
+	},
+	"SimpleMinionAI" : {},
+	"Inventory": {
+		"itemSlots": [
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0
+		]
+	},
+    "AccessInventoryAction": {},
+    "Spawnable" : {
+		"type" : "oreon"
+    }
+}
