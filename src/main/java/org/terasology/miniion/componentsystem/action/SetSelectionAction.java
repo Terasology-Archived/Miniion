@@ -15,27 +15,18 @@
  */
 package org.terasology.miniion.componentsystem.action;
 
-import java.util.Set;
-
-import org.terasology.entitySystem.*;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.ComponentSystem;
-import org.terasology.entitySystem.systems.In;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.components.ZoneSelectionComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
-import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SetSelectionAction implements ComponentSystem {
-
-	@In
-	private WorldProvider worldProvider;
 
 	@Override
 	public void initialise() {
@@ -51,6 +42,11 @@ public class SetSelectionAction implements ComponentSystem {
 
 	@ReceiveEvent(components = ZoneSelectionComponent.class)
 	public void onActivate(ActivateEvent event, EntityRef entity) {
+	    if (null == event.getTargetLocation()) {
+	        event.consume();
+	        return;
+	    }
+	    
 		if(MinionSystem.getNewZone() == null){
 			MinionSystem.startNewSelection(new Vector3i(event.getTargetLocation()));
 		}else if(MinionSystem.getNewZone().getEndPosition() == null){
