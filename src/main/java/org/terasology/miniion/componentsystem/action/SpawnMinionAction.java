@@ -64,10 +64,9 @@ public class SpawnMinionAction implements ComponentSystem {
 
 	@ReceiveEvent(components = SpawnMinionActionComponent.class)
 	public void onActivate(ActivateEvent event, EntityRef entity) {
-		SpawnMinionActionComponent spawnInfo = entity
-				.getComponent(SpawnMinionActionComponent.class);
-		if (spawnInfo.prefab != null) {
-			Vector3f spawnPos = event.getTargetLocation();
+		SpawnMinionActionComponent spawnInfo = entity.getComponent(SpawnMinionActionComponent.class);
+                Vector3f spawnPos = event.getTargetLocation();
+		if ((null != spawnPos) && (spawnInfo.prefab != null)) {
 			spawnPos.y += 2;
 			Prefab prefab = CoreRegistry.get(PrefabManager.class).getPrefab(
 					spawnInfo.prefab);
@@ -86,8 +85,12 @@ public class SpawnMinionAction implements ComponentSystem {
 						minioncomp.name = tempstring[0];
 						minioncomp.flavortext = tempstring[1];
 					}
+					
+					return;
 				}
 			}
 		}
+		// if this gets here, we didn't actually create a minion
+		event.consume();
 	}
 }
