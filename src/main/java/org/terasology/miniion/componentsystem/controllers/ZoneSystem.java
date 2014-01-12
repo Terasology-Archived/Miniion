@@ -15,8 +15,6 @@
  */
 package org.terasology.miniion.componentsystem.controllers;
 
-import org.terasology.engine.CoreRegistry;
-import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.RenderSystem;
@@ -25,11 +23,8 @@ import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ZoneSystem implements UpdateSubscriberSystem, RenderSystem {
 
-    private EntityManager entityManager;
-
     @Override
     public void initialise() {
-        entityManager = CoreRegistry.get(EntityManager.class);
     }
 
     @Override

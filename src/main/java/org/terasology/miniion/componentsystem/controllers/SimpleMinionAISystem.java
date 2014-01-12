@@ -88,6 +88,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
     @Override
     public void initialise() {
         aStarPathing = new AStarPathing(worldProvider);
+
     }
 
     @ReceiveEvent(components = {SimpleMinionAIComponent.class})
@@ -279,7 +280,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
 
     private void getTargetsfromZone(MinionComponent minioncomp,
                                     SimpleMinionAIComponent ai) {
-        Zone zone = new Zone(minioncomp.assignedzone);
+        Zone zone = minioncomp.assignedzone;
         // first loop at highest blocks (y)
         for (int y = zone.getMaxBounds().y; y >= zone.getMinBounds().y; y--) {
             for (int x = zone.getMinBounds().x; x <= zone.getMaxBounds().x; x++) {
@@ -306,12 +307,12 @@ public class SimpleMinionAISystem implements ComponentSystem,
         if (minioncomp.assignedzone == null) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
-        } else if (minioncomp.assignedzone.startPosition == null) {
+        } else if (minioncomp.assignedzone.getStartPosition() == null) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
         } else if (minioncomp.assignedzone.zonetype != ZoneType.Work) {
             if (minioncomp.assignedzone.zonetype == ZoneType.OreonFarm) {
-                if (minioncomp.assignedzone.isTerraformComplete) {
+                if (minioncomp.assignedzone.isTerraformComplete()) {
                     //farming
                     executeFarmmAI(entity);
                 } else {
@@ -324,7 +325,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
             return;
         }
 
-        Vector3f currentTarget = minioncomp.assignedzone.startPosition.toVector3f();
+        Vector3f currentTarget = minioncomp.assignedzone.getStartPosition().toVector3f();
         currentTarget.y += 0.5;
 
         Vector3f dist = new Vector3f(worldPos);
@@ -407,10 +408,10 @@ public class SimpleMinionAISystem implements ComponentSystem,
     /**
      * Terraforms a zone into a set recipe, by default chocolate.
      * @param entity 
-     * 				the minion that is terraforming
+     *                              the minion that is terraforming
      * @param fixedrecipeuri
-     * 				set to empty string by default for normal terraforming, 
-     * 				can override the default recipe for farming. 
+     *                              set to empty string by default for normal terraforming, 
+     *                              can override the default recipe for farming. 
      */
     private void executeTerraformAI(EntityRef entity, String fixedrecipeuri) {
         MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
@@ -425,7 +426,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
         if (minioncomp.assignedzone == null) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
-        } else if (minioncomp.assignedzone.startPosition == null) {
+        } else if (minioncomp.assignedzone.getStartPosition() == null) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
         } else if (minioncomp.assignedzone.zonetype != ZoneType.Terraform && fixedrecipeuri.isEmpty()) {
@@ -457,7 +458,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
             changeAnimation(entity, animcomp.terraformAnim, true);
             if (timer.getGameTimeInMs() - ai.lastAttacktime > 200) {
                 ai.lastAttacktime = timer.getGameTimeInMs();
-                for (int y = (int) (currentTarget.y - 0.5); y >= minioncomp.assignedzone.minBounds.y; y--) {
+                for (int y = (int) (currentTarget.y - 0.5); y >= minioncomp.assignedzone.getMinBounds().y; y--) {
                     Block tmpblock = worldProvider.getBlock((int) currentTarget.x, y, (int) currentTarget.z);
                     if (!tmpblock.isInvisible()) {
                         if (tmpblock.getBlockFamily().getURI().getModuleName().equals("engine")) {
@@ -474,25 +475,25 @@ public class SimpleMinionAISystem implements ComponentSystem,
                                 }
                                 worldProvider.setBlock(new Vector3i(currentTarget.x, y, currentTarget.z), newBlock);
                                 ai.craftprogress = 0;
-                                if (y == minioncomp.assignedzone.minBounds.y) {
+                                if (y == minioncomp.assignedzone.getMinBounds().y) {
                                     ai.movementTargets.remove(currentTarget);
                                 }
                             }
                             break;
                         } else
                         {
-                            if (y == minioncomp.assignedzone.minBounds.y) {
+                            if (y == minioncomp.assignedzone.getMinBounds().y) {
                                 ai.movementTargets.remove(currentTarget);
                             }
                         }
                     } else
                     {
-                        if (y == minioncomp.assignedzone.minBounds.y) {
+                        if (y == minioncomp.assignedzone.getMinBounds().y) {
                             ai.movementTargets.remove(currentTarget);
                         }
                     }
                     if (ai.movementTargets.size() == 0 && !fixedrecipeuri.isEmpty()) {
-                        minioncomp.assignedzone.isTerraformComplete = true;
+                        minioncomp.assignedzone.setTerraformComplete();
                     }
                 }
 
@@ -504,7 +505,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
     }
 
     private void getFirsBlockfromZone(MinionComponent minioncomp, SimpleMinionAIComponent ai) {
-        Zone zone = new Zone(minioncomp.assignedzone);
+        Zone zone = minioncomp.assignedzone;
         for (int x = zone.getMinBounds().x; x <= zone.getMaxBounds().x; x++) {
             for (int z = zone.getMinBounds().z; z <= zone.getMaxBounds().z; z++) {
                 for (int y = zone.getMaxBounds().y; y >= zone.getMinBounds().y; y--) {
@@ -521,10 +522,10 @@ public class SimpleMinionAISystem implements ComponentSystem,
     /**
      * plants crops
      * @param entity 
-     * 				the minion that is terraforming
+     *                              the minion that is terraforming
      * @param fixedrecipeuri
-     * 				set to empty string by default for normal terraforming, 
-     * 				can override the default recipe for farming. 
+     *                              set to empty string by default for normal terraforming, 
+     *                              can override the default recipe for farming. 
      */
     private void executeFarmmAI(EntityRef entity) {
         MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
@@ -557,14 +558,14 @@ public class SimpleMinionAISystem implements ComponentSystem,
             changeAnimation(entity, animcomp.terraformAnim, true);
             if (timer.getGameTimeInMs() - ai.lastAttacktime > 200) {
                 ai.lastAttacktime = timer.getGameTimeInMs();
-                for (int y = (int) (currentTarget.y - 0.5); y >= minioncomp.assignedzone.minBounds.y; y--) {
+                for (int y = (int) (currentTarget.y - 0.5); y >= minioncomp.assignedzone.getMinBounds().y; y--) {
                     ai.craftprogress++;
                     if (ai.craftprogress > 20) {
                         Block newBlock;
                         newBlock = blockManager.getBlock("miniion:OreonPlant0");
                         worldProvider.setBlock(new Vector3i(currentTarget.x, y + 1, currentTarget.z), newBlock);
                         ai.craftprogress = 0;
-                        if (y == minioncomp.assignedzone.minBounds.y) {
+                        if (y == minioncomp.assignedzone.getMinBounds().y) {
                             ai.movementTargets.remove(currentTarget);
                         }
                     }

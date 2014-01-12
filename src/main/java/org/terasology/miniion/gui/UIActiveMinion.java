@@ -485,7 +485,7 @@ public class UIActiveMinion extends UIWindow{
 				case Gather: {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getGatherZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
+						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);
 					}
@@ -496,7 +496,7 @@ public class UIActiveMinion extends UIWindow{
 				case Terraform: {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getTerraformZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
+						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);
 					}
@@ -507,7 +507,7 @@ public class UIActiveMinion extends UIWindow{
 				case Work : {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getWorkZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
+						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);
 					}
@@ -518,7 +518,7 @@ public class UIActiveMinion extends UIWindow{
 				case Storage : {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getStorageZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
+						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);
 					}
@@ -529,7 +529,7 @@ public class UIActiveMinion extends UIWindow{
 				case OreonFarm : {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getOreonFarmZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
+						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);
 					}
@@ -544,7 +544,7 @@ public class UIActiveMinion extends UIWindow{
 			}else if(listitem.getValue().getClass().equals(Zone.class)){
 				Zone selectedzone = (Zone) ((UIListItem)element).getValue();
 				MinionComponent minioncomp = MinionSystem.getActiveMinion().getComponent(MinionComponent.class);
-				minioncomp.assignedzone = selectedzone.getZoneComponent();
+				minioncomp.assignedzone = selectedzone;
 				MinionSystem.getActiveMinion().saveComponent(minioncomp);
 				uiDetailList.setVisible(false);
 				refreshScreen();
@@ -619,7 +619,7 @@ public class UIActiveMinion extends UIWindow{
 					lblzone.setText("no zone assigned");
 				}else
 				{
-					lblzone.setText("workzone : " + minioncomp.assignedzone.name);
+					lblzone.setText("workzone : " + minioncomp.assignedzone.Name);
 				}
 				if(minioncomp.assignedrecipe == null){
 					lblrecipe.setText("");

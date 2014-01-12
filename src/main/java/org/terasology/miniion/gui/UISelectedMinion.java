@@ -403,7 +403,7 @@ public class UISelectedMinion extends UICompositeScrollable {
 	private void setZone() {
 		uizonelist.removeAll();
 		for (Zone zone : MinionSystem.getGatherZoneList()) {
-			UIListItem listitem = new UIListItem(zone.getName(), zone);
+			UIListItem listitem = new UIListItem(zone.Name, zone);
 			listitem.setTextColor(Color.black);
 			uizonelist.addItem(listitem);
 		}
@@ -415,8 +415,8 @@ public class UISelectedMinion extends UICompositeScrollable {
 			MinionComponent minioncomp = cell.minion
 					.getComponent(MinionComponent.class);
 			for (Zone zone : MinionSystem.getGatherZoneList()) {
-				if (zone.getName().matches(uizonelist.getSelection().getText())) {
-					minioncomp.assignedzone = zone.getZoneComponent();
+				if (zone.Name.matches(uizonelist.getSelection().getText())) {
+					minioncomp.assignedzone = zone;
 				}
 			}
 			cell.minion.saveComponent(minioncomp);

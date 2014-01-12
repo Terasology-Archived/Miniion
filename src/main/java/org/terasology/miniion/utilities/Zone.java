@@ -21,6 +21,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
 import org.lwjgl.opengl.GL11;
+import org.terasology.classMetadata.MappedContainer;
 import org.terasology.engine.CoreRegistry;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
@@ -33,227 +34,211 @@ import org.terasology.rendering.world.WorldRenderer;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 
+@MappedContainer
 public class Zone {
 
-        private ZoneInformationMappedContainer zoneInformationMappedContainer;
-        
-	private WorldProvider worldProvider;
+        private WorldProvider worldProvider;
 
-	private Vector3i maxbounds = new Vector3i(Integer.MIN_VALUE,
-			Integer.MIN_VALUE, Integer.MIN_VALUE);
+        private Vector3i minbounds = new Vector3i(Integer.MAX_VALUE,
+                        Integer.MAX_VALUE, Integer.MAX_VALUE);
+        private Vector3i maxbounds = new Vector3i(Integer.MIN_VALUE,
+                        Integer.MIN_VALUE, Integer.MIN_VALUE);
 
-	/* CONST */
-	private static final int maxselectionbounds = 50;	
+        /* CONST */
+        private static final int maxselectionbounds = 50;       
     private final Mesh mesh;
     
-	private Vector3i endposition;
-	//used to undo zones with unbreakable blocks
-	//zone set to delete untill blocks are removed
-	private boolean deleted = false;
+        private Vector3i startposition;
+        private Vector3i endposition;
+        private boolean terraformcomplete = false;
+        //used to undo zones with unbreakable blocks
+        //zone set to delete untill blocks are removed
+        private boolean deleted = false;
 
-	public int zoneheight;
-	public int zonedepth;
-	public int zonewidth;
+        public String Name;
+        public ZoneType zonetype;
+        public int zoneheight;
+        public int zonedepth;
+        public int zonewidth;
 
-	public Zone(ZoneInformationMappedContainer zoneComponent) {
-	    this.zoneInformationMappedContainer = zoneComponent;
-		Tessellator tessellator = new Tessellator();
+        public Zone() {
+                Tessellator tessellator = new Tessellator();
         TessellatorHelper.addBlockMesh(tessellator, new Vector4f(0.0f, 0.0f, 1.0f, 0.25f), 1.005f, 1.0f, 0.5f, 0.0f, 0.0f, 0.0f);
         mesh = tessellator.generateMesh();
-	}
+        }
 
-	public Zone(ZoneInformationMappedContainer zoneComponent, Vector3i startposition, Vector3i endposition) {
-		this(zoneComponent);
-		this.zoneInformationMappedContainer.startPosition = startposition;
-		this.endposition = endposition;
-		calcBounds(startposition);
-		if(endposition != null){
-			calcBounds(endposition);
-		}
-	}
+        public Zone(Vector3i startposition, Vector3i endposition) {
+                this();
+                this.startposition = startposition;
+                this.endposition = endposition;
+                calcBounds(startposition);
+                if(endposition != null){
+                        calcBounds(endposition);
+                }
+        }
 
-	private void calcBounds(Vector3i gridPosition) {
-		if (gridPosition.x < zoneInformationMappedContainer.minBounds.x) {
-		    zoneInformationMappedContainer.minBounds.x = gridPosition.x;
-		}
-		if (gridPosition.y < zoneInformationMappedContainer.minBounds.y) {
-		    zoneInformationMappedContainer.minBounds.y = gridPosition.y;
-		}
-		if (gridPosition.z < zoneInformationMappedContainer.minBounds.z) {
-		    zoneInformationMappedContainer.minBounds.z = gridPosition.z;
-		}
+        private void calcBounds(Vector3i gridPosition) {
+                if (gridPosition.x < minbounds.x) {
+                        minbounds.x = gridPosition.x;
+                }
+                if (gridPosition.y < minbounds.y) {
+                        minbounds.y = gridPosition.y;
+                }
+                if (gridPosition.z < minbounds.z) {
+                        minbounds.z = gridPosition.z;
+                }
 
-		if (gridPosition.x > maxbounds.x) {
-			maxbounds.x = gridPosition.x;
-		}
-		if (gridPosition.y > maxbounds.y) {
-			maxbounds.y = gridPosition.y;
-		}
-		if (gridPosition.z > maxbounds.z) {
-			maxbounds.z = gridPosition.z;
-		}
-	}
+                if (gridPosition.x > maxbounds.x) {
+                        maxbounds.x = gridPosition.x;
+                }
+                if (gridPosition.y > maxbounds.y) {
+                        maxbounds.y = gridPosition.y;
+                }
+                if (gridPosition.z > maxbounds.z) {
+                        maxbounds.z = gridPosition.z;
+                }
+        }
 
-	public void setStartPosition(Vector3i startpos) {
-	    zoneInformationMappedContainer.startPosition = startpos;
-		calcBounds(zoneInformationMappedContainer.startPosition);
-	}
+        public void setStartPosition(Vector3i startpos) {
+                startposition = startpos;
+                calcBounds(startposition);
+        }
 
-	public Vector3i getStartPosition() {
-		return zoneInformationMappedContainer.startPosition;
-	}
+        public Vector3i getStartPosition() {
+                return startposition;
+        }
 
-	public void setEndPosition(Vector3i endpos) {
-		endposition = endpos;
-		calcBounds(endposition);
-	}
+        public void setEndPosition(Vector3i endpos) {
+                endposition = endpos;
+                calcBounds(endposition);
+        }
 
-	public Vector3i getEndPosition() {
-		return endposition;
-	}
+        public Vector3i getEndPosition() {
+                return endposition;
+        }
 
-	public Vector3i getMinBounds() {
-		return zoneInformationMappedContainer.minBounds;
-	}
+        public Vector3i getMinBounds() {
+                return minbounds;
+        }
 
-	public Vector3i getMaxBounds() {
-		return maxbounds;
-	}
-	
-	public boolean isTerraformComplete(){
-		return zoneInformationMappedContainer.isTerraformComplete;
-	}
-	
-	public void setTerraformComplete(){
-	    zoneInformationMappedContainer.isTerraformComplete = true;
-	}
+        public Vector3i getMaxBounds() {
+                return maxbounds;
+        }
+        
+        public boolean isTerraformComplete(){
+                return terraformcomplete;
+        }
+        
+        public void setTerraformComplete(){
+                terraformcomplete = true;
+        }
 
-	public boolean outofboundselection(){
-		boolean retval = false;
-		if(zoneInformationMappedContainer.startPosition != null && endposition != null){
-			if(getAbsoluteDiff(zoneInformationMappedContainer.minBounds.x, maxbounds.x) > maxselectionbounds){
-				retval = true;
-			}
-			if(getAbsoluteDiff(zoneInformationMappedContainer.minBounds.y, maxbounds.y) > maxselectionbounds){
-				retval = true;
-			}
-			if(getAbsoluteDiff(zoneInformationMappedContainer.minBounds.z, maxbounds.z) > maxselectionbounds){
-				retval = true;
-			}
-		}
-		return retval;
-	}
+        public boolean outofboundselection(){
+                boolean retval = false;
+                if(startposition != null && endposition != null){
+                        if(getAbsoluteDiff(minbounds.x, maxbounds.x) > maxselectionbounds){
+                                retval = true;
+                        }
+                        if(getAbsoluteDiff(minbounds.y, maxbounds.y) > maxselectionbounds){
+                                retval = true;
+                        }
+                        if(getAbsoluteDiff(minbounds.z, maxbounds.z) > maxselectionbounds){
+                                retval = true;
+                        }
+                }
+                return retval;
+        }
 
-	private int getAbsoluteDiff(int val1, int val2) {
-		int width;
-		if (val1 == val2) {
-			width = 1;
-		} else if (val1 < 0) {
-			if (val2 < 0 && val2 < val1) {
-				width = Math.abs(val2) - Math.abs(val1);
-			} else if (val2 < 0 && val2 > val1) {
-				width = Math.abs(val1) - Math.abs(val2);
-			} else {
-				width = Math.abs(val1) + val2;
-			}
-			width++;
-		} else {
-			if (val2 > -1 && val2 < val1) {
-				width = val1 - val2;
-			} else if (val2 > -1 && val2 > val1) {
-				width = val2 - val1;
-			} else {
-				width = Math.abs(val2) + val1;
-			}
-			width++;
-		}
-		return width;
-	}
+        private int getAbsoluteDiff(int val1, int val2) {
+                int width;
+                if (val1 == val2) {
+                        width = 1;
+                } else if (val1 < 0) {
+                        if (val2 < 0 && val2 < val1) {
+                                width = Math.abs(val2) - Math.abs(val1);
+                        } else if (val2 < 0 && val2 > val1) {
+                                width = Math.abs(val1) - Math.abs(val2);
+                        } else {
+                                width = Math.abs(val1) + val2;
+                        }
+                        width++;
+                } else {
+                        if (val2 > -1 && val2 < val1) {
+                                width = val1 - val2;
+                        } else if (val2 > -1 && val2 > val1) {
+                                width = val2 - val1;
+                        } else {
+                                width = Math.abs(val2) + val1;
+                        }
+                        width++;
+                }
+                return width;
+        }
 
-	public void render() {
-	    if(MinionSystem.getNewZone() != null && this.equals(MinionSystem.getNewZone())){
+        public void render() {
+                if(MinionSystem.getNewZone() != null && this.equals(MinionSystem.getNewZone())){
 		CoreRegistry.get(ShaderManager.class).enableDefault();
-	        worldProvider = CoreRegistry.get(WorldProvider.class);
+                worldProvider = CoreRegistry.get(WorldProvider.class);
 
-	        for (int i = 0; i < 2; i++) {
-	            if (i == 0) {
-	                glColorMask(false, false, false, false);
-	            } else {
-	                glColorMask(true, true, true, true);
-	            }
-	            Vector3f cameraPosition = CoreRegistry.get(WorldRenderer.class).getActiveCamera().getPosition();
-	            int camx = (int)cameraPosition.x;
-	            int camy = (int)cameraPosition.y;
-	            int camz = (int)cameraPosition.z;
-	            if(MinionSystem.getNewZone().zoneInformationMappedContainer.startPosition != null){
-	            	Vector3i renderpos = MinionSystem.getNewZone().zoneInformationMappedContainer.startPosition;
-	            	GL11.glPushMatrix();
-	            	GL11.glTranslated(renderpos.x - cameraPosition.x, renderpos.y - cameraPosition.y, renderpos.z - cameraPosition.z);
-	            	mesh.render();
-	            	GL11.glPopMatrix();
-	            	if(MinionSystem.getNewZone().endposition != null){
-	            		renderpos = MinionSystem.getNewZone().endposition;
-	            		GL11.glPushMatrix();
-		            	GL11.glTranslated(renderpos.x - cameraPosition.x, renderpos.y - cameraPosition.y, renderpos.z - cameraPosition.z);
-		            	mesh.render();
-		            	GL11.glPopMatrix();
-		            	if(!outofboundselection() && MinionSystem.isSelectionShown()){
-			            	for (int x = getMinBounds().x; x <= getMaxBounds().x; x++) {
-				    			for (int z = getMinBounds().z; z <= getMaxBounds().z; z++) {
-				    				for (int y = getMaxBounds().y; y >= getMinBounds().y; y--) {
-				    					Block tmpblock;
-				    					if(worldProvider.getBlock(x - camx, y - camy, z- camz) == null){
-				    						continue;
-				    					}else{
-				    						tmpblock = worldProvider.getBlock(x, y, z);
-				    					} //!tmpblock.getBlockFamily().getURI().getFamily().matches("air")
-				    					if (!tmpblock.isInvisible()) {
-				    						if(x==zoneInformationMappedContainer.minBounds.x || x == maxbounds.x){
-				    							GL11.glPushMatrix();
-					    		            	GL11.glTranslated(x - cameraPosition.x, y - cameraPosition.y, z - cameraPosition.z);
-					    		            	mesh.render();
-					    		            	GL11.glPopMatrix();
-				    						}else
-				    						if(z==zoneInformationMappedContainer.minBounds.z || z == maxbounds.z){
-				    							GL11.glPushMatrix();
-					    		            	GL11.glTranslated(x - cameraPosition.x, y - cameraPosition.y, z - cameraPosition.z);
-					    		            	mesh.render();
-					    		            	GL11.glPopMatrix();
-				    						}else{
-					    						GL11.glPushMatrix();
-					    		            	GL11.glTranslated(x - cameraPosition.x, y - cameraPosition.y, z - cameraPosition.z);
-					    		            	mesh.render();
-					    		            	GL11.glPopMatrix();
-					    						break;
-				    						}
-				    					}
-				    				}
-				    			}
-				    		}
-		            	}
-	            	}
-	            }	           
-	        }
-		}
+                for (int i = 0; i < 2; i++) {
+                    if (i == 0) {
+                        glColorMask(false, false, false, false);
+                    } else {
+                        glColorMask(true, true, true, true);
+                    }
+                    Vector3f cameraPosition = CoreRegistry.get(WorldRenderer.class).getActiveCamera().getPosition();
+                    int camx = (int)cameraPosition.x;
+                    int camy = (int)cameraPosition.y;
+                    int camz = (int)cameraPosition.z;
+                    if(MinionSystem.getNewZone().startposition != null){
+                        Vector3i renderpos = MinionSystem.getNewZone().startposition;
+                        GL11.glPushMatrix();
+                        GL11.glTranslated(renderpos.x - cameraPosition.x, renderpos.y - cameraPosition.y, renderpos.z - cameraPosition.z);
+                        mesh.render();
+                        GL11.glPopMatrix();
+                        if(MinionSystem.getNewZone().endposition != null){
+                                renderpos = MinionSystem.getNewZone().endposition;
+                                GL11.glPushMatrix();
+                                GL11.glTranslated(renderpos.x - cameraPosition.x, renderpos.y - cameraPosition.y, renderpos.z - cameraPosition.z);
+                                mesh.render();
+                                GL11.glPopMatrix();
+                                if(!outofboundselection() && MinionSystem.isSelectionShown()){
+                                        for (int x = getMinBounds().x; x <= getMaxBounds().x; x++) {
+                                                        for (int z = getMinBounds().z; z <= getMaxBounds().z; z++) {
+                                                                for (int y = getMaxBounds().y; y >= getMinBounds().y; y--) {
+                                                                        Block tmpblock;
+                                                                        if(worldProvider.getBlock(x - camx, y - camy, z- camz) == null){
+                                                                                continue;
+                                                                        }else{
+                                                                                tmpblock = worldProvider.getBlock(x, y, z);
+                                                                        } //!tmpblock.getBlockFamily().getURI().getFamily().matches("air")
+                                                                        if (!tmpblock.isInvisible()) {
+                                                                                if(x==minbounds.x || x == maxbounds.x){
+                                                                                        GL11.glPushMatrix();
+                                                                        GL11.glTranslated(x - cameraPosition.x, y - cameraPosition.y, z - cameraPosition.z);
+                                                                        mesh.render();
+                                                                        GL11.glPopMatrix();
+                                                                                }else
+                                                                                if(z==minbounds.z || z == maxbounds.z){
+                                                                                        GL11.glPushMatrix();
+                                                                        GL11.glTranslated(x - cameraPosition.x, y - cameraPosition.y, z - cameraPosition.z);
+                                                                        mesh.render();
+                                                                        GL11.glPopMatrix();
+                                                                                }else{
+                                                                                        GL11.glPushMatrix();
+                                                                        GL11.glTranslated(x - cameraPosition.x, y - cameraPosition.y, z - cameraPosition.z);
+                                                                        mesh.render();
+                                                                        GL11.glPopMatrix();
+                                                                                        break;
+                                                                                }
+                                                                        }
+                                                                }
+                                                        }
+                                                }
+                                }
+                        }
+                    }              
+                }
+                }
     }
-
-	    public ZoneType getZoneType() {
-	        return zoneInformationMappedContainer.zonetype;
-	    }
-
-	    public void setZoneType(ZoneType zoneType) {
-	        zoneInformationMappedContainer.zonetype = zoneType;
-	    }
-
-            public String getName() {
-                return zoneInformationMappedContainer.name;
-            }
-
-            public void setName(String name) {
-                zoneInformationMappedContainer.name = name;
-            }
-
-            public ZoneInformationMappedContainer getZoneComponent() {
-                return zoneInformationMappedContainer;
-            }
 }

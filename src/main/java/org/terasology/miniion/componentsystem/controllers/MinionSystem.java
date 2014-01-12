@@ -48,7 +48,6 @@ import org.terasology.miniion.gui.UIZoneBook;
 import org.terasology.miniion.utilities.MinionRecipe;
 import org.terasology.miniion.utilities.ModIcons;
 import org.terasology.miniion.utilities.Zone;
-import org.terasology.miniion.utilities.ZoneInformationMappedContainer;
 import org.terasology.rendering.logic.AnimEndEvent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
 
@@ -102,9 +101,10 @@ public class MinionSystem implements ComponentSystem {
         inventoryManager.giveItem(player, entityManager.create("miniion:emptycard"));
         inventoryManager.giveItem(player, entityManager.create("miniion:emptycard"));
         inventoryManager.giveItem(player, entityManager.create("miniion:emptycard"));
-        inventoryManager.giveItem(player, entityManager.create("miniion:emptycard"));
+        inventoryManager.giveItem(player, entityManager.create("Miniion:zonetool"));
+        inventoryManager.giveItem(player, entityManager.create("Miniion:zonebook"));
     }
-
+    
 	/**
 	 * Ugly way to retrieve a name from a prefab
 	 * 
@@ -201,7 +201,7 @@ public class MinionSystem implements ComponentSystem {
 	}
 	
 	public static void startNewSelection(Vector3i startpos){
-		newzone = new Zone(new ZoneInformationMappedContainer());
+		newzone = new Zone();
 		newzone.setStartPosition(startpos);
 	}
 
@@ -226,7 +226,7 @@ public class MinionSystem implements ComponentSystem {
 	 */
 	public static void addZone(Zone zone) {		
 		ZoneListComponent zonelistcomp = zonelist.getComponent(ZoneListComponent.class);
-		switch(zone.getZoneType()){
+		switch(zone.zonetype){
 			case Gather : {
 				zonelistcomp.Gatherzones.add(zone);
 				break;

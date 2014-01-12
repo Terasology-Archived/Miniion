@@ -31,7 +31,6 @@ import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.miniion.minionenum.ZoneType;
 import org.terasology.miniion.utilities.Zone;
-import org.terasology.miniion.utilities.ZoneInformationMappedContainer;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
 import org.terasology.rendering.gui.framework.events.ClickListener;
 import org.terasology.rendering.gui.widgets.*;
@@ -62,7 +61,7 @@ public class UIZoneBook extends UIWindow {
 				case Gather: {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getGatherZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
+						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.setTextColor(Color.black);
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
@@ -75,7 +74,7 @@ public class UIZoneBook extends UIWindow {
 				case Terraform: {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getTerraformZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
+						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.setTextColor(Color.black);
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
@@ -88,7 +87,7 @@ public class UIZoneBook extends UIWindow {
 				case Work : {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getWorkZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
+						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.setTextColor(Color.black);
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
@@ -101,7 +100,7 @@ public class UIZoneBook extends UIWindow {
 				case Storage : {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getStorageZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
+						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.setTextColor(Color.black);
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
@@ -114,7 +113,7 @@ public class UIZoneBook extends UIWindow {
 				case OreonFarm : {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getOreonFarmZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.getName(), zone);
+						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.setTextColor(Color.black);
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
@@ -135,11 +134,11 @@ public class UIZoneBook extends UIWindow {
 				}
 				lblError.setText("");
 				Zone zone = (Zone)listitem.getValue();
-				txtzonename.setText(zone.getName());
+				txtzonename.setText(zone.Name);
 				txtheight.setText("" + zone.zoneheight);
 				txtwidth.setText("" + zone.zonewidth);
 				txtdepth.setText("" + zone.zonedepth);
-				switch(zone.getZoneType()){
+				switch(zone.zonetype){
 					case Gather: {
 						lblzonetype.setText("Zonetype : Gather");
 						break;
@@ -312,7 +311,7 @@ public class UIZoneBook extends UIWindow {
 			MinionSystem.resetNewSelection();
 			lblError.setText("Something went wrong. Please close the book and recreate the selection.");
 		}
-		if( MinionSystem.getNewZone().getZoneType() == ZoneType.OreonFarm){
+		if( MinionSystem.getNewZone().zonetype == ZoneType.OreonFarm){
 			if(MinionSystem.getNewZone().getEndPosition() == null){
 				newzonefound = false;
 				MinionSystem.resetNewSelection();
@@ -343,19 +342,19 @@ public class UIZoneBook extends UIWindow {
 			return;
 		}				
 		for (Zone zone : MinionSystem.getGatherZoneList()) {
-			if (zone.getName().matches(txtzonename.getText())) {
+			if (zone.Name.matches(txtzonename.getText())) {
 				lblError.setText("Zone name already exists!");
 				return;
 			}
 		}
 		for (Zone zone : MinionSystem.getTerraformZoneList()) {
-			if (zone.getName().matches(txtzonename.getText())) {
+			if (zone.Name.matches(txtzonename.getText())) {
 				lblError.setText("Zone name already exists!");
 				return;
 			}
 		}
 		for (Zone zone : MinionSystem.getWorkZoneList()) {
-			if (zone.getName().matches(txtzonename.getText())) {
+			if (zone.Name.matches(txtzonename.getText())) {
 				lblError.setText("Zone name already exists!");
 				return;
 			}
@@ -369,16 +368,16 @@ public class UIZoneBook extends UIWindow {
 		} catch (NumberFormatException e) {
 			return;
 		}
-		Zone newzone = new Zone(new ZoneInformationMappedContainer(), MinionSystem.getNewZone().getStartPosition(),
+		Zone newzone = new Zone(MinionSystem.getNewZone().getStartPosition(),
 								MinionSystem.getNewZone().getEndPosition());
-		newzone.setName(txtzonename.getText());
+		newzone.Name = txtzonename.getText();
 		newzone.zoneheight = Integer.parseInt(txtheight.getText());
 		newzone.zonewidth = Integer.parseInt(txtwidth.getText());
 		newzone.zonedepth = Integer.parseInt(txtdepth.getText());
 		if(cmbType.isVisible()){
-			newzone.setZoneType(ZoneType.valueOf(cmbType.getSelection().getText()));
+			newzone.zonetype = ZoneType.valueOf(cmbType.getSelection().getText());
 		}else{
-			newzone.setZoneType(MinionSystem.getNewZone().getZoneType());
+			newzone.zonetype = MinionSystem.getNewZone().zonetype;
 		}
 		MinionSystem.addZone(newzone);
 		newzonefound = false;
@@ -388,7 +387,7 @@ public class UIZoneBook extends UIWindow {
 	}
 	
 	private void executeDelClick(UIDisplayElement element, int id, Zone deletezone) {
-		switch(deletezone.getZoneType()){
+		switch(deletezone.zonetype){
 			case Gather : {
 				MinionSystem.getGatherZoneList().remove(deletezone);
 				break;
@@ -434,7 +433,7 @@ public class UIZoneBook extends UIWindow {
 		}else
 		if (MinionSystem.getNewZone() != null	&& MinionSystem.getNewZone().getEndPosition() != null) {
 			newzonefound = true;
-			MinionSystem.getNewZone().setZoneType(ZoneType.Gather); 
+			MinionSystem.getNewZone().zonetype = ZoneType.Gather; 
 			
 			Vector3i minbounds = MinionSystem.getNewZone().getMinBounds();
 			Vector3i maxbounds = MinionSystem.getNewZone().getMaxBounds();
@@ -471,7 +470,7 @@ public class UIZoneBook extends UIWindow {
 		WorldProvider worldprovider = CoreRegistry.get(WorldProvider.class);
 		Block block = worldprovider.getBlock(MinionSystem.getNewZone().getStartPosition());
 		if(block.getURI().getFamilyName().matches("minionbench")){
-			MinionSystem.getNewZone().setZoneType(ZoneType.Work);
+			MinionSystem.getNewZone().zonetype = ZoneType.Work;
 			if (MinionSystem.getWorkZoneList() == null) {
 				txtzonename.setText("Workzone0");
 			} else {
@@ -481,7 +480,7 @@ public class UIZoneBook extends UIWindow {
 			newzonefound = true;
 		}else
 		if(block.getURI().getFamilyName().matches("chest")){
-			MinionSystem.getNewZone().setZoneType(ZoneType.Storage);
+			MinionSystem.getNewZone().zonetype = ZoneType.Storage;
 			if (MinionSystem.getWorkZoneList() == null) {
 				txtzonename.setText("Storage0");
 			} else {

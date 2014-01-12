@@ -39,7 +39,7 @@ public enum MinionMessageType {
                 String[] content = new String[3];
                 content[0] = "No more commands"; //description
                 content[1] = "iddle minion"; //Title
-                content[2] = "The minion has no more commands to execute and is now iddle"; //body
+                content[2] = "The minion has no more commands to execute and is now idle"; //body
                 return content;
             }
             default:

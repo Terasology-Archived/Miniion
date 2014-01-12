@@ -54,7 +54,7 @@ public final class MinionComponent implements Component {
 	public int Staminatotal;
 	
 	//determines an action point for the minion
-	public ZoneInformationMappedContainer assignedzone;
+	public Zone assignedzone;
 	//the recipe to craft when working
 	public MinionRecipe assignedrecipe;
 
