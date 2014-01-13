@@ -496,6 +496,9 @@ public class UIActiveMinion extends UIWindow{
 				case Terraform: {
 					uiDetailList.removeAll();
 					for (Zone zone : MinionSystem.getTerraformZoneList()) {
+			                    if (null == zone.Name) {
+			                        zone.Name = "unnamed";
+			                    }
 						UIListItem newlistitem = new UIListItem(zone.Name, zone);
 						newlistitem.addClickListener(zoneItemListener);
 						uiDetailList.addItem(newlistitem);

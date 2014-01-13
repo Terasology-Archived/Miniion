@@ -21,6 +21,7 @@ import javax.vecmath.Vector2f;
 
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.util.Log;
 import org.terasology.asset.Assets;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -342,18 +343,30 @@ public class UIZoneBook extends UIWindow {
 			return;
 		}				
 		for (Zone zone : MinionSystem.getGatherZoneList()) {
+                    if (null == zone.Name) {
+                        continue;
+                    }
+
 			if (zone.Name.matches(txtzonename.getText())) {
 				lblError.setText("Zone name already exists!");
 				return;
 			}
 		}
 		for (Zone zone : MinionSystem.getTerraformZoneList()) {
+	            if (null == zone.Name) {
+	                continue;
+	            }
+
 			if (zone.Name.matches(txtzonename.getText())) {
 				lblError.setText("Zone name already exists!");
 				return;
 			}
 		}
 		for (Zone zone : MinionSystem.getWorkZoneList()) {
+                    if (null == zone.Name) {
+                        continue;
+                    }
+
 			if (zone.Name.matches(txtzonename.getText())) {
 				lblError.setText("Zone name already exists!");
 				return;
