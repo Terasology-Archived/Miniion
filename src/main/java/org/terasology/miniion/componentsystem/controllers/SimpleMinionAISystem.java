@@ -57,6 +57,7 @@ import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
+import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.items.BlockItemComponent;
 import org.terasology.world.block.items.BlockItemFactory;
 
@@ -176,7 +177,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
                     break;
                 }
                 case Stay: {
-                    changeAnimation(entity, animcomp.idleAnim, false);
+                    executeStayAI(entity);
                     break;
                 }
                 case Test: {
@@ -189,6 +190,16 @@ public class SimpleMinionAISystem implements ComponentSystem,
                 }
             }
         }
+    }
+
+    private void executeStayAI(EntityRef entity) {
+        CharacterMovementComponent moveComp = entity
+                .getComponent(CharacterMovementComponent.class);
+        moveComp.setVelocity(new Vector3f(0,0,0));
+        entity.saveComponent(moveComp);
+        AnimationComponent animcomp = entity
+                .getComponent(AnimationComponent.class);
+        changeAnimation(entity, animcomp.idleAnim, false);
     }
 
     private void changeAnimation(EntityRef entity, MeshAnimation animation,
@@ -433,17 +444,22 @@ public class SimpleMinionAISystem implements ComponentSystem,
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
             
-            // Not sure why we're checking for oreonfarm when we're in teraform mode
+            // Not sure why we're checking for oreonfarm when we're in Terraform mode
 //        } else if (minioncomp.assignedzone.zonetype != ZoneType.OreonFarm) {
 //            changeAnimation(entity, animcomp.idleAnim, true);
 //            return;
         }
 
         if (ai.movementTargets.size() == 0) {
+            // this might load more ai.movementTargets
             getFirsBlockfromZone(minioncomp, ai);
         }
 
-        Vector3f currentTarget = ai.movementTargets.get(0);
+        Vector3f currentTarget = null;
+        if (ai.movementTargets.size() != 0) {
+            currentTarget = ai.movementTargets.get(0);
+        }
+
         if (currentTarget == null) {
             ai.movementTargets.remove(currentTarget);
             changeAnimation(entity, animcomp.idleAnim, true);
@@ -464,19 +480,27 @@ public class SimpleMinionAISystem implements ComponentSystem,
                     Block tmpblock = worldProvider.getBlock((int) currentTarget.x, y, (int) currentTarget.z);
                     if (!tmpblock.isInvisible()) {
                         String moduleName = tmpblock.getBlockFamily().getURI().getModuleName();
+                        // TODO: why do we care about what kinds of blocks we terraform?
                         if ((moduleName.equals("engine")) || (moduleName.equals("core"))) {
                             ai.craftprogress++;
                             if (ai.craftprogress > 20) {
                                 Block newBlock;
                                 if (!fixedrecipeuri.isEmpty()) {
                                     newBlock = blockManager.getBlock(fixedrecipeuri);
+                                    if (!newBlock.getURI().equals(new BlockUri(fixedrecipeuri))) {
+                                        // Not sure what we should do if block read fails, but we don't want air as default
+                                        newBlock = blockManager.getBlock("CakeLie:ChocolateBlock");
+                                    }
+
                                 } else if (minioncomp.assignedrecipe == null) {
+                                    // TODO: we should read this block asset name from the prefab
                                     newBlock = blockManager.getBlock("CakeLie:ChocolateBlock");
                                 } else
                                 {
                                     newBlock = blockManager.getBlock(minioncomp.assignedrecipe.result);
                                 }
-                                worldProvider.setBlock(new Vector3i(currentTarget.x, y, currentTarget.z), newBlock);
+                                
+                                worldProvider.setBlock(new Vector3i(currentTarget.x, y, currentTarget.z), newBlock );
                                 ai.craftprogress = 0;
                                 if (y == minioncomp.assignedzone.getMinBounds().y) {
                                     ai.movementTargets.remove(currentTarget);
@@ -544,7 +568,11 @@ public class SimpleMinionAISystem implements ComponentSystem,
             getFirsBlockfromZone(minioncomp, ai);
         }
 
-        Vector3f currentTarget = ai.movementTargets.get(0);
+        Vector3f currentTarget = null;
+        if (ai.movementTargets.size() != 0) {
+            currentTarget = ai.movementTargets.get(0);
+        }
+
         if (currentTarget == null) {
             ai.movementTargets.remove(currentTarget);
             changeAnimation(entity, animcomp.idleAnim, true);
@@ -566,6 +594,10 @@ public class SimpleMinionAISystem implements ComponentSystem,
                     if (ai.craftprogress > 20) {
                         Block newBlock;
                         newBlock = blockManager.getBlock("miniion:OreonPlant0");
+                        if (!newBlock.getURI().equals(new BlockUri("miniion:OreonPlant0"))) {
+                            // Not sure what we should do if block read fails, but we don't want air as default
+                            newBlock = blockManager.getBlock("core:plant");
+                        }
                         worldProvider.setBlock(new Vector3i(currentTarget.x, y + 1, currentTarget.z), newBlock);
                         ai.craftprogress = 0;
                         if (y == minioncomp.assignedzone.getMinBounds().y) {
@@ -586,10 +618,13 @@ public class SimpleMinionAISystem implements ComponentSystem,
         SimpleMinionAIComponent ai = entity
                 .getComponent(SimpleMinionAIComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
+        CharacterMovementComponent characterMovement = entity.getComponent(CharacterMovementComponent.class);
 
         // get targets, break if none
         List<Vector3f> targets = ai.movementTargets;
         if ((targets == null) || (targets.size() < 1)) {
+            characterMovement.setVelocity(new Vector3f(0, 0, 0));
+            entity.saveComponent(characterMovement);
             return;
         }
         Vector3f currentTarget = targets.get(0);
@@ -761,6 +796,10 @@ public class SimpleMinionAISystem implements ComponentSystem,
                         changeAnimation(entity, animcomp.idleAnim, true);
                     }
                     location.setWorldPosition(currentTarget);
+                    moveComp.setVelocity(new Vector3f(0,0,0));
+                    entity.saveComponent(location);
+                    entity.saveComponent(moveComp);
+                    ai.lastPosition = location.getWorldPosition();
                 } else {
                     ai.lastPosition = location.getWorldPosition();
                 }
