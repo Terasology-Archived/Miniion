@@ -19,5 +19,5 @@
 */
 {
 	"author" : "overdhose",
-    "basedOn" : "engine:plant"
+    "basedOn" : "core:plant"
 }
