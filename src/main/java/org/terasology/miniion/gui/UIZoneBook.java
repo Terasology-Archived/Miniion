@@ -62,7 +62,11 @@ public class UIZoneBook extends UIWindow {
 				case Gather: {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getGatherZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
+			                    String zoneName = zone.Name;
+                                            if (null == zoneName) {
+                                                zoneName = "<un-named>";
+    			                    }
+						UIListItem newlistitem = new UIListItem(zoneName, zone);
 						newlistitem.setTextColor(Color.black);
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
@@ -75,7 +79,11 @@ public class UIZoneBook extends UIWindow {
 				case Terraform: {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getTerraformZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
+                                            String zoneName = zone.Name;
+                                            if (null == zoneName) {
+                                                zoneName = "<un-named>";
+                                            }
+						UIListItem newlistitem = new UIListItem(zoneName, zone);
 						newlistitem.setTextColor(Color.black);
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
@@ -88,7 +96,11 @@ public class UIZoneBook extends UIWindow {
 				case Work : {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getWorkZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
+                                            String zoneName = zone.Name;
+                                            if (null == zoneName) {
+                                                zoneName = "<un-named>";
+                                            }
+						UIListItem newlistitem = new UIListItem(zoneName, zone);
 						newlistitem.setTextColor(Color.black);
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
@@ -101,7 +113,11 @@ public class UIZoneBook extends UIWindow {
 				case Storage : {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getStorageZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
+                                            String zoneName = zone.Name;
+                                            if (null == zoneName) {
+                                                zoneName = "<un-named>";
+                                            }
+						UIListItem newlistitem = new UIListItem(zoneName, zone);
 						newlistitem.setTextColor(Color.black);
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
@@ -114,7 +130,11 @@ public class UIZoneBook extends UIWindow {
 				case OreonFarm : {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getOreonFarmZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
+                                            String zoneName = zone.Name;
+                                            if (null == zoneName) {
+                                                zoneName = "<un-named>";
+                                            }
+						UIListItem newlistitem = new UIListItem(zoneName, zone);
 						newlistitem.setTextColor(Color.black);
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
