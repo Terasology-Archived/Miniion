@@ -432,9 +432,11 @@ public class SimpleMinionAISystem implements ComponentSystem,
         } else if (minioncomp.assignedzone.zonetype != ZoneType.Terraform && fixedrecipeuri.isEmpty()) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
-        } else if (minioncomp.assignedzone.zonetype != ZoneType.OreonFarm) {
-            changeAnimation(entity, animcomp.idleAnim, true);
-            return;
+            
+            // Not sure why we're checking for oreonfarm when we're in teraform mode
+//        } else if (minioncomp.assignedzone.zonetype != ZoneType.OreonFarm) {
+//            changeAnimation(entity, animcomp.idleAnim, true);
+//            return;
         }
 
         if (ai.movementTargets.size() == 0) {
@@ -461,7 +463,8 @@ public class SimpleMinionAISystem implements ComponentSystem,
                 for (int y = (int) (currentTarget.y - 0.5); y >= minioncomp.assignedzone.getMinBounds().y; y--) {
                     Block tmpblock = worldProvider.getBlock((int) currentTarget.x, y, (int) currentTarget.z);
                     if (!tmpblock.isInvisible()) {
-                        if (tmpblock.getBlockFamily().getURI().getModuleName().equals("engine")) {
+                        String moduleName = tmpblock.getBlockFamily().getURI().getModuleName();
+                        if ((moduleName.equals("engine")) || (moduleName.equals("core"))) {
                             ai.craftprogress++;
                             if (ai.craftprogress > 20) {
                                 Block newBlock;
@@ -746,7 +749,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
         Vector3f targetDirection = new Vector3f();
         targetDirection.sub(currentTarget, worldPos);
         if (targetDirection.x * targetDirection.x + targetDirection.z
-            * targetDirection.z > 0.01f) {
+            * targetDirection.z > 0.03f) {
             if (timer.getGameTimeInMs() - ai.lastDistancecheck > 2000) {
                 ai.lastDistancecheck = timer.getGameTimeInMs();
                 if (ai.lastPosition == null) {
