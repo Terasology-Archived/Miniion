@@ -37,8 +37,6 @@ import org.terasology.world.block.Block;
 @MappedContainer
 public class Zone {
 
-        private WorldProvider worldProvider;
-
         private Vector3i minbounds = new Vector3i(Integer.MAX_VALUE,
                         Integer.MAX_VALUE, Integer.MAX_VALUE);
         private Vector3i maxbounds = new Vector3i(Integer.MIN_VALUE,
@@ -178,7 +176,7 @@ public class Zone {
         public void render() {
                 if(MinionSystem.getNewZone() != null && this.equals(MinionSystem.getNewZone())){
 		CoreRegistry.get(ShaderManager.class).enableDefault();
-                worldProvider = CoreRegistry.get(WorldProvider.class);
+		WorldProvider worldProvider = CoreRegistry.get(WorldProvider.class);
 
                 for (int i = 0; i < 2; i++) {
                     if (i == 0) {
