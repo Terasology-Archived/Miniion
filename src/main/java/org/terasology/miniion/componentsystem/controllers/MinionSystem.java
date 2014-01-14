@@ -201,18 +201,10 @@ public class MinionSystem implements ComponentSystem {
 	}
 	
 	public static void startNewSelection(Vector3i startpos){
-		newzone = new Zone();
-		newzone.setStartPosition(startpos);
 	}
 
-	public static void endNewSelection(Vector3i endpos){
-		if(newzone != null){
-			newzone.setEndPosition(endpos);
-		}
-	}
-
-	public static void resetNewSelection(){
-		newzone = null;
+	public static void setNewZone(Zone zone){
+		newzone = zone;
 	}
 
 	public static Zone getNewZone(){

@@ -15,26 +15,26 @@
  */
 package org.terasology.miniion.gui;
 
-import java.util.Set;
-
 import javax.vecmath.Vector2f;
 
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.util.Log;
 import org.terasology.asset.Assets;
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.engine.CoreRegistry;
 import org.terasology.math.Vector3i;
-import org.terasology.miniion.components.ZoneSelectionComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.miniion.minionenum.ZoneType;
 import org.terasology.miniion.utilities.Zone;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
 import org.terasology.rendering.gui.framework.events.ClickListener;
-import org.terasology.rendering.gui.widgets.*;
+import org.terasology.rendering.gui.widgets.UIComboBox;
+import org.terasology.rendering.gui.widgets.UIImage;
+import org.terasology.rendering.gui.widgets.UILabel;
+import org.terasology.rendering.gui.widgets.UIList;
+import org.terasology.rendering.gui.widgets.UIListItem;
+import org.terasology.rendering.gui.widgets.UIText;
+import org.terasology.rendering.gui.widgets.UIWindow;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 
@@ -329,17 +329,7 @@ public class UIZoneBook extends UIWindow {
 		lblError.setText("");
 		if( MinionSystem.getNewZone() == null){
 			newzonefound = false;
-			MinionSystem.resetNewSelection();
 			lblError.setText("Something went wrong. Please close the book and recreate the selection.");
-		}
-		if( MinionSystem.getNewZone().zonetype == ZoneType.OreonFarm){
-			if(MinionSystem.getNewZone().getEndPosition() == null){
-				newzonefound = false;
-				MinionSystem.resetNewSelection();
-				lblError.setText("Something went wrong. Please close the book and recreate the selection.");
-			}else{
-				
-			}			
 		}
 		if( (!cmbType.isVisible()) && MinionSystem.getNewZone() == null){
 			newzonefound = false;			
@@ -392,8 +382,8 @@ public class UIZoneBook extends UIWindow {
 				return;
 			}
 		}
-		int tmp;
 		try {
+	                int tmp;
 			tmp = Integer.parseInt(txtheight.getText());
 			tmp = Integer.parseInt(txtwidth.getText());
 			tmp = Integer.parseInt(txtdepth.getText());
@@ -415,7 +405,7 @@ public class UIZoneBook extends UIWindow {
 		MinionSystem.addZone(newzone);
 		newzonefound = false;
 		lblzonetype.setText("");
-		MinionSystem.resetNewSelection();
+		MinionSystem.setNewZone(null);
 		this.close();
 	}
 	
