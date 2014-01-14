@@ -19,7 +19,6 @@ import org.terasology.entitySystem.Component;
 import org.terasology.miniion.minionenum.MinionBehaviour;
 import org.terasology.miniion.utilities.MinionRecipe;
 import org.terasology.miniion.utilities.Zone;
-import org.terasology.miniion.utilities.ZoneInformationMappedContainer;
 
 /**
  * Allows an entity to store items
