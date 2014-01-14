@@ -16,5 +16,7 @@
 {
 	"OreonCrop" = {
 		"stages" = 7
-	}
+	},
+	LocationComponent : {},
+	BlockComponent  : {}
 }
