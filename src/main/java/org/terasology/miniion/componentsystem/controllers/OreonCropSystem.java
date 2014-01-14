@@ -64,6 +64,7 @@ public class OreonCropSystem implements ComponentSystem, UpdateSubscriberSystem 
 				}
 				if(crop.lastgrowthcheck == -1){
 					crop.lastgrowthcheck = timer.getGameTimeInMs();
+                                        entity.saveComponent(crop);
 					return;
 				}
 				if(timer.getGameTimeInMs() - crop.lastgrowthcheck > 54000000){
