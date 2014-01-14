@@ -20,12 +20,14 @@ import java.util.List;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Vector3f;
 
+import org.terasology.asset.AssetUri;
 import org.terasology.engine.CoreRegistry;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.entity.lifecycleEvents.OnAddedComponent;
 import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.ComponentSystem;
 import org.terasology.entitySystem.systems.In;
 import org.terasology.entitySystem.systems.RegisterMode;
@@ -58,6 +60,7 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
+import org.terasology.world.block.family.BlockFamily;
 import org.terasology.world.block.items.BlockItemComponent;
 import org.terasology.world.block.items.BlockItemFactory;
 
@@ -590,10 +593,14 @@ public class SimpleMinionAISystem implements ComponentSystem,
             if (timer.getGameTimeInMs() - ai.lastAttacktime > 200) {
                 ai.lastAttacktime = timer.getGameTimeInMs();
                 for (int y = (int) (currentTarget.y - 0.5); y >= minioncomp.assignedzone.getMinBounds().y; y--) {
+                    Block currentBlock = worldProvider.getBlock(new Vector3i(currentTarget.x, y + 1, currentTarget.z));
+                    if ("miniion:OreonCrop".equals(currentBlock.getPrefab())) {
+                        ai.movementTargets.remove(currentTarget);
+                        continue;
+                    }
                     ai.craftprogress++;
                     if (ai.craftprogress > 20) {
-                        Block newBlock;
-                        newBlock = blockManager.getBlock("miniion:OreonPlant0");
+                        Block newBlock = blockManager.getBlock("miniion:OreonPlant0");
                         if (!newBlock.getURI().equals(new BlockUri("miniion:OreonPlant0"))) {
                             // Not sure what we should do if block read fails, but we don't want air as default
                             newBlock = blockManager.getBlock("core:plant");
@@ -606,6 +613,13 @@ public class SimpleMinionAISystem implements ComponentSystem,
                     }
                 }
             }
+        }
+
+        if (ai.movementTargets.size() == 0) {
+            ai.movementTargets.remove(currentTarget);
+            changeAnimation(entity, animcomp.idleAnim, true);
+            entity.saveComponent(ai);
+            return;
         }
 
         entity.saveComponent(ai);
