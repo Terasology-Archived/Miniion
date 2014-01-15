@@ -4,6 +4,19 @@
     "author" : "Overdhose",
     "displayName" : "Miniions",
     "description" : "A prototype of summonable, commandable minions",
-    "dependencies" : [],
+    "dependencies" : [
+		{
+            "id" : "Core",
+            "minVersion" : "0.1.0"
+        },
+		{
+            "id" : "Oreons",
+            "minVersion" : "0.2.0"
+        },
+		{
+            "id" : "Crops",
+            "minVersion" : "0.2.0"
+        }
+    ],
     "isServerSideOnly" : false
 }
