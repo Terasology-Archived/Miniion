@@ -42,10 +42,10 @@ public class OreonCropSystem implements ComponentSystem, UpdateSubscriberSystem 
 	private void initCrops(){
 		//add 3000 to init to create  bit of a delay before first check
 		long initTime = timer.getGameTimeInMs();
-		for(EntityRef minion : entityManager.getEntitiesWith(OreonCropComponent.class)){
-			OreonCropComponent crop = minion.getComponent(OreonCropComponent.class);
+		for(EntityRef cropEntity : entityManager.getEntitiesWith(OreonCropComponent.class)){
+			OreonCropComponent crop = cropEntity.getComponent(OreonCropComponent.class);
 			crop.lastgrowthcheck = initTime;
-			minion.saveComponent(crop);
+			cropEntity.saveComponent(crop);
 		}
 	}
 
@@ -56,34 +56,37 @@ public class OreonCropSystem implements ComponentSystem, UpdateSubscriberSystem 
 
 	@Override
 	public void update(float delta) {
-		for (EntityRef entity : entityManager.getEntitiesWith(OreonCropComponent.class)){
-			if(entity.hasComponent(BlockComponent.class)){
-				OreonCropComponent crop = entity.getComponent(OreonCropComponent.class);
+		for (EntityRef cropEntity : entityManager.getEntitiesWith(OreonCropComponent.class)){
+			if(cropEntity.hasComponent(BlockComponent.class)){
+				OreonCropComponent crop = cropEntity.getComponent(OreonCropComponent.class);
 				if(crop.fullgrown){
 					return;
 				}
 				if(crop.lastgrowthcheck == -1){
 					crop.lastgrowthcheck = timer.getGameTimeInMs();
-                                        entity.saveComponent(crop);
+                                        cropEntity.saveComponent(crop);
 					return;
 				}
-				if(timer.getGameTimeInMs() - crop.lastgrowthcheck > 54000000){
+                                if(timer.getGameTimeInMs() - crop.lastgrowthcheck > crop.timeInGameMsToNextStage){
 					crop.lastgrowthcheck = timer.getGameTimeInMs();
-					if(entity.hasComponent(LocationComponent.class)){
-						LocationComponent locComponent = entity.getComponent(LocationComponent.class);
-						Block oldblock = worldprovider.getBlock(locComponent.getWorldPosition());
-						String oldUri = oldblock.getURI().getFamilyName();
-						byte currentstage = Byte.parseByte(oldUri.substring(oldUri.length() - 1, oldUri.length()));
-						if(crop.stages -1 > currentstage){
-							currentstage++;
-							if(currentstage == crop.stages -1){
-								crop.fullgrown = true;
-							}
-							oldUri = oldUri.substring(0, oldUri.length()-1) + currentstage;
-							Block newBlock = blockManager.getBlock(oldblock.getURI().getModuleName() + ":" + oldUri);
-							worldprovider.setBlock(new Vector3i(locComponent.getWorldPosition()), newBlock);
+					if(cropEntity.hasComponent(LocationComponent.class)){
+						LocationComponent locComponent = cropEntity.getComponent(LocationComponent.class);
+						Block currentBlock = worldprovider.getBlock(locComponent.getWorldPosition());
+						String currentBlockFamilyStage = currentBlock.getURI().toString();
+						int currentstageIndex = crop.blockFamilyStages.indexOf(currentBlockFamilyStage);
+						int lastStageIndex = crop.blockFamilyStages.size() -1;
+                                                if(lastStageIndex > currentstageIndex) {
+						    currentstageIndex++;
+                                                    if(currentstageIndex == lastStageIndex) {
+                                                        crop.fullgrown = true;
+                                                    }
+                                                    String newBlockUri = crop.blockFamilyStages.get(currentstageIndex);
+                                                    Block newBlock = blockManager.getBlock(newBlockUri);
+                                                    if (newBlockUri.equals(newBlock.getURI().toString())) {
+                                                        worldprovider.setBlock(new Vector3i(locComponent.getWorldPosition()), newBlock);
+                                                    }
 						}
-						entity.saveComponent(crop);
+						cropEntity.saveComponent(crop);
 					}					
 				}
 			}
