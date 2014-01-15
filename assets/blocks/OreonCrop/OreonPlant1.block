@@ -19,5 +19,9 @@
 */
 {
 	"author" : "overdhose",
-    "basedOn" : "core:plant"
+    "basedOn" : "core:plant",
+    "entity" : {
+        "prefab" : "miniion:OreonCrop",
+		"keepActive" : true
+    }
 }

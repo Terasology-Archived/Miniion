@@ -25,6 +25,6 @@
     },
     "entity" : {
         "prefab" : "miniion:minionbench",
-        "mode" : "persistent"
+		"keepActive" : true
     }
 }

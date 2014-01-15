@@ -22,6 +22,6 @@
     "basedOn" : "core:plant",
     "entity" : {
         "prefab" : "miniion:OreonCrop",
-        "mode" : "persistent"
+		"keepActive" : true
     }
 }
