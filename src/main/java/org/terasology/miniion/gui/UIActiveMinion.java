@@ -19,7 +19,6 @@ import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
 import org.lwjgl.input.Keyboard;
-import org.newdawn.slick.Color;
 import org.terasology.asset.Assets;
 import org.terasology.engine.CoreRegistry;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -43,10 +42,11 @@ import org.terasology.rendering.gui.widgets.UILabel;
 import org.terasology.rendering.gui.widgets.UIList;
 import org.terasology.rendering.gui.widgets.UIListItem;
 import org.terasology.rendering.gui.widgets.UIWindow;
+import org.terasology.rendering.nui.Color;
 
 public class UIActiveMinion extends UIWindow{
-	
-	private final UILabel lblname, lblflavor, lblzone, lblrecipe;
+
+    private final UILabel lblname, lblflavor, lblzone, lblrecipe;
 	private final UIImage backgroundmain;
 	private final UIComposite behaviourlist, actionlist;
 	private final UIList uiMainlist, uiDetailList;
@@ -603,7 +603,7 @@ public class UIActiveMinion extends UIWindow{
 			// would be nice if I could lock the size to default size
 			lblname.removeBorderSolid();		
 			lblname.setText("No Oeon is obeying you!");
-			lblname.setBorderSolid(new Vector4f(2f, 2f, 2f, 2f), Color.magenta);
+			lblname.setBorderSolid(new Vector4f(2f, 2f, 2f, 2f), Color.MAGENTA.toHex());
 			lblflavor.setText("Get your Oreominions now!!! 75% off if you bought any other DLC");
 			lblzone.setText("");
 			lblrecipe.setText("");            
@@ -650,7 +650,7 @@ public class UIActiveMinion extends UIWindow{
 					toggleBehaviour(null);
 				}
 			}			
-			lblname.setBorderSolid(new Vector4f(2f, 2f, 2f, 2f), Color.magenta);						
+			lblname.setBorderSolid(new Vector4f(2f, 2f, 2f, 2f), Color.MAGENTA.toHex());						
 		}
 		//refresh the stats screen whenever the main window refreshes.
 		uistats.refreshScreen();

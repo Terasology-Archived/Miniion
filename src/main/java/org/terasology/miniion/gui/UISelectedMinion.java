@@ -25,7 +25,6 @@ import static org.lwjgl.opengl.GL11.glTranslatef;
 import javax.vecmath.Vector2f;
 
 import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.Color;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.engine.CoreRegistry;
 import org.terasology.logic.common.ActivateEvent;
@@ -41,6 +40,7 @@ import org.terasology.miniion.minionenum.MinionBehaviour;
 import org.terasology.miniion.utilities.Zone;
 import org.terasology.rendering.gui.widgets.*;
 import org.terasology.rendering.icons.Icon;
+import org.terasology.rendering.nui.Color;
 
 public class UISelectedMinion extends UICompositeScrollable {
 
@@ -137,19 +137,19 @@ public class UISelectedMinion extends UICompositeScrollable {
 
 		lblname = new UILabel("");
 		lblname.setPosition(new Vector2f(50, 30));
-		lblname.setColor(Color.black);
+		lblname.setColor(Color.BLACK.toHex());
 		lblname.setVisible(false);
 		this.addDisplayElement(lblname);
 
 		lblflavor = new UILabel("");
 		lblflavor.setPosition(new Vector2f(50, 50));
-		lblflavor.setColor(Color.black);
+		lblflavor.setColor(Color.BLACK.toHex());
 		lblflavor.setVisible(false);
 		this.addDisplayElement(lblflavor);
 
 		lblBehaviour = new UILabel("Behaviour");
 		lblBehaviour.setPosition(new Vector2f(20, 80));
-		lblBehaviour.setColor(Color.black);
+		lblBehaviour.setColor(Color.BLACK.toHex());
 		lblBehaviour.setVisible(false);
 		this.addDisplayElement(lblBehaviour);
 
@@ -274,7 +274,7 @@ public class UISelectedMinion extends UICompositeScrollable {
 		uizonelist.setSize(new Vector2f(250, 300));
 		uizonelist.setPosition(new Vector2f(300, 0));
 		uizonelist.setBackgroundImage("miniion:pageback");
-		uizonelist.setBackgroundColor(Color.black);
+		uizonelist.setBackgroundColor(Color.BLACK.toHex());
 		uizonelist.setVisible(false);
 		this.addDisplayElement(uizonelist);
 
@@ -404,7 +404,7 @@ public class UISelectedMinion extends UICompositeScrollable {
 		uizonelist.removeAll();
 		for (Zone zone : MinionSystem.getGatherZoneList()) {
 			UIListItem listitem = new UIListItem(zone.Name, zone);
-			listitem.setTextColor(Color.black);
+			listitem.setTextColor(Color.BLACK.toHex());
 			uizonelist.addItem(listitem);
 		}
 		uizonelist.setVisible(true);

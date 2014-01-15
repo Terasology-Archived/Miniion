@@ -17,7 +17,6 @@ package org.terasology.miniion.gui;
 
 import javax.vecmath.Vector2f;
 
-import org.newdawn.slick.Color;
 import org.terasology.entitySystem.systems.In;
 import org.terasology.engine.Time;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
@@ -25,6 +24,7 @@ import org.terasology.rendering.gui.framework.UIDisplayElement;
 import org.terasology.rendering.gui.framework.events.ClickListener;
 import org.terasology.rendering.gui.widgets.UILabel;
 import org.terasology.rendering.gui.widgets.UIWindow;
+import org.terasology.rendering.nui.Color;
 
 public class UIScreenSettings extends UIWindow{
 	
@@ -42,7 +42,7 @@ public class UIScreenSettings extends UIWindow{
 		lblTitle.setPosition(new Vector2f(150 - (lblTitle.getSize().x /2), 10));
 		//lblstatTitle.setPosition(new Vector2f(120, 10));
 		lblTitle.setVisible(true);
-		lblTitle.setColor(Color.green);
+		lblTitle.setColor(Color.GREEN.toHex());
 		addDisplayElement(lblTitle);
 		
 		lblWarning = new UILabel();
@@ -51,7 +51,7 @@ public class UIScreenSettings extends UIWindow{
 		lblWarning.setSize(new Vector2f(280, 30));
 		lblWarning.setPosition(new Vector2f(10, 300));
 		lblWarning.setVisible(true);
-		lblWarning.setColor(Color.red);
+		lblWarning.setColor(Color.RED.toHex());
 		addDisplayElement(lblWarning);
 		
 		lblselover = new UILabel();
@@ -60,7 +60,7 @@ public class UIScreenSettings extends UIWindow{
 		lblselover.setSize(new Vector2f(280, 30));
 		lblselover.setPosition(new Vector2f(10, 400));
 		lblselover.setVisible(true);
-		lblselover.setColor(Color.green);
+		lblselover.setColor(Color.GREEN.toHex());
 		addDisplayElement(lblselover);
 		
 		btnOverlay = new UIModButtonMenu(new Vector2f(50,20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.TOGGLE);

@@ -16,7 +16,6 @@
 package org.terasology.miniion.gui;
 
 import org.lwjgl.input.Keyboard;
-import org.newdawn.slick.Color;
 import org.terasology.asset.Assets;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -26,6 +25,7 @@ import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
 import org.terasology.rendering.gui.framework.events.ClickListener;
 import org.terasology.rendering.gui.widgets.*;
+import org.terasology.rendering.nui.Color;
 
 import javax.vecmath.Vector2f;
 
@@ -64,13 +64,13 @@ public class UIScreenBookOreo extends UIWindow {
 
 		pagetitle = new UILabel("Summoned minions");
 		pagetitle.setPosition(new Vector2f(50, 20));
-		pagetitle.setColor(org.newdawn.slick.Color.black);
+		pagetitle.setColor(Color.BLACK.toHex());
 		pagetitle.setVisible(true);
 		addDisplayElement(pagetitle);
 
 		pagetitle2 = new UILabel("Active minion");
 		pagetitle2.setPosition(new Vector2f(340, 20));
-		pagetitle2.setColor(org.newdawn.slick.Color.black);
+		pagetitle2.setColor(Color.BLACK.toHex());
 		pagetitle2.setVisible(true);
 		addDisplayElement(pagetitle2);
 		
@@ -117,7 +117,7 @@ public class UIScreenBookOreo extends UIWindow {
 		EntityManager entMan = CoreRegistry.get(EntityManager.class);
 		for(EntityRef minion : entMan.getEntitiesWith(MinionComponent.class)){
 			UIListItem listitem = new UIListItem(minion.getComponent(MinionComponent.class).name, minion);
-			listitem.setTextColor(Color.black);
+			listitem.setTextColor(Color.BLACK.toHex());
 			listitem.addClickListener(minionistener);
 			uiminionlist.addItem(listitem);
 		}

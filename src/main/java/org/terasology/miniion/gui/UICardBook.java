@@ -20,7 +20,6 @@ import javax.vecmath.Vector4f;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-import org.newdawn.slick.Color;
 import org.terasology.asset.Assets;
 import org.terasology.engine.CoreRegistry;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -45,6 +44,7 @@ import org.terasology.rendering.gui.widgets.UIInventoryGrid;
 import org.terasology.rendering.gui.widgets.UILabel;
 import org.terasology.rendering.gui.widgets.UIListItem;
 import org.terasology.rendering.gui.widgets.UIWindow;
+import org.terasology.rendering.nui.Color;
 
 /**
  * Displays two inventories, and allows moving items between them
@@ -52,7 +52,7 @@ import org.terasology.rendering.gui.widgets.UIWindow;
  * @author Immortius <immortius@gmail.com>
  */
 public class UICardBook extends UIWindow {
-    
+
 	EntityRef container = EntityRef.NULL;
 	EntityRef creature = EntityRef.NULL;
 	EntityManager entityManager;
@@ -71,7 +71,7 @@ public class UICardBook extends UIWindow {
 	public UICardBook() {
 		setId("cardbook");
 		entityManager = CoreRegistry.get(EntityManager.class);
-		setBackgroundColor(new Color(0, 0, 0, 200));
+		setBackgroundColor(new Color(0, 0, 0, 200).toHex());
 		setModal(true);
 		maximize();
 		// setCloseBinds(new String[] {"engine:useHeldItem"});
@@ -102,7 +102,7 @@ public class UICardBook extends UIWindow {
 		page1label.setSize(new Vector2f(190, 60));
 		page1label.setWrap(true);
 		page1label.setText("Insert an empty card into this page!");
-		page1label.setColor(Color.black);
+		page1label.setColor(Color.BLACK.toHex());
 		page1label.setVisible(true);
 		background.addDisplayElement(page1label);
 
@@ -192,7 +192,7 @@ public class UICardBook extends UIWindow {
 		PrefabManager prefMan = CoreRegistry.get(PrefabManager.class);
 		for (Prefab prefab : prefMan.listPrefabs(MinionComponent.class)) {
 			UIListItem listitem = new UIListItem();
-			listitem.setTextColor(Color.black);
+			listitem.setTextColor(Color.BLACK.toHex());
 			String[] tempstring = prefab.getName().split(":");
 			if (tempstring.length == 2) {
 				listitem.setText(tempstring[1]);
