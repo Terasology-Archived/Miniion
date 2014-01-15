@@ -19,7 +19,6 @@ import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
 import org.terasology.asset.Assets;
 import org.terasology.engine.CoreRegistry;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -30,6 +29,7 @@ import org.terasology.logic.inventory.InventoryComponent;
 import org.terasology.logic.inventory.ItemComponent;
 import org.terasology.logic.inventory.SlotBasedInventoryManager;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.math.Vector2i;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.actions.SpawnMinionActionComponent;
 import org.terasology.miniion.gui.UIModButton.ButtonType;
@@ -220,11 +220,12 @@ public class UICardBook extends UIWindow {
 				.setVisible(false);
 		layout();
 
-		playerInventory.setPosition(new Vector2f(Display.getWidth() / 2
-				- playerInventory.getSize().x / 2, Display.getHeight() + 5f));
-		playerInventory.addAnimation(new AnimationMove(new Vector2f(Display
-				.getWidth() / 2 - playerInventory.getSize().x / 2, Display
-				.getHeight() - 192f), 20f));
+		Vector2i displaySize = getDisplaySize();
+		playerInventory.setPosition(new Vector2f(displaySize.x / 2
+				- playerInventory.getSize().x / 2, displaySize.y + 5f));
+		playerInventory.addAnimation(new AnimationMove(new Vector2f(
+		        displaySize.x / 2 - playerInventory.getSize().x / 2,
+		        displaySize.y - 192f), 20f));
 		playerInventory.getAnimation(AnimationMove.class).start();
 		leftGearWheel.addAnimation(new AnimationRotate(-120f, 10f));
 		leftGearWheel.getAnimation(AnimationRotate.class).start();
