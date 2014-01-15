@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 {
-	"OreonCrop" = {
+	"Crop" = {
 		"blockFamilyStages" = [  "Miniion:OreonPlant0",
 								 "Miniion:OreonPlant1",
 								 "Miniion:OreonPlant2",
@@ -23,7 +23,5 @@
 								 "Miniion:OreonPlant5",
 								 "Miniion:OreonPlant6" ],
 		"timeInGameMsToNextStage" = 30000
-	},
-	LocationComponent : {},
-	BlockComponent  : {}
+	}
 }

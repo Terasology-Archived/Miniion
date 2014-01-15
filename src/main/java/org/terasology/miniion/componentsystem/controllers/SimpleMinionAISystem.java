@@ -20,14 +20,12 @@ import java.util.List;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Vector3f;
 
-import org.terasology.asset.AssetUri;
 import org.terasology.engine.CoreRegistry;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.entity.lifecycleEvents.OnAddedComponent;
 import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.ComponentSystem;
 import org.terasology.entitySystem.systems.In;
 import org.terasology.entitySystem.systems.RegisterMode;
@@ -46,6 +44,7 @@ import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.MinionComponent;
+import org.terasology.miniion.components.MinionFarmerComponent;
 import org.terasology.miniion.components.SimpleMinionAIComponent;
 import org.terasology.miniion.events.MinionMessageEvent;
 import org.terasology.miniion.minionenum.MinionMessagePriority;
@@ -60,7 +59,6 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
-import org.terasology.world.block.family.BlockFamily;
 import org.terasology.world.block.items.BlockItemComponent;
 import org.terasology.world.block.items.BlockItemFactory;
 
@@ -71,6 +69,8 @@ import org.terasology.world.block.items.BlockItemFactory;
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SimpleMinionAISystem implements ComponentSystem,
         UpdateSubscriberSystem {
+    private static final String DEFAULT_TERRAFORM_FINAL_BLOCK_TYPE_NAME = "CakeLie:ChocolateBlock";
+    private static final String DEFAULT_CROP_BLOCK_NAME = "core:plant";
 
     @In
     private BlockManager blockManager;
@@ -310,6 +310,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
 
     private void executeWorkAI(EntityRef entity) {
         MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
+        MinionFarmerComponent minionFarmer = entity.getComponent(MinionFarmerComponent.class);
         LocationComponent location = entity
                 .getComponent(LocationComponent.class);
         SimpleMinionAIComponent ai = entity
@@ -328,9 +329,9 @@ public class SimpleMinionAISystem implements ComponentSystem,
             if (minioncomp.assignedzone.zonetype == ZoneType.OreonFarm) {
                 if (minioncomp.assignedzone.isTerraformComplete()) {
                     //farming
-                    executeFarmmAI(entity);
+                    executeFarmAI(entity);
                 } else {
-                    executeTerraformAI(entity, "miniion:OreonFarmDry");
+                    executeTerraformAI(entity, minionFarmer.farmFieldBlockName);
                 }
             } else {
                 changeAnimation(entity, animcomp.idleAnim, true);
@@ -423,11 +424,11 @@ public class SimpleMinionAISystem implements ComponentSystem,
      * Terraforms a zone into a set recipe, by default chocolate.
      * @param entity 
      *                              the minion that is terraforming
-     * @param fixedrecipeuri
+     * @param terraformFinalBlockType
      *                              set to empty string by default for normal terraforming, 
      *                              can override the default recipe for farming. 
      */
-    private void executeTerraformAI(EntityRef entity, String fixedrecipeuri) {
+    private void executeTerraformAI(EntityRef entity, String terraformFinalBlockType) {
         MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
         LocationComponent location = entity
                 .getComponent(LocationComponent.class);
@@ -443,7 +444,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
         } else if (minioncomp.assignedzone.getStartPosition() == null) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
-        } else if (minioncomp.assignedzone.zonetype != ZoneType.Terraform && fixedrecipeuri.isEmpty()) {
+        } else if (minioncomp.assignedzone.zonetype != ZoneType.Terraform && terraformFinalBlockType.isEmpty()) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
             
@@ -488,16 +489,16 @@ public class SimpleMinionAISystem implements ComponentSystem,
                             ai.craftprogress++;
                             if (ai.craftprogress > 20) {
                                 Block newBlock;
-                                if (!fixedrecipeuri.isEmpty()) {
-                                    newBlock = blockManager.getBlock(fixedrecipeuri);
-                                    if (!newBlock.getURI().equals(new BlockUri(fixedrecipeuri))) {
+                                if ((null != terraformFinalBlockType) && !terraformFinalBlockType.isEmpty()) {
+                                    newBlock = blockManager.getBlock(terraformFinalBlockType);
+                                    if (!newBlock.getURI().toString().toLowerCase().equals(terraformFinalBlockType.toLowerCase())) {
                                         // Not sure what we should do if block read fails, but we don't want air as default
-                                        newBlock = blockManager.getBlock("CakeLie:ChocolateBlock");
+                                        newBlock = blockManager.getBlock(DEFAULT_TERRAFORM_FINAL_BLOCK_TYPE_NAME);
                                     }
 
                                 } else if (minioncomp.assignedrecipe == null) {
                                     // TODO: we should read this block asset name from the prefab
-                                    newBlock = blockManager.getBlock("CakeLie:ChocolateBlock");
+                                    newBlock = blockManager.getBlock(DEFAULT_TERRAFORM_FINAL_BLOCK_TYPE_NAME);
                                 } else
                                 {
                                     newBlock = blockManager.getBlock(minioncomp.assignedrecipe.result);
@@ -522,7 +523,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
                             ai.movementTargets.remove(currentTarget);
                         }
                     }
-                    if (ai.movementTargets.size() == 0 && !fixedrecipeuri.isEmpty()) {
+                    if (ai.movementTargets.size() == 0 && !terraformFinalBlockType.isEmpty()) {
                         minioncomp.assignedzone.setTerraformComplete();
                     }
                 }
@@ -557,8 +558,9 @@ public class SimpleMinionAISystem implements ComponentSystem,
      *                              set to empty string by default for normal terraforming, 
      *                              can override the default recipe for farming. 
      */
-    private void executeFarmmAI(EntityRef entity) {
+    private void executeFarmAI(EntityRef entity) {
         MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
+        MinionFarmerComponent minionFarmer = entity.getComponent(MinionFarmerComponent.class);
         LocationComponent location = entity
                 .getComponent(LocationComponent.class);
         SimpleMinionAIComponent ai = entity
@@ -594,18 +596,26 @@ public class SimpleMinionAISystem implements ComponentSystem,
                 ai.lastAttacktime = timer.getGameTimeInMs();
                 for (int y = (int) (currentTarget.y - 0.5); y >= minioncomp.assignedzone.getMinBounds().y; y--) {
                     Block currentBlock = worldProvider.getBlock(new Vector3i(currentTarget.x, y + 1, currentTarget.z));
-                    if ("miniion:OreonCrop".equals(currentBlock.getPrefab())) {
+                    Block plantedBlock = null;
+                    if (null != minionFarmer.blockNameToPlantAboveFarmField) {
+                        plantedBlock = blockManager.getBlock(minionFarmer.blockNameToPlantAboveFarmField);
+                        if (!plantedBlock.getURI().toString().toLowerCase().equals(minionFarmer.blockNameToPlantAboveFarmField.toLowerCase())) {
+                            // We didn't get what we asked for and probably got air instead
+                            plantedBlock = null;
+                        }
+                    }
+                    if (null == plantedBlock) {
+                        // Not sure what we should do if block read fails, but we don't want air as default
+                        plantedBlock = blockManager.getBlock(DEFAULT_CROP_BLOCK_NAME);
+                    }
+
+                    if (plantedBlock.getPrefab().equals(currentBlock.getPrefab())) {
                         ai.movementTargets.remove(currentTarget);
                         continue;
                     }
                     ai.craftprogress++;
                     if (ai.craftprogress > 20) {
-                        Block newBlock = blockManager.getBlock("miniion:OreonPlant0");
-                        if (!newBlock.getURI().equals(new BlockUri("miniion:OreonPlant0"))) {
-                            // Not sure what we should do if block read fails, but we don't want air as default
-                            newBlock = blockManager.getBlock("core:plant");
-                        }
-                        worldProvider.setBlock(new Vector3i(currentTarget.x, y + 1, currentTarget.z), newBlock);
+                        worldProvider.setBlock(new Vector3i(currentTarget.x, y + 1, currentTarget.z), plantedBlock);
                         ai.craftprogress = 0;
                         if (y == minioncomp.assignedzone.getMinBounds().y) {
                             ai.movementTargets.remove(currentTarget);
