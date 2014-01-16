@@ -15,22 +15,22 @@
  */
 package org.terasology.miniion.componentsystem.action;
 
-import java.util.Set;
-
-import org.terasology.entitySystem.*;
-import org.terasology.events.ActivateEvent;
-import org.terasology.math.Vector3i;
-import org.terasology.miniion.components.ZoneSelectionComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.systems.ComponentSystem;
+import org.terasology.entitySystem.systems.RegisterMode;
+import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.logic.selection.ApplyBlockSelectionEvent;
+import org.terasology.math.Region3i;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
-import org.terasology.rendering.world.BlockGrid;
-import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
+import org.terasology.miniion.utilities.Zone;
 
-@RegisterComponentSystem
-public class SetSelectionAction implements EventHandlerSystem {
+@RegisterSystem(RegisterMode.AUTHORITY)
+public class SetSelectionAction implements ComponentSystem {
 
-	@In
-	private WorldProvider worldProvider;
+    private static final Logger logger = LoggerFactory.getLogger(SetSelectionAction.class);
 
 	@Override
 	public void initialise() {
@@ -42,16 +42,13 @@ public class SetSelectionAction implements EventHandlerSystem {
 	public void shutdown() {
 		// TODO Auto-generated method stub
 
-	}
+        }
 
-	@ReceiveEvent(components = ZoneSelectionComponent.class)
-	public void onActivate(ActivateEvent event, EntityRef entity) {
-		if(MinionSystem.getNewZone() == null){
-			MinionSystem.startNewSelection(new Vector3i(event.getTargetLocation()));
-		}else if(MinionSystem.getNewZone().getEndPosition() == null){
-			MinionSystem.endNewSelection(new Vector3i(event.getTargetLocation()));
-		}else{
-			MinionSystem.resetNewSelection();
-		}		
+        @ReceiveEvent
+        public void onSelection(ApplyBlockSelectionEvent event, EntityRef entity) {
+            // TODO: this should be done with a new zone event, not method calls
+            Region3i selectedRegion = event.getSelection();
+            Zone newzone = new Zone(selectedRegion);
+            MinionSystem.setNewZone(newzone);
 	}
 }

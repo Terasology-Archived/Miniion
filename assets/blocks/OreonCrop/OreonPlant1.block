@@ -15,16 +15,13 @@
  */
 
 /**
- * A minion bench to test some stuff
- */
+ * farm block is indestructible for now to prevent zone issues
+*/
 {
-    "craftPlace" : false,
-    "tiles" : {
-        "sides" : "miniion:minionbenchsides",
-        "topBottom" : "miniion:minionbenchtop"
-    },
+	"author" : "overdhose",
+    "basedOn" : "core:plant",
     "entity" : {
-        "prefab" : "miniion:minionbench",
-        "mode" : "persistent"
+        "prefab" : "miniion:OreonCrop",
+		"keepActive" : true
     }
 }

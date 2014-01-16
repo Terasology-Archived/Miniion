@@ -22,9 +22,9 @@ import java.util.Queue;
 
 import javax.vecmath.Vector2f;
 
-import org.lwjgl.opengl.Display;
 import org.terasology.asset.Assets;
-import org.terasology.entitySystem.EventHandlerSystem;
+import org.terasology.entitySystem.systems.ComponentSystem;
+import org.terasology.math.Vector2i;
 import org.terasology.miniion.minionenum.MinionMessagePriority;
 import org.terasology.miniion.utilities.MinionMessage;
 import org.terasology.rendering.gui.framework.UIDisplayContainer;
@@ -35,7 +35,7 @@ import org.terasology.rendering.gui.widgets.UIImage;
  * for message icons containing miniion messages
  */
 public class UIMessageQueue extends UIDisplayContainer implements
-		EventHandlerSystem {
+		ComponentSystem {
 
 	private static final float ICON_SIZE = 32.0f;
 
@@ -47,7 +47,8 @@ public class UIMessageQueue extends UIDisplayContainer implements
 	public UIMessageQueue() {
 		elements = new ArrayList<UIImage>();
 		messageQueue = new PriorityQueue<MinionMessage>();
-		float height = Display.getHeight() / 2;
+		Vector2i displaySize = getDisplaySize();
+		float height = displaySize.y / 2;
 		setSize(new Vector2f(ICON_SIZE, height));
 		setPosition(new Vector2f(4, 4));
 	}

@@ -1,0 +1,41 @@
+{
+	"parent": "Oreons:OreonKing",
+	"name" : "OreonMinions:OreonKing",
+	"Minion" : {
+		"icon" = "minionskull",
+		"Healthtotal" = 800,
+		"Hungertotal" = 100,
+		"Staminatotal" = 100,
+	    "unselectedSkin" = "Oreons:OreonSkin",
+	    "selectedSkin" = "Oreons:OreonSkinSelected"
+	},
+	"SimpleMinionAI" : {},
+	"MinionFarmer" : {
+		"farmFieldBlockName" : "miniion:OreonFarmDry",
+		"blockNameToPlantAboveFarmField" : "miniion:OreonPlant0"
+	},
+	"Inventory": {
+		"itemSlots": [
+			0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0,
+	        0
+		]
+	},
+    "AccessInventoryAction": {},
+    "Spawnable" : {
+		"type" : "oreon"
+    }
+}

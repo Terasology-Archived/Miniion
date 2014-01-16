@@ -16,7 +16,7 @@
 
 package org.terasology.miniion.components.actions;
 
-import org.terasology.components.actions.ActionTarget;
+import org.terasology.logic.actions.ActionTarget;
 import org.terasology.entitySystem.Component;
 
 /**

@@ -16,7 +16,7 @@
 {	
 	"CraftRecipe" : {
   		"type" : "EXTERNAL",
-  		"result" : "engine:plank",
+  		"result" : "core:plank",
   		"fullMatch": false,
         "recipe" :  {
             bottom:

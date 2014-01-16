@@ -16,47 +16,50 @@
 
 package org.terasology.miniion.componentsystem.action;
 
-import org.terasology.components.ItemComponent;
-import org.terasology.entitySystem.EntityRef;
-import org.terasology.entitySystem.EventHandlerSystem;
-import org.terasology.entitySystem.ReceiveEvent;
-import org.terasology.entitySystem.RegisterComponentSystem;
-import org.terasology.events.ActivateEvent;
-import org.terasology.game.CoreRegistry;
-import org.terasology.logic.LocalPlayer;
+import org.terasology.engine.CoreRegistry;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.systems.ComponentSystem;
+import org.terasology.entitySystem.systems.In;
+import org.terasology.entitySystem.systems.RegisterMode;
+import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.inventory.ItemComponent;
 import org.terasology.logic.manager.GUIManager;
+import org.terasology.logic.players.LocalPlayer;
 import org.terasology.miniion.components.actions.OpenUiActionComponent;
 import org.terasology.miniion.gui.UICardBook;
 
 /**
  * @author Immortius
  */
-@RegisterComponentSystem
-public class OpenUiAction implements EventHandlerSystem {
+@RegisterSystem(RegisterMode.AUTHORITY)
+public class OpenUiAction implements ComponentSystem {
 
-	@Override
-	public void initialise() {
-	}
+    @In
+    private GUIManager guiManager;
 
-	@Override
-	public void shutdown() {
-	}
+    @In
+    private LocalPlayer localPlayer;
 
-	@ReceiveEvent(components = { ItemComponent.class,
-			OpenUiActionComponent.class })
-	public void onActivate(ActivateEvent event, EntityRef entity) {
-		OpenUiActionComponent uiInfo = entity
-				.getComponent(OpenUiActionComponent.class);
-		if (uiInfo != null) {
-			if (uiInfo.uiwindowid.matches("cardbook")) {
-				UICardBook cardbookui = (UICardBook) CoreRegistry.get(
-						GUIManager.class).openWindow("cardbook");
-				cardbookui.openContainer(entity,
-						CoreRegistry.get(LocalPlayer.class).getEntity());
-			} else {
-				CoreRegistry.get(GUIManager.class)
-						.openWindow(uiInfo.uiwindowid);
-			}
-		}
-	}
+    @Override
+    public void initialise() {
+    }
+
+    @Override
+    public void shutdown() {
+    }
+
+    @ReceiveEvent(components = {ItemComponent.class, OpenUiActionComponent.class})
+    public void onActivate(ActivateEvent event, EntityRef entity) {
+        OpenUiActionComponent uiInfo = entity.getComponent(OpenUiActionComponent.class);
+        if (uiInfo != null) {
+            if (uiInfo.uiwindowid.matches("cardbook")) {
+                UICardBook cardbookui = (UICardBook) guiManager.openWindow("cardbook");
+                cardbookui.openContainer(entity, localPlayer.getCharacterEntity());
+            } else {
+                guiManager.openWindow(uiInfo.uiwindowid);
+            }
+        }
+    }
 }

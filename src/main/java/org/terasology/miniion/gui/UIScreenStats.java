@@ -18,18 +18,18 @@ package org.terasology.miniion.gui;
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
-import org.newdawn.slick.Color;
-import org.terasology.entitySystem.In;
-import org.terasology.game.Timer;
+import org.terasology.engine.Time;
+import org.terasology.entitySystem.systems.In;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.rendering.gui.widgets.UILabel;
 import org.terasology.rendering.gui.widgets.UIWindow;
+import org.terasology.rendering.nui.Color;
 
 public class UIScreenStats extends UIWindow{
 	
 	@In
-    private Timer timer;
+    private Time timer;
 	
 	private final UILabel lblstatTitle, lblstatHealth, lblstatHunger, lblstatStamina;	
    
@@ -47,30 +47,30 @@ public class UIScreenStats extends UIWindow{
     public UIScreenStats() {
     	lblstatTitle = new UILabel();
 		lblstatTitle.setTextShadow(true);
-		lblstatTitle.setBorderSolid(new Vector4f(4f, 4f, 4f, 4f), Color.red);
+		lblstatTitle.setBorderSolid(new Vector4f(4f, 4f, 4f, 4f), Color.toColorString(Color.RED));
 		lblstatTitle.setPosition(new Vector2f(100, 10));
 		lblstatTitle.setVisible(true);
-		lblstatTitle.setColor(Color.green);
+		lblstatTitle.setColor(Color.toColorString(Color.GREEN));
 		addDisplayElement(lblstatTitle);
 		
 		lblstatHealth = new UILabel();
 		lblstatHealth.setText("Health Placeholder");
 		lblstatHealth.setPosition(new Vector2f(10, 40));
 		lblstatHealth.setVisible(true);
-		lblstatHealth.setColor(Color.green);
+		lblstatHealth.setColor(Color.toColorString(Color.GREEN));
 		addDisplayElement(lblstatHealth);
 		
 		lblstatHunger = new UILabel();		
 		lblstatHunger.setPosition(new Vector2f(10, 70));
 		lblstatHunger.setVisible(true);
-		lblstatHunger.setColor(Color.yellow);
+		lblstatHunger.setColor(Color.toColorString(Color.YELLOW));
 		addDisplayElement(lblstatHunger);
 
 		lblstatStamina = new UILabel();
 		lblstatStamina.setText("Stamina Placeholder");
 		lblstatStamina.setPosition(new Vector2f(10, 100));
 		lblstatStamina.setVisible(true);
-		lblstatStamina.setColor(Color.cyan);
+		lblstatStamina.setColor(Color.toColorString(Color.CYAN));
 		addDisplayElement(lblstatStamina);
     }
     

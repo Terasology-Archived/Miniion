@@ -21,27 +21,35 @@ import javax.vecmath.Vector3f;
 //import com.bulletphysics.collision.shapes.BoxShape;
 //import com.bulletphysics.linearmath.QuaternionUtil;
 
-import org.terasology.components.world.LocationComponent;
-import org.terasology.entitySystem.EntityManager;
-import org.terasology.entitySystem.EntityRef;
-import org.terasology.entitySystem.EventHandlerSystem;
-import org.terasology.entitySystem.Prefab;
-import org.terasology.entitySystem.PrefabManager;
-import org.terasology.entitySystem.ReceiveEvent;
-import org.terasology.entitySystem.RegisterComponentSystem;
-import org.terasology.events.ActivateEvent;
-import org.terasology.game.CoreRegistry;
+
+
+
+
+
+
+
+import org.terasology.entitySystem.entity.EntityManager;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.prefab.Prefab;
+import org.terasology.entitySystem.prefab.PrefabManager;
+import org.terasology.entitySystem.systems.ComponentSystem;
+import org.terasology.entitySystem.systems.RegisterMode;
+import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.logic.characters.CharacterMovementComponent;
+import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.location.LocationComponent;
+import org.terasology.engine.CoreRegistry;
 import org.terasology.miniion.components.MinionComponent;
 //import org.terasology.math.Side;
 import org.terasology.miniion.components.actions.SpawnMinionActionComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
-import org.terasology.physics.character.CharacterMovementComponent;
 
 /**
  * @author Immortius
  */
-@RegisterComponentSystem
-public class SpawnMinionAction implements EventHandlerSystem {
+@RegisterSystem(RegisterMode.AUTHORITY)
+public class SpawnMinionAction implements ComponentSystem {
 
 	private EntityManager entityManager;
 
@@ -56,10 +64,9 @@ public class SpawnMinionAction implements EventHandlerSystem {
 
 	@ReceiveEvent(components = SpawnMinionActionComponent.class)
 	public void onActivate(ActivateEvent event, EntityRef entity) {
-		SpawnMinionActionComponent spawnInfo = entity
-				.getComponent(SpawnMinionActionComponent.class);
-		if (spawnInfo.prefab != null) {
-			Vector3f spawnPos = event.getTargetLocation();
+		SpawnMinionActionComponent spawnInfo = entity.getComponent(SpawnMinionActionComponent.class);
+                Vector3f spawnPos = event.getTargetLocation();
+		if ((null != spawnPos) && (spawnInfo.prefab != null)) {
 			spawnPos.y += 2;
 			Prefab prefab = CoreRegistry.get(PrefabManager.class).getPrefab(
 					spawnInfo.prefab);
@@ -78,8 +85,12 @@ public class SpawnMinionAction implements EventHandlerSystem {
 						minioncomp.name = tempstring[0];
 						minioncomp.flavortext = tempstring[1];
 					}
+					
+					return;
 				}
 			}
 		}
+		// if this gets here, we didn't actually create a minion
+		event.consume();
 	}
 }

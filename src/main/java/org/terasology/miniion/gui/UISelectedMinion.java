@@ -25,15 +25,13 @@ import static org.lwjgl.opengl.GL11.glTranslatef;
 import javax.vecmath.Vector2f;
 
 import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.Color;
-import org.terasology.entitySystem.EntityRef;
-import org.terasology.events.ActivateEvent;
-import org.terasology.game.CoreRegistry;
-import org.terasology.logic.LocalPlayer;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.engine.CoreRegistry;
+import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.players.LocalPlayer;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.SimpleMinionAIComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
-import org.terasology.model.inventory.Icon;
 import org.terasology.rendering.gui.framework.*;
 import org.terasology.rendering.gui.framework.events.ClickListener;
 import org.terasology.miniion.gui.UIModButton;
@@ -41,6 +39,8 @@ import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.miniion.minionenum.MinionBehaviour;
 import org.terasology.miniion.utilities.Zone;
 import org.terasology.rendering.gui.widgets.*;
+import org.terasology.rendering.icons.Icon;
+import org.terasology.rendering.nui.Color;
 
 public class UISelectedMinion extends UICompositeScrollable {
 
@@ -137,19 +137,19 @@ public class UISelectedMinion extends UICompositeScrollable {
 
 		lblname = new UILabel("");
 		lblname.setPosition(new Vector2f(50, 30));
-		lblname.setColor(Color.black);
+		lblname.setColor(Color.toColorString(Color.BLACK));
 		lblname.setVisible(false);
 		this.addDisplayElement(lblname);
 
 		lblflavor = new UILabel("");
 		lblflavor.setPosition(new Vector2f(50, 50));
-		lblflavor.setColor(Color.black);
+		lblflavor.setColor(Color.toColorString(Color.BLACK));
 		lblflavor.setVisible(false);
 		this.addDisplayElement(lblflavor);
 
 		lblBehaviour = new UILabel("Behaviour");
 		lblBehaviour.setPosition(new Vector2f(20, 80));
-		lblBehaviour.setColor(Color.black);
+		lblBehaviour.setColor(Color.toColorString(Color.BLACK));
 		lblBehaviour.setVisible(false);
 		this.addDisplayElement(lblBehaviour);
 
@@ -274,7 +274,7 @@ public class UISelectedMinion extends UICompositeScrollable {
 		uizonelist.setSize(new Vector2f(250, 300));
 		uizonelist.setPosition(new Vector2f(300, 0));
 		uizonelist.setBackgroundImage("miniion:pageback");
-		uizonelist.setBackgroundColor(Color.black);
+		uizonelist.setBackgroundColor(Color.toColorString(Color.BLACK));
 		uizonelist.setVisible(false);
 		this.addDisplayElement(uizonelist);
 
@@ -388,7 +388,7 @@ public class UISelectedMinion extends UICompositeScrollable {
 	private void openInventory() {
 		if (this.cell.minion != null) {
 			this.cell.minion.send(new ActivateEvent(this.cell.minion,
-					CoreRegistry.get(LocalPlayer.class).getEntity()));
+					CoreRegistry.get(LocalPlayer.class).getCharacterEntity()));
 			this.cell.minion.getComponent(MinionComponent.class).minionBehaviour = MinionBehaviour.Stay;
 			setBehaviourToggle(butStay);
 			this.cell.minion.saveComponent(this.cell.minion
@@ -404,7 +404,7 @@ public class UISelectedMinion extends UICompositeScrollable {
 		uizonelist.removeAll();
 		for (Zone zone : MinionSystem.getGatherZoneList()) {
 			UIListItem listitem = new UIListItem(zone.Name, zone);
-			listitem.setTextColor(Color.black);
+			listitem.setTextColor(Color.toColorString(Color.BLACK));
 			uizonelist.addItem(listitem);
 		}
 		uizonelist.setVisible(true);

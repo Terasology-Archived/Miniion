@@ -15,25 +15,26 @@
  */
 package org.terasology.miniion.gui;
 
-import java.util.Set;
-
 import javax.vecmath.Vector2f;
 
 import org.lwjgl.input.Keyboard;
-import org.newdawn.slick.Color;
 import org.terasology.asset.Assets;
-import org.terasology.entitySystem.EntityManager;
-import org.terasology.entitySystem.EntityRef;
-import org.terasology.game.CoreRegistry;
+import org.terasology.engine.CoreRegistry;
 import org.terasology.math.Vector3i;
-import org.terasology.miniion.components.ZoneSelectionComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.miniion.minionenum.ZoneType;
 import org.terasology.miniion.utilities.Zone;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
 import org.terasology.rendering.gui.framework.events.ClickListener;
-import org.terasology.rendering.gui.widgets.*;
+import org.terasology.rendering.gui.widgets.UIComboBox;
+import org.terasology.rendering.gui.widgets.UIImage;
+import org.terasology.rendering.gui.widgets.UILabel;
+import org.terasology.rendering.gui.widgets.UIList;
+import org.terasology.rendering.gui.widgets.UIListItem;
+import org.terasology.rendering.gui.widgets.UIText;
+import org.terasology.rendering.gui.widgets.UIWindow;
+import org.terasology.rendering.nui.Color;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 
@@ -61,8 +62,12 @@ public class UIZoneBook extends UIWindow {
 				case Gather: {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getGatherZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
-						newlistitem.setTextColor(Color.black);
+			                    String zoneName = zone.Name;
+                                            if (null == zoneName) {
+                                                zoneName = "<un-named>";
+    			                    }
+						UIListItem newlistitem = new UIListItem(zoneName, zone);
+						newlistitem.setTextColor(Color.toColorString(Color.BLACK));
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
 					}
@@ -74,8 +79,12 @@ public class UIZoneBook extends UIWindow {
 				case Terraform: {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getTerraformZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
-						newlistitem.setTextColor(Color.black);
+                                            String zoneName = zone.Name;
+                                            if (null == zoneName) {
+                                                zoneName = "<un-named>";
+                                            }
+						UIListItem newlistitem = new UIListItem(zoneName, zone);
+						newlistitem.setTextColor(Color.toColorString(Color.BLACK));
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
 					}
@@ -87,8 +96,12 @@ public class UIZoneBook extends UIWindow {
 				case Work : {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getWorkZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
-						newlistitem.setTextColor(Color.black);
+                                            String zoneName = zone.Name;
+                                            if (null == zoneName) {
+                                                zoneName = "<un-named>";
+                                            }
+						UIListItem newlistitem = new UIListItem(zoneName, zone);
+						newlistitem.setTextColor(Color.toColorString(Color.BLACK));
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
 					}
@@ -100,8 +113,12 @@ public class UIZoneBook extends UIWindow {
 				case Storage : {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getStorageZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
-						newlistitem.setTextColor(Color.black);
+                                            String zoneName = zone.Name;
+                                            if (null == zoneName) {
+                                                zoneName = "<un-named>";
+                                            }
+						UIListItem newlistitem = new UIListItem(zoneName, zone);
+						newlistitem.setTextColor(Color.toColorString(Color.BLACK));
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
 					}
@@ -113,8 +130,12 @@ public class UIZoneBook extends UIWindow {
 				case OreonFarm : {
 					uizonelist.removeAll();
 					for (Zone zone : MinionSystem.getOreonFarmZoneList()) {
-						UIListItem newlistitem = new UIListItem(zone.Name, zone);
-						newlistitem.setTextColor(Color.black);
+                                            String zoneName = zone.Name;
+                                            if (null == zoneName) {
+                                                zoneName = "<un-named>";
+                                            }
+						UIListItem newlistitem = new UIListItem(zoneName, zone);
+						newlistitem.setTextColor(Color.toColorString(Color.BLACK));
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
 					}
@@ -192,59 +213,59 @@ public class UIZoneBook extends UIWindow {
 
 		lblzonename = new UILabel("Zone name :");
 		lblzonename.setPosition(new Vector2f(260, 20));
-		lblzonename.setColor(Color.black);
+		lblzonename.setColor(Color.toColorString(Color.BLACK));
 		lblzonename.setVisible(true);
 		background.addDisplayElement(lblzonename);
 
 		txtzonename = new UIText();
 		txtzonename.setPosition(new Vector2f(350, 20));
-		txtzonename.setColor(Color.black);
+		txtzonename.setColor(Color.toColorString(Color.BLACK));
 		txtzonename.setSize(new Vector2f(80, 20));
 		txtzonename.setVisible(true);
 		background.addDisplayElement(txtzonename);
 
 		lblheight = new UILabel("Height :");
 		lblheight.setPosition(new Vector2f(260, 40));
-		lblheight.setColor(Color.black);
+		lblheight.setColor(Color.toColorString(Color.BLACK));
 		lblheight.setVisible(true);
 		background.addDisplayElement(lblheight);
 
 		txtheight = new UIText();
 		txtheight.setPosition(new Vector2f(350, 40));
-		txtheight.setColor(Color.black);
+		txtheight.setColor(Color.toColorString(Color.BLACK));
 		txtheight.setSize(new Vector2f(80, 20));
 		txtheight.setVisible(true);
 		background.addDisplayElement(txtheight);
 
 		lblwidth = new UILabel("Width :");
 		lblwidth.setPosition(new Vector2f(260, 60));
-		lblwidth.setColor(Color.black);
+		lblwidth.setColor(Color.toColorString(Color.BLACK));
 		lblwidth.setVisible(true);
 		background.addDisplayElement(lblwidth);
 
 		txtwidth = new UIText();
 		txtwidth.setPosition(new Vector2f(350, 60));
-		txtwidth.setColor(Color.black);
+		txtwidth.setColor(Color.toColorString(Color.BLACK));
 		txtwidth.setSize(new Vector2f(80, 20));
 		txtwidth.setVisible(true);
 		background.addDisplayElement(txtwidth);
 
 		lbldepth = new UILabel("Depth :");
 		lbldepth.setPosition(new Vector2f(260, 80));
-		lbldepth.setColor(Color.black);
+		lbldepth.setColor(Color.toColorString(Color.BLACK));
 		lbldepth.setVisible(true);
 		background.addDisplayElement(lbldepth);
 
 		txtdepth = new UIText();
 		txtdepth.setPosition(new Vector2f(350, 80));
-		txtdepth.setColor(Color.black);
+		txtdepth.setColor(Color.toColorString(Color.BLACK));
 		txtdepth.setSize(new Vector2f(80, 20));
 		txtdepth.setVisible(true);
 		background.addDisplayElement(txtdepth);
 		
 		lblzonetype = new UILabel("");
 		lblzonetype.setPosition(new Vector2f(260, 100));
-		lblzonetype.setColor(Color.black);
+		lblzonetype.setColor(Color.toColorString(Color.BLACK));
 		lblzonetype.setVisible(true);
 		background.addDisplayElement(lblzonetype);
 		
@@ -258,7 +279,7 @@ public class UIZoneBook extends UIWindow {
 		lblError.setWrap(true);
 		lblError.setSize(new Vector2f(200, 80));
 		lblError.setPosition(new Vector2f(260, 130));
-		lblError.setColor(Color.red);
+		lblError.setColor(Color.toColorString(Color.RED));
 		lblError.setVisible(true);
 		background.addDisplayElement(lblError);
 		
@@ -308,17 +329,7 @@ public class UIZoneBook extends UIWindow {
 		lblError.setText("");
 		if( MinionSystem.getNewZone() == null){
 			newzonefound = false;
-			MinionSystem.resetNewSelection();
 			lblError.setText("Something went wrong. Please close the book and recreate the selection.");
-		}
-		if( MinionSystem.getNewZone().zonetype == ZoneType.OreonFarm){
-			if(MinionSystem.getNewZone().getEndPosition() == null){
-				newzonefound = false;
-				MinionSystem.resetNewSelection();
-				lblError.setText("Something went wrong. Please close the book and recreate the selection.");
-			}else{
-				
-			}			
 		}
 		if( (!cmbType.isVisible()) && MinionSystem.getNewZone() == null){
 			newzonefound = false;			
@@ -342,25 +353,37 @@ public class UIZoneBook extends UIWindow {
 			return;
 		}				
 		for (Zone zone : MinionSystem.getGatherZoneList()) {
+                    if (null == zone.Name) {
+                        continue;
+                    }
+
 			if (zone.Name.matches(txtzonename.getText())) {
 				lblError.setText("Zone name already exists!");
 				return;
 			}
 		}
 		for (Zone zone : MinionSystem.getTerraformZoneList()) {
+	            if (null == zone.Name) {
+	                continue;
+	            }
+
 			if (zone.Name.matches(txtzonename.getText())) {
 				lblError.setText("Zone name already exists!");
 				return;
 			}
 		}
 		for (Zone zone : MinionSystem.getWorkZoneList()) {
+                    if (null == zone.Name) {
+                        continue;
+                    }
+
 			if (zone.Name.matches(txtzonename.getText())) {
 				lblError.setText("Zone name already exists!");
 				return;
 			}
 		}
-		int tmp;
 		try {
+	                int tmp;
 			tmp = Integer.parseInt(txtheight.getText());
 			tmp = Integer.parseInt(txtwidth.getText());
 			tmp = Integer.parseInt(txtdepth.getText());
@@ -382,7 +405,7 @@ public class UIZoneBook extends UIWindow {
 		MinionSystem.addZone(newzone);
 		newzonefound = false;
 		lblzonetype.setText("");
-		MinionSystem.resetNewSelection();
+		MinionSystem.setNewZone(null);
 		this.close();
 	}
 	
@@ -469,7 +492,7 @@ public class UIZoneBook extends UIWindow {
 	private boolean checkSingleZone(){
 		WorldProvider worldprovider = CoreRegistry.get(WorldProvider.class);
 		Block block = worldprovider.getBlock(MinionSystem.getNewZone().getStartPosition());
-		if(block.getURI().getFamily().matches("minionbench")){
+		if(block.getURI().getFamilyName().matches("minionbench")){
 			MinionSystem.getNewZone().zonetype = ZoneType.Work;
 			if (MinionSystem.getWorkZoneList() == null) {
 				txtzonename.setText("Workzone0");
@@ -479,7 +502,7 @@ public class UIZoneBook extends UIWindow {
 			lblzonetype.setText("ZoneType : Workzone");
 			newzonefound = true;
 		}else
-		if(block.getURI().getFamily().matches("chest")){
+		if(block.getURI().getFamilyName().matches("chest")){
 			MinionSystem.getNewZone().zonetype = ZoneType.Storage;
 			if (MinionSystem.getWorkZoneList() == null) {
 				txtzonename.setText("Storage0");
@@ -499,7 +522,7 @@ public class UIZoneBook extends UIWindow {
 		uizonelistgroup.removeAll();
 		for (ZoneType zonetype : ZoneType.values()) {
 			UIListItem listitem = new UIListItem(zonetype.toString(), zonetype);
-			listitem.setTextColor(Color.black);
+			listitem.setTextColor(Color.toColorString(Color.BLACK));
 			listitem.addClickListener(zonelistener);
 			uizonelistgroup.addItem(listitem);
 		}		
@@ -507,13 +530,13 @@ public class UIZoneBook extends UIWindow {
 	
 	private void initTypes(){
 		UIListItem listitem = new UIListItem(ZoneType.Gather.toString(), ZoneType.Gather);
-		listitem.setTextColor(Color.black);
+		listitem.setTextColor(Color.toColorString(Color.BLACK));
 		cmbType.addItem(listitem);
 		listitem = new UIListItem(ZoneType.Terraform.toString(), ZoneType.Terraform);
-		listitem.setTextColor(Color.black);
+		listitem.setTextColor(Color.toColorString(Color.BLACK));
 		cmbType.addItem(listitem);
 		listitem = new UIListItem(ZoneType.OreonFarm.toString(), ZoneType.OreonFarm);
-		listitem.setTextColor(Color.black);
+		listitem.setTextColor(Color.toColorString(Color.BLACK));
 		cmbType.addItem(listitem);
 	}
 	

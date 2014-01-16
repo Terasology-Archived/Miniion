@@ -21,35 +21,55 @@ import java.util.List;
 import java.util.Random;
 
 import org.terasology.asset.Assets;
-
-import org.terasology.rendering.logic.*;
-import org.terasology.world.block.*;
-import org.terasology.entityFactory.*;
-import org.terasology.entitySystem.*;
-import org.terasology.events.*;
-import org.terasology.events.inventory.ReceiveItemEvent;
-import org.terasology.game.CoreRegistry;
-import org.terasology.logic.LocalPlayer;
+import org.terasology.engine.CoreRegistry;
+import org.terasology.entitySystem.entity.EntityManager;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.prefab.Prefab;
+import org.terasology.entitySystem.prefab.PrefabManager;
+import org.terasology.entitySystem.systems.ComponentSystem;
+import org.terasology.entitySystem.systems.In;
+import org.terasology.entitySystem.systems.RegisterMode;
+import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.logic.inventory.InventoryComponent;
+import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.manager.GUIManager;
+import org.terasology.logic.players.LocalPlayer;
+import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
 import org.terasology.math.Vector3i;
-import org.terasology.miniion.components.*;
-import org.terasology.miniion.gui.*;
-import org.terasology.miniion.utilities.*;
+import org.terasology.miniion.components.AnimationComponent;
+import org.terasology.miniion.components.MinionComponent;
+import org.terasology.miniion.components.ZoneListComponent;
+import org.terasology.miniion.components.namesComponent;
+import org.terasology.miniion.gui.UIActiveMinion;
+import org.terasology.miniion.gui.UICardBook;
+import org.terasology.miniion.gui.UIScreenBookOreo;
+import org.terasology.miniion.gui.UIZoneBook;
+import org.terasology.miniion.utilities.MinionRecipe;
+import org.terasology.miniion.utilities.ModIcons;
+import org.terasology.miniion.utilities.Zone;
+import org.terasology.rendering.logic.AnimEndEvent;
+import org.terasology.rendering.logic.SkeletalMeshComponent;
 
 /**
  * Created with IntelliJ IDEA. User: Overdhose Date: 10/05/12 Time: 17:54
  * Minionsystem gives you some control over the minions. this is the home of the
  * minionbar.
  */
-@RegisterComponentSystem
-public class MinionSystem implements EventHandlerSystem {
+@RegisterSystem(RegisterMode.AUTHORITY)
+public class MinionSystem implements ComponentSystem {
 
 	@In
 	private LocalPlayer localPlayer;
 	@In
 	private EntityManager entityManager;
+        @In
+        private GUIManager guiManager;
+        @In
+        private InventoryManager inventoryManager;
 
-	//private static final int PRIORITY_LOCAL_PLAYER_OVERRIDE = 160;
+
+        //private static final int PRIORITY_LOCAL_PLAYER_OVERRIDE = 160;
 	private static boolean showactiveminion = false;
 	private static boolean showSelectionOverlay = false;
 	private static EntityRef activeminion;
@@ -57,19 +77,11 @@ public class MinionSystem implements EventHandlerSystem {
 	private static EntityRef zonelist;
 	private static Zone newzone;
 	
-	
-	
 	private static List<MinionRecipe> recipeslist = new ArrayList<MinionRecipe>();
-
-	private GUIManager guiManager;
-	private BlockItemFactory blockItemFactory;
-
 
 	@Override
 	public void initialise() {
 		ModIcons.loadIcons();
-		guiManager = CoreRegistry.get(GUIManager.class);
-		blockItemFactory = new BlockItemFactory(entityManager);
 		// experimental popup menu for the minion command tool
 		guiManager.registerWindow("activeminiion", UIActiveMinion.class);
 		// ui to create summonable cards
@@ -82,23 +94,26 @@ public class MinionSystem implements EventHandlerSystem {
 		initRecipes();
 	}
 	
-	//need to check inventory if already has one or not before sending this
-    /*@ReceiveEvent(components = {LocalPlayerComponent.class})
-    public void onSpawn(AddComponentEvent event, EntityRef entity) {
-        entity.send(new ReceiveItemEvent(CoreRegistry.get(EntityManager.class).create("miniion:minioncommand")));
-    }*/
-
+    @ReceiveEvent
+    public void onPlayerSpawn(OnPlayerSpawnedEvent event, EntityRef player, InventoryComponent inventory) {
+        inventoryManager.giveItem(player, entityManager.create("miniion:minioncommand"));
+        inventoryManager.giveItem(player, entityManager.create("miniion:cardbook"));
+        inventoryManager.giveItem(player, entityManager.create("miniion:emptycard"));
+        inventoryManager.giveItem(player, entityManager.create("miniion:emptycard"));
+        inventoryManager.giveItem(player, entityManager.create("miniion:emptycard"));
+        inventoryManager.giveItem(player, entityManager.create("Miniion:zonetool"));
+        inventoryManager.giveItem(player, entityManager.create("Miniion:zonebook"));
+    }
+    
 	/**
 	 * Ugly way to retrieve a name from a prefab
 	 * 
-	 * @return 
-	 * 			a ":" seperated string, with name and flavor text.
+	 * @return a ":" seperated string, with name and flavor text.
 	 */
 	public static String getName() {
 		PrefabManager prefMan = CoreRegistry.get(PrefabManager.class);
 		Prefab prefab = prefMan.getPrefab("miniion:nameslist");
-		EntityRef namelist = CoreRegistry.get(EntityManager.class).create(
-				prefab);
+		EntityRef namelist = CoreRegistry.get(EntityManager.class).create(prefab);
 		namelist.hasComponent(namesComponent.class);
 		namesComponent namecomp = namelist.getComponent(namesComponent.class);
 		Random rand = new Random();
@@ -119,27 +134,34 @@ public class MinionSystem implements EventHandlerSystem {
 		}
 	}
 
-	/**
-	 * triggered when a block was destroyed and dropped in the world used to
-	 * intercept gathering by minions and sending the block to their inventory
-	 * the droppedblock in the world then gets destroyed, possible duplication
-	 * exploit
-	 */
-	@ReceiveEvent(components = { MinionComponent.class })
-	public void onBlockDropped(BlockDroppedEvent event, EntityRef entity) {
-		if (entity.hasComponent(MinionComponent.class)) {
-			EntityRef item;
-			if (event.getOldBlock().getEntityMode() == BlockEntityMode.PERSISTENT) {
-				item = blockItemFactory.newInstance(event.getOldBlock()
-						.getBlockFamily(), entity);
-			} else {
-				item = blockItemFactory.newInstance(event.getOldBlock()
-						.getBlockFamily());
-			}
-			entity.send(new ReceiveItemEvent(item));
-			event.getDroppedBlock().destroy();
-		}
-	}
+// See package org.terasology.world.block.entity.BlockEntitySystem
+// public void onDestroyed(NoHealthEvent event, EntityRef entity) {
+// For some kinds of blocks, the block is automatically added to the instigator's inventory.
+// If this isn't sufficient, then we probably need to try to go find nearby blocks and pick them up
+// since the BlockToItem event types do not record the instigator.
+	
+//        /**
+//         * triggered when a block was destroyed and dropped in the world used to
+//         * intercept gathering by minions and sending the block to their inventory
+//         * the droppedblock in the world then gets destroyed, possible duplication
+//         * exploit
+//         */
+//        @ReceiveEvent(components = { MinionComponent.class })
+//        public void onBlockDropped(BlockDroppedEvent event, EntityRef entity) {
+//                if (entity.hasComponent(MinionComponent.class)) {
+//                        EntityRef item;
+//                        if (event.getOldBlock().getEntityMode() == BlockEntityMode.PERSISTENT) {
+//                                item = blockItemFactory.newInstance(event.getOldBlock()
+//                                                .getBlockFamily(), entity);
+//                        } else {
+//                                item = blockItemFactory.newInstance(event.getOldBlock()
+//                                                .getBlockFamily());
+//                        }
+//                        entity.send(new ReceivedItemEvent(item));
+//                        event.getDroppedBlock().destroy();
+//                }
+//        }
+
 
 	/**
 	 * The active minion, to be commanded by the minion command item etc uses a
@@ -153,13 +175,18 @@ public class MinionSystem implements EventHandlerSystem {
 		if (activeminion != null) {
 			skelcomp = activeminion.getComponent(SkeletalMeshComponent.class);
 			if (skelcomp != null) {
-				skelcomp.material = Assets.getMaterial("OreoMinions:OreonSkin");
+			    MinionComponent minionComponent = activeminion.getComponent(MinionComponent.class);
+			    if (null != minionComponent.unselectedSkin) {
+	                        skelcomp.material = Assets.getMaterial(minionComponent.unselectedSkin);
+			    }
 			}
 		}
 		skelcomp = minion.getComponent(SkeletalMeshComponent.class);
 		if (skelcomp != null) {
-			skelcomp.material = Assets
-					.getMaterial("OreoMinions:OreonSkinSelected");
+                    MinionComponent minionComponent = minion.getComponent(MinionComponent.class);
+                    if (null != minionComponent.selectedSkin) {
+                        skelcomp.material = Assets.getMaterial(minionComponent.selectedSkin);
+                    }
 		}
 		activeminion = minion;
 	}
@@ -174,18 +201,10 @@ public class MinionSystem implements EventHandlerSystem {
 	}
 	
 	public static void startNewSelection(Vector3i startpos){
-		newzone = new Zone();
-		newzone.setStartPosition(startpos);
 	}
 
-	public static void endNewSelection(Vector3i endpos){
-		if(newzone != null){
-			newzone.setEndPosition(endpos);
-		}
-	}
-
-	public static void resetNewSelection(){
-		newzone = null;
+	public static void setNewZone(Zone zone){
+		newzone = zone;
 	}
 
 	public static Zone getNewZone(){
@@ -299,7 +318,8 @@ public class MinionSystem implements EventHandlerSystem {
 		zonelist = CoreRegistry.get(EntityManager.class).create();
 		ZoneListComponent zonecomp = new ZoneListComponent();
 		zonelist.addComponent(zonecomp);
-		zonelist.setPersisted(true);
+		// Pretty sure entities are persisted by default now
+//		zonelist.setPersisted(true);
 		zonelist.saveComponent(zonecomp);
 	}
 	
@@ -338,7 +358,7 @@ public class MinionSystem implements EventHandlerSystem {
 	public static void getNextMinion(boolean deleteactive){
 		EntityManager entman = CoreRegistry.get(EntityManager.class);
 		List<Integer> sortedlist = new ArrayList<Integer>();		
-		for(EntityRef minion : entman.iteratorEntities(MinionComponent.class)){
+		for(EntityRef minion : entman.getEntitiesWith(MinionComponent.class)){
 			if(!minion.getComponent(MinionComponent.class).dying){
 				sortedlist.add(minion.getId());
 			}
@@ -360,7 +380,7 @@ public class MinionSystem implements EventHandlerSystem {
 			index++;
 		}
 		index = sortedlist.get(index);
-		for(EntityRef minion : entman.iteratorEntities(MinionComponent.class)){
+		for(EntityRef minion : entman.getEntitiesWith(MinionComponent.class)){
 			if(minion.getId() == index){
 				setActiveMinion(minion);
 			}
@@ -373,7 +393,7 @@ public class MinionSystem implements EventHandlerSystem {
 	public static void getPreviousMinion(boolean deleteactive){
 		EntityManager entman = CoreRegistry.get(EntityManager.class);
 		List<Integer> sortedlist = new ArrayList<Integer>();		
-		for(EntityRef minion : entman.iteratorEntities(MinionComponent.class)){
+		for(EntityRef minion : entman.getEntitiesWith(MinionComponent.class)){
 			if(!minion.getComponent(MinionComponent.class).dying){
 				sortedlist.add(minion.getId());
 			}
@@ -395,7 +415,7 @@ public class MinionSystem implements EventHandlerSystem {
 			index--;
 		}
 		index = sortedlist.get(index);
-		for(EntityRef minion : entman.iteratorEntities(MinionComponent.class)){
+		for(EntityRef minion : entman.getEntitiesWith(MinionComponent.class)){
 			if(minion.getId() == index){
 				setActiveMinion(minion);
 			}
@@ -485,7 +505,10 @@ public class MinionSystem implements EventHandlerSystem {
 		if(activeminion != null){
 			SkeletalMeshComponent skelcomp = activeminion.getComponent(SkeletalMeshComponent.class);
 			if (skelcomp != null) {
-				skelcomp.material = Assets.getMaterial("OreoMinions:OreonSkin");
+                            MinionComponent minionComponent = activeminion.getComponent(MinionComponent.class);
+                            if (null != minionComponent.unselectedSkin) {
+                                skelcomp.material = Assets.getMaterial(minionComponent.unselectedSkin);
+                            }
 			}
 		}
 	}
