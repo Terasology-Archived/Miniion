@@ -33,7 +33,7 @@ public class UIScreenSettings extends UIWindow{
 	
 	private final UILabel lblTitle, lblselover, lblWarning;
 	private final UIModButtonMenu btnOverlay;
-	
+
     public UIScreenSettings() {
     	lblTitle = new UILabel();
     	lblTitle.setText("Settings");
@@ -42,7 +42,7 @@ public class UIScreenSettings extends UIWindow{
 		lblTitle.setPosition(new Vector2f(150 - (lblTitle.getSize().x /2), 10));
 		//lblstatTitle.setPosition(new Vector2f(120, 10));
 		lblTitle.setVisible(true);
-		lblTitle.setColor(Color.GREEN.toHex());
+		lblTitle.setColor(Color.toColorString(Color.GREEN));
 		addDisplayElement(lblTitle);
 		
 		lblWarning = new UILabel();
@@ -51,7 +51,7 @@ public class UIScreenSettings extends UIWindow{
 		lblWarning.setSize(new Vector2f(280, 30));
 		lblWarning.setPosition(new Vector2f(10, 300));
 		lblWarning.setVisible(true);
-		lblWarning.setColor(Color.RED.toHex());
+		lblWarning.setColor(Color.toColorString(Color.RED));
 		addDisplayElement(lblWarning);
 		
 		lblselover = new UILabel();
@@ -60,7 +60,7 @@ public class UIScreenSettings extends UIWindow{
 		lblselover.setSize(new Vector2f(280, 30));
 		lblselover.setPosition(new Vector2f(10, 400));
 		lblselover.setVisible(true);
-		lblselover.setColor(Color.GREEN.toHex());
+		lblselover.setColor(Color.toColorString(Color.GREEN));
 		addDisplayElement(lblselover);
 		
 		btnOverlay = new UIModButtonMenu(new Vector2f(50,20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.TOGGLE);

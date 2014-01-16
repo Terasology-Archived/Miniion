@@ -67,7 +67,7 @@ public class UIZoneBook extends UIWindow {
                                                 zoneName = "<un-named>";
     			                    }
 						UIListItem newlistitem = new UIListItem(zoneName, zone);
-						newlistitem.setTextColor(Color.BLACK.toHex());
+						newlistitem.setTextColor(Color.toColorString(Color.BLACK));
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
 					}
@@ -84,7 +84,7 @@ public class UIZoneBook extends UIWindow {
                                                 zoneName = "<un-named>";
                                             }
 						UIListItem newlistitem = new UIListItem(zoneName, zone);
-						newlistitem.setTextColor(Color.BLACK.toHex());
+						newlistitem.setTextColor(Color.toColorString(Color.BLACK));
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
 					}
@@ -101,7 +101,7 @@ public class UIZoneBook extends UIWindow {
                                                 zoneName = "<un-named>";
                                             }
 						UIListItem newlistitem = new UIListItem(zoneName, zone);
-						newlistitem.setTextColor(Color.BLACK.toHex());
+						newlistitem.setTextColor(Color.toColorString(Color.BLACK));
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
 					}
@@ -118,7 +118,7 @@ public class UIZoneBook extends UIWindow {
                                                 zoneName = "<un-named>";
                                             }
 						UIListItem newlistitem = new UIListItem(zoneName, zone);
-						newlistitem.setTextColor(Color.BLACK.toHex());
+						newlistitem.setTextColor(Color.toColorString(Color.BLACK));
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
 					}
@@ -135,7 +135,7 @@ public class UIZoneBook extends UIWindow {
                                                 zoneName = "<un-named>";
                                             }
 						UIListItem newlistitem = new UIListItem(zoneName, zone);
-						newlistitem.setTextColor(Color.BLACK.toHex());
+						newlistitem.setTextColor(Color.toColorString(Color.BLACK));
 						newlistitem.addClickListener(zonelistener);
 						uizonelist.addItem(newlistitem);
 					}
@@ -213,59 +213,59 @@ public class UIZoneBook extends UIWindow {
 
 		lblzonename = new UILabel("Zone name :");
 		lblzonename.setPosition(new Vector2f(260, 20));
-		lblzonename.setColor(Color.BLACK.toHex());
+		lblzonename.setColor(Color.toColorString(Color.BLACK));
 		lblzonename.setVisible(true);
 		background.addDisplayElement(lblzonename);
 
 		txtzonename = new UIText();
 		txtzonename.setPosition(new Vector2f(350, 20));
-		txtzonename.setColor(Color.BLACK.toHex());
+		txtzonename.setColor(Color.toColorString(Color.BLACK));
 		txtzonename.setSize(new Vector2f(80, 20));
 		txtzonename.setVisible(true);
 		background.addDisplayElement(txtzonename);
 
 		lblheight = new UILabel("Height :");
 		lblheight.setPosition(new Vector2f(260, 40));
-		lblheight.setColor(Color.BLACK.toHex());
+		lblheight.setColor(Color.toColorString(Color.BLACK));
 		lblheight.setVisible(true);
 		background.addDisplayElement(lblheight);
 
 		txtheight = new UIText();
 		txtheight.setPosition(new Vector2f(350, 40));
-		txtheight.setColor(Color.BLACK.toHex());
+		txtheight.setColor(Color.toColorString(Color.BLACK));
 		txtheight.setSize(new Vector2f(80, 20));
 		txtheight.setVisible(true);
 		background.addDisplayElement(txtheight);
 
 		lblwidth = new UILabel("Width :");
 		lblwidth.setPosition(new Vector2f(260, 60));
-		lblwidth.setColor(Color.BLACK.toHex());
+		lblwidth.setColor(Color.toColorString(Color.BLACK));
 		lblwidth.setVisible(true);
 		background.addDisplayElement(lblwidth);
 
 		txtwidth = new UIText();
 		txtwidth.setPosition(new Vector2f(350, 60));
-		txtwidth.setColor(Color.BLACK.toHex());
+		txtwidth.setColor(Color.toColorString(Color.BLACK));
 		txtwidth.setSize(new Vector2f(80, 20));
 		txtwidth.setVisible(true);
 		background.addDisplayElement(txtwidth);
 
 		lbldepth = new UILabel("Depth :");
 		lbldepth.setPosition(new Vector2f(260, 80));
-		lbldepth.setColor(Color.BLACK.toHex());
+		lbldepth.setColor(Color.toColorString(Color.BLACK));
 		lbldepth.setVisible(true);
 		background.addDisplayElement(lbldepth);
 
 		txtdepth = new UIText();
 		txtdepth.setPosition(new Vector2f(350, 80));
-		txtdepth.setColor(Color.BLACK.toHex());
+		txtdepth.setColor(Color.toColorString(Color.BLACK));
 		txtdepth.setSize(new Vector2f(80, 20));
 		txtdepth.setVisible(true);
 		background.addDisplayElement(txtdepth);
 		
 		lblzonetype = new UILabel("");
 		lblzonetype.setPosition(new Vector2f(260, 100));
-		lblzonetype.setColor(Color.BLACK.toHex());
+		lblzonetype.setColor(Color.toColorString(Color.BLACK));
 		lblzonetype.setVisible(true);
 		background.addDisplayElement(lblzonetype);
 		
@@ -279,7 +279,7 @@ public class UIZoneBook extends UIWindow {
 		lblError.setWrap(true);
 		lblError.setSize(new Vector2f(200, 80));
 		lblError.setPosition(new Vector2f(260, 130));
-		lblError.setColor(Color.RED.toHex());
+		lblError.setColor(Color.toColorString(Color.RED));
 		lblError.setVisible(true);
 		background.addDisplayElement(lblError);
 		
@@ -522,7 +522,7 @@ public class UIZoneBook extends UIWindow {
 		uizonelistgroup.removeAll();
 		for (ZoneType zonetype : ZoneType.values()) {
 			UIListItem listitem = new UIListItem(zonetype.toString(), zonetype);
-			listitem.setTextColor(Color.BLACK.toHex());
+			listitem.setTextColor(Color.toColorString(Color.BLACK));
 			listitem.addClickListener(zonelistener);
 			uizonelistgroup.addItem(listitem);
 		}		
@@ -530,13 +530,13 @@ public class UIZoneBook extends UIWindow {
 	
 	private void initTypes(){
 		UIListItem listitem = new UIListItem(ZoneType.Gather.toString(), ZoneType.Gather);
-		listitem.setTextColor(Color.BLACK.toHex());
+		listitem.setTextColor(Color.toColorString(Color.BLACK));
 		cmbType.addItem(listitem);
 		listitem = new UIListItem(ZoneType.Terraform.toString(), ZoneType.Terraform);
-		listitem.setTextColor(Color.BLACK.toHex());
+		listitem.setTextColor(Color.toColorString(Color.BLACK));
 		cmbType.addItem(listitem);
 		listitem = new UIListItem(ZoneType.OreonFarm.toString(), ZoneType.OreonFarm);
-		listitem.setTextColor(Color.BLACK.toHex());
+		listitem.setTextColor(Color.toColorString(Color.BLACK));
 		cmbType.addItem(listitem);
 	}
 	

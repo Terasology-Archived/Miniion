@@ -71,7 +71,7 @@ public class UICardBook extends UIWindow {
 	public UICardBook() {
 		setId("cardbook");
 		entityManager = CoreRegistry.get(EntityManager.class);
-		setBackgroundColor(new Color(0, 0, 0, 200).toHex());
+		setBackgroundColor(Color.toColorString(new Color(0, 0, 0, 200)));
 		setModal(true);
 		maximize();
 		// setCloseBinds(new String[] {"engine:useHeldItem"});
@@ -102,7 +102,7 @@ public class UICardBook extends UIWindow {
 		page1label.setSize(new Vector2f(190, 60));
 		page1label.setWrap(true);
 		page1label.setText("Insert an empty card into this page!");
-		page1label.setColor(Color.BLACK.toHex());
+		page1label.setColor(Color.toColorString(Color.BLACK));
 		page1label.setVisible(true);
 		background.addDisplayElement(page1label);
 
@@ -192,7 +192,7 @@ public class UICardBook extends UIWindow {
 		PrefabManager prefMan = CoreRegistry.get(PrefabManager.class);
 		for (Prefab prefab : prefMan.listPrefabs(MinionComponent.class)) {
 			UIListItem listitem = new UIListItem();
-			listitem.setTextColor(Color.BLACK.toHex());
+			listitem.setTextColor(Color.toColorString(Color.BLACK));
 			String[] tempstring = prefab.getName().split(":");
 			if (tempstring.length == 2) {
 				listitem.setText(tempstring[1]);

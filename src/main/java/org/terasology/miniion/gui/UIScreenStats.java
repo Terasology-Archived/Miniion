@@ -47,30 +47,30 @@ public class UIScreenStats extends UIWindow{
     public UIScreenStats() {
     	lblstatTitle = new UILabel();
 		lblstatTitle.setTextShadow(true);
-		lblstatTitle.setBorderSolid(new Vector4f(4f, 4f, 4f, 4f), Color.RED.toHex());
+		lblstatTitle.setBorderSolid(new Vector4f(4f, 4f, 4f, 4f), Color.toColorString(Color.RED));
 		lblstatTitle.setPosition(new Vector2f(100, 10));
 		lblstatTitle.setVisible(true);
-		lblstatTitle.setColor(Color.GREEN.toHex());
+		lblstatTitle.setColor(Color.toColorString(Color.GREEN));
 		addDisplayElement(lblstatTitle);
 		
 		lblstatHealth = new UILabel();
 		lblstatHealth.setText("Health Placeholder");
 		lblstatHealth.setPosition(new Vector2f(10, 40));
 		lblstatHealth.setVisible(true);
-		lblstatHealth.setColor(Color.GREEN.toHex());
+		lblstatHealth.setColor(Color.toColorString(Color.GREEN));
 		addDisplayElement(lblstatHealth);
 		
 		lblstatHunger = new UILabel();		
 		lblstatHunger.setPosition(new Vector2f(10, 70));
 		lblstatHunger.setVisible(true);
-		lblstatHunger.setColor(Color.YELLOW.toHex());
+		lblstatHunger.setColor(Color.toColorString(Color.YELLOW));
 		addDisplayElement(lblstatHunger);
 
 		lblstatStamina = new UILabel();
 		lblstatStamina.setText("Stamina Placeholder");
 		lblstatStamina.setPosition(new Vector2f(10, 100));
 		lblstatStamina.setVisible(true);
-		lblstatStamina.setColor(Color.CYAN.toHex());
+		lblstatStamina.setColor(Color.toColorString(Color.CYAN));
 		addDisplayElement(lblstatStamina);
     }
     

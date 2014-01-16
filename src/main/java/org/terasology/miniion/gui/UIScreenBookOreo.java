@@ -64,13 +64,13 @@ public class UIScreenBookOreo extends UIWindow {
 
 		pagetitle = new UILabel("Summoned minions");
 		pagetitle.setPosition(new Vector2f(50, 20));
-		pagetitle.setColor(Color.BLACK.toHex());
+		pagetitle.setColor(Color.toColorString(Color.BLACK));
 		pagetitle.setVisible(true);
 		addDisplayElement(pagetitle);
 
 		pagetitle2 = new UILabel("Active minion");
 		pagetitle2.setPosition(new Vector2f(340, 20));
-		pagetitle2.setColor(Color.BLACK.toHex());
+		pagetitle2.setColor(Color.toColorString(Color.BLACK));
 		pagetitle2.setVisible(true);
 		addDisplayElement(pagetitle2);
 		
@@ -117,7 +117,7 @@ public class UIScreenBookOreo extends UIWindow {
 		EntityManager entMan = CoreRegistry.get(EntityManager.class);
 		for(EntityRef minion : entMan.getEntitiesWith(MinionComponent.class)){
 			UIListItem listitem = new UIListItem(minion.getComponent(MinionComponent.class).name, minion);
-			listitem.setTextColor(Color.BLACK.toHex());
+			listitem.setTextColor(Color.toColorString(Color.BLACK));
 			listitem.addClickListener(minionistener);
 			uiminionlist.addItem(listitem);
 		}

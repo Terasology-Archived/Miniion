@@ -137,19 +137,19 @@ public class UISelectedMinion extends UICompositeScrollable {
 
 		lblname = new UILabel("");
 		lblname.setPosition(new Vector2f(50, 30));
-		lblname.setColor(Color.BLACK.toHex());
+		lblname.setColor(Color.toColorString(Color.BLACK));
 		lblname.setVisible(false);
 		this.addDisplayElement(lblname);
 
 		lblflavor = new UILabel("");
 		lblflavor.setPosition(new Vector2f(50, 50));
-		lblflavor.setColor(Color.BLACK.toHex());
+		lblflavor.setColor(Color.toColorString(Color.BLACK));
 		lblflavor.setVisible(false);
 		this.addDisplayElement(lblflavor);
 
 		lblBehaviour = new UILabel("Behaviour");
 		lblBehaviour.setPosition(new Vector2f(20, 80));
-		lblBehaviour.setColor(Color.BLACK.toHex());
+		lblBehaviour.setColor(Color.toColorString(Color.BLACK));
 		lblBehaviour.setVisible(false);
 		this.addDisplayElement(lblBehaviour);
 
@@ -274,7 +274,7 @@ public class UISelectedMinion extends UICompositeScrollable {
 		uizonelist.setSize(new Vector2f(250, 300));
 		uizonelist.setPosition(new Vector2f(300, 0));
 		uizonelist.setBackgroundImage("miniion:pageback");
-		uizonelist.setBackgroundColor(Color.BLACK.toHex());
+		uizonelist.setBackgroundColor(Color.toColorString(Color.BLACK));
 		uizonelist.setVisible(false);
 		this.addDisplayElement(uizonelist);
 
@@ -404,7 +404,7 @@ public class UISelectedMinion extends UICompositeScrollable {
 		uizonelist.removeAll();
 		for (Zone zone : MinionSystem.getGatherZoneList()) {
 			UIListItem listitem = new UIListItem(zone.Name, zone);
-			listitem.setTextColor(Color.BLACK.toHex());
+			listitem.setTextColor(Color.toColorString(Color.BLACK));
 			uizonelist.addItem(listitem);
 		}
 		uizonelist.setVisible(true);

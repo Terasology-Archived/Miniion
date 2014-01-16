@@ -603,7 +603,7 @@ public class UIActiveMinion extends UIWindow{
 			// would be nice if I could lock the size to default size
 			lblname.removeBorderSolid();		
 			lblname.setText("No Oeon is obeying you!");
-			lblname.setBorderSolid(new Vector4f(2f, 2f, 2f, 2f), Color.MAGENTA.toHex());
+			lblname.setBorderSolid(new Vector4f(2f, 2f, 2f, 2f), Color.toColorString(Color.MAGENTA));
 			lblflavor.setText("Get your Oreominions now!!! 75% off if you bought any other DLC");
 			lblzone.setText("");
 			lblrecipe.setText("");            
@@ -650,7 +650,7 @@ public class UIActiveMinion extends UIWindow{
 					toggleBehaviour(null);
 				}
 			}			
-			lblname.setBorderSolid(new Vector4f(2f, 2f, 2f, 2f), Color.MAGENTA.toHex());						
+			lblname.setBorderSolid(new Vector4f(2f, 2f, 2f, 2f), Color.toColorString(Color.MAGENTA));						
 		}
 		//refresh the stats screen whenever the main window refreshes.
 		uistats.refreshScreen();
