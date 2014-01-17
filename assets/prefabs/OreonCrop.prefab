@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 {
-	"ChangingBlocks" = {
-		"blockFamilyStages" = [  "Miniion:OreonPlant0",
-								 "Miniion:OreonPlant1",
-								 "Miniion:OreonPlant2",
-								 "Miniion:OreonPlant3",
-								 "Miniion:OreonPlant4",
-								 "Miniion:OreonPlant5",
-								 "Miniion:OreonPlant6" ],
-		"loops" = false,
-		"timeInGameMsToNextStage" = 30000
+	"ChangingBlocks" : {
+		"blockFamilyStages" : {  "Miniion:OreonPlant0" : 7000,
+								 "Miniion:OreonPlant1" : 9000,
+								 "Miniion:OreonPlant2" : 8000,
+								 "Miniion:OreonPlant3" : 6000,
+								 "Miniion:OreonPlant4" : 2000,
+								 "Miniion:OreonPlant5" : 5000,
+								 "Miniion:OreonPlant6" : 5000 },
+		"loops" = false
 	}
 }
