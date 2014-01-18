@@ -27,7 +27,7 @@ import org.terasology.world.selection.BlockSelectionComponent;
 @MappedContainer
 public class Zone {
 
-        public EntityRef blockSelectionEntity;
+        public EntityRef blockSelectionEntity = EntityRef.NULL;
         
         private Vector3i minbounds = new Vector3i(Integer.MAX_VALUE,
                         Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -62,10 +62,8 @@ public class Zone {
                     calcBounds(endposition);
             }
             
-            if (null == blockSelectionEntity) {
-                EntityManager entityManager = CoreRegistry.get(EntityManager.class);
-                blockSelectionEntity = entityManager.create(new BlockSelectionComponent());
-            }
+            EntityManager entityManager = CoreRegistry.get(EntityManager.class);
+            blockSelectionEntity = entityManager.create(new BlockSelectionComponent());
             BlockSelectionComponent selection = blockSelectionEntity.getComponent(BlockSelectionComponent.class);
             selection.currentSelection = region;
             selection.shouldRender = false;
