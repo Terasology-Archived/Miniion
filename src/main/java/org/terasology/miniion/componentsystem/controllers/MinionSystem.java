@@ -95,6 +95,11 @@ public class MinionSystem implements ComponentSystem {
         guiManager.registerWindow("zonebook", UIZoneBook.class);
         createZoneList();
         initRecipes();
+
+        BlockSelectionComponent blockSelectionComponent = new BlockSelectionComponent();
+        Color transparentGreen = new Color(0, 255, 0, 100);
+        blockSelectionComponent.texture = Assets.get(TextureUtil.getTextureUriForColor(transparentGreen), Texture.class);
+        currentBlockSelectionEntity = entityManager.create(blockSelectionComponent);
     }
 
     @ReceiveEvent
@@ -204,17 +209,7 @@ public class MinionSystem implements ComponentSystem {
 
     public static void setCurrentBlockSelectionRegion(Region3i currentBlockSelectionRegion) {
         
-        BlockSelectionComponent blockSelectionComponent;
-        if (currentBlockSelectionEntity == EntityRef.NULL) {
-            EntityManager entityManager = CoreRegistry.get(EntityManager.class);
-            blockSelectionComponent = new BlockSelectionComponent();
-            Color transparentGreen = new Color(0, 255, 0, 100);
-            blockSelectionComponent.texture = Assets.get(TextureUtil.getTextureUriForColor(transparentGreen), Texture.class);
-            currentBlockSelectionEntity = entityManager.create(blockSelectionComponent);
-        } else {
-            blockSelectionComponent = currentBlockSelectionEntity.getComponent(BlockSelectionComponent.class);
-        }
-
+        BlockSelectionComponent blockSelectionComponent = currentBlockSelectionEntity.getComponent(BlockSelectionComponent.class);
         blockSelectionComponent.currentSelection = currentBlockSelectionRegion;
         if (null != currentBlockSelectionRegion) {
             blockSelectionComponent.shouldRender = true;
@@ -223,7 +218,7 @@ public class MinionSystem implements ComponentSystem {
         }
 
         // TODO: it would be better if we didn't persist this entity and block selection component
-        currentBlockSelectionEntity.saveComponent(blockSelectionComponent);
+        // currentBlockSelectionEntity.saveComponent(blockSelectionComponent);
     }
 
     public static Region3i getCurrentBlockSelectionRegion() {
@@ -534,6 +529,9 @@ public class MinionSystem implements ComponentSystem {
                 }
             }
         }
+        
+        currentBlockSelectionEntity.destroy();
+        currentBlockSelectionEntity = EntityRef.NULL;
     }
 
     /**
