@@ -20,6 +20,7 @@ import javax.vecmath.Vector2f;
 import org.terasology.entitySystem.systems.In;
 import org.terasology.engine.Time;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
+import org.terasology.module.common.gui.UIModButtonMenu;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
 import org.terasology.rendering.gui.framework.events.ClickListener;
 import org.terasology.rendering.gui.widgets.UILabel;
@@ -63,7 +64,7 @@ public class UIScreenSettings extends UIWindow {
         lblselover.setColor(Color.toColorString(Color.GREEN));
         addDisplayElement(lblselover);
 
-        btnOverlay = new UIModButtonMenu(new Vector2f(50, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.TOGGLE);
+        btnOverlay = new UIModButtonMenu(new Vector2f(50, 20), org.terasology.module.common.gui.UIModButtonMenu.ButtonType.TOGGLE);
         btnOverlay.setPosition(new Vector2f(125, 430));
         btnOverlay.setId("over");
         if (MinionSystem.isSelectionShown()) {

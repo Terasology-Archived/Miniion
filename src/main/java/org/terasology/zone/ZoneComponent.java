@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.miniion.components;
+package org.terasology.zone;
 
 import org.terasology.entitySystem.Component;
 import org.terasology.math.Region3i;
 import org.terasology.math.Vector3i;
-import org.terasology.miniion.minionenum.ZoneType;
 
 public final class ZoneComponent implements Component {
 

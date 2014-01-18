@@ -38,17 +38,17 @@ import org.terasology.logic.players.LocalPlayer;
 import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
 import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.MinionComponent;
-import org.terasology.miniion.components.ZoneComponent;
-import org.terasology.miniion.components.ZoneListComponent;
 import org.terasology.miniion.components.namesComponent;
 import org.terasology.miniion.gui.UIActiveMinion;
 import org.terasology.miniion.gui.UICardBook;
 import org.terasology.miniion.gui.UIScreenBookOreo;
-import org.terasology.miniion.gui.UIZoneBook;
 import org.terasology.miniion.utilities.MinionRecipe;
 import org.terasology.miniion.utilities.ModIcons;
 import org.terasology.rendering.logic.AnimEndEvent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
+import org.terasology.zone.ZoneComponent;
+import org.terasology.zone.ZoneListComponent;
+import org.terasology.zone.gui.UIZoneBook;
 
 /**
  * Created with IntelliJ IDEA. User: Overdhose Date: 10/05/12 Time: 17:54
@@ -71,8 +71,6 @@ public class MinionSystem implements ComponentSystem {
     private static boolean showactiveminion = false;
     private static boolean showSelectionOverlay = false;
     private static EntityRef activeminion;
-    // TODO : a better way to save / load zones, but it does the trick
-    private static EntityRef zonelist = EntityRef.NULL;
 
     private static List<MinionRecipe> recipeslist = new ArrayList<MinionRecipe>();
 
@@ -85,9 +83,6 @@ public class MinionSystem implements ComponentSystem {
         guiManager.registerWindow("cardbook", UICardBook.class);
         // ui to manage summoned minions, selecting one sets it active!
         guiManager.registerWindow("oreobook", UIScreenBookOreo.class);
-        // ui to manage zones
-        guiManager.registerWindow("zonebook", UIZoneBook.class);
-        createZoneList();
         initRecipes();
     }
 
@@ -196,115 +191,11 @@ public class MinionSystem implements ComponentSystem {
         return activeminion;
     }
 
-    /**
-     * adds a new zone to the corresponding zone list
-     * @param zone
-     * 				the zone to be added
-     */
-    public static void addZone(EntityRef zone) {
-        ZoneListComponent zonelistcomp = zonelist.getComponent(ZoneListComponent.class);
-        ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-        switch (zoneComponent.zonetype) {
-            case Gather: {
-                zonelistcomp.Gatherzones.add(zone);
-                break;
-            }
-            case Work: {
-                zonelistcomp.Workzones.add(zone);
-                break;
-            }
-            case Terraform: {
-                zonelistcomp.Terrazones.add(zone);
-                break;
-            }
-            case Storage: {
-                zonelistcomp.Storagezones.add(zone);
-                break;
-            }
-            case OreonFarm: {
-                zonelistcomp.OreonFarmzones.add(zone);
-                break;
-            }
-        }
-        zonelist.saveComponent(zonelistcomp);
-    }
-
-    /**
-     * returns a list with all gather zones
-     * @return
-     * 			a list with all gather zones
-     */
-    public static List<EntityRef> getGatherZoneList() {
-        if (zonelist == EntityRef.NULL) {
-            return null;
-        }
-        return zonelist.getComponent(ZoneListComponent.class).Gatherzones;
-    }
-
-    /**
-     * returns a list with all work zones
-     * @return
-     * 			a list with all work zones
-     */
-    public static List<EntityRef> getWorkZoneList() {
-        if (zonelist == EntityRef.NULL) {
-            return null;
-        }
-        return zonelist.getComponent(ZoneListComponent.class).Workzones;
-    }
-
-    /**
-     * returns a list with all terraform zones
-     * @return
-     * 			a list with all terraform zones
-     */
-    public static List<EntityRef> getTerraformZoneList() {
-        if (zonelist == EntityRef.NULL) {
-            return null;
-        }
-        return zonelist.getComponent(ZoneListComponent.class).Terrazones;
-    }
-
-    /**
-     * returns a list with all storage zones
-     * @return
-     * 			a list with all storage zones
-     */
-    public static List<EntityRef> getStorageZoneList() {
-        if (zonelist == EntityRef.NULL) {
-            return null;
-        }
-        return zonelist.getComponent(ZoneListComponent.class).Storagezones;
-    }
-
-    /**
-     * returns a list with all Oreon farm zones
-     * @return
-     * 			a list with all Oreon farm zones
-     */
-    public static List<EntityRef> getOreonFarmZoneList() {
-        if (zonelist == EntityRef.NULL) {
-            return null;
-        }
-        return zonelist.getComponent(ZoneListComponent.class).OreonFarmzones;
-    }
-
     public static List<MinionRecipe> getRecipesList() {
         if (recipeslist == null) {
             return null;
         }
         return recipeslist;
-    }
-
-    /**
-     * creates a zonelist component
-     * used to save all zones (persist)
-     */
-    private static void createZoneList() {
-        zonelist = CoreRegistry.get(EntityManager.class).create();
-        ZoneListComponent zonecomp = new ZoneListComponent();
-        zonelist.addComponent(zonecomp);
-        zonelist.saveComponent(zonecomp);
     }
 
     /**

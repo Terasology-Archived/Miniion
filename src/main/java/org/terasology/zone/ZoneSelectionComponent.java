@@ -13,25 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.miniion.components;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.terasology.zone;
 
 import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.math.Vector3i;
 
-/**
- * Zonelist to be used exclusively by minionsystem no prefab should use this
- * component
- * 
- * @author od
- * 
- */
-public class ZoneListComponent implements Component {
-    public List<EntityRef> Gatherzones = new ArrayList<EntityRef>();
-    public List<EntityRef> Workzones = new ArrayList<EntityRef>();
-    public List<EntityRef> Terrazones = new ArrayList<EntityRef>();
-    public List<EntityRef> Storagezones = new ArrayList<EntityRef>();
-    public List<EntityRef> OreonFarmzones = new ArrayList<EntityRef>();
+public class ZoneSelectionComponent implements Component {
+    public Vector3i startpos;
+    public Vector3i endpos;
+    public ZoneType zonetype;
 }

@@ -31,16 +31,17 @@ import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.SimpleMinionAIComponent;
-import org.terasology.miniion.components.ZoneComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.rendering.gui.framework.*;
 import org.terasology.rendering.gui.framework.events.ClickListener;
-import org.terasology.miniion.gui.UIModButton;
-import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.miniion.minionenum.MinionBehaviour;
+import org.terasology.module.common.gui.UIModButton;
+import org.terasology.module.common.gui.UIModButton.ButtonType;
 import org.terasology.rendering.gui.widgets.*;
 import org.terasology.rendering.icons.Icon;
 import org.terasology.rendering.nui.Color;
+import org.terasology.zone.ZoneComponent;
+import org.terasology.zone.ZoneTrackingSystem;
 
 public class UISelectedMinion extends UICompositeScrollable {
 
@@ -402,7 +403,7 @@ public class UISelectedMinion extends UICompositeScrollable {
      */
     private void setZone() {
         uizonelist.removeAll();
-        for (EntityRef zone : MinionSystem.getGatherZoneList()) {
+        for (EntityRef zone : ZoneTrackingSystem.getGatherZoneList()) {
             ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
             UIListItem listitem = new UIListItem(zoneComponent.Name, zone);
             listitem.setTextColor(Color.toColorString(Color.BLACK));
@@ -415,7 +416,7 @@ public class UISelectedMinion extends UICompositeScrollable {
         if (uizonelist.getSelection() != null) {
             MinionComponent minioncomp = cell.minion
                     .getComponent(MinionComponent.class);
-            for (EntityRef zone : MinionSystem.getGatherZoneList()) {
+            for (EntityRef zone : ZoneTrackingSystem.getGatherZoneList()) {
                 ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
                 if (zoneComponent.Name.matches(uizonelist.getSelection().getText())) {
                     minioncomp.assignedZoneEntity = zone;

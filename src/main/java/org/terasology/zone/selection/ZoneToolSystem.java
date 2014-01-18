@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.miniion.componentsystem.action;
+package org.terasology.zone.selection;
 
 import java.awt.Color;
 
@@ -26,11 +26,13 @@ import org.terasology.entitySystem.systems.In;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.Share;
+import org.terasology.logic.manager.GUIManager;
 import org.terasology.logic.selection.ApplyBlockSelectionEvent;
 import org.terasology.math.Region3i;
 import org.terasology.rendering.assets.texture.Texture;
 import org.terasology.rendering.assets.texture.TextureUtil;
 import org.terasology.world.selection.BlockSelectionComponent;
+import org.terasology.zone.gui.UIZoneBook;
 
 @Share(ZoneToolSystem.class)
 @RegisterSystem(RegisterMode.AUTHORITY)
@@ -38,11 +40,16 @@ public class ZoneToolSystem implements ComponentSystem {
 
     @In
     private EntityManager entityManager;
+    @In
+    private GUIManager guiManager;
     
     private EntityRef currentBlockSelectionDisplayEntity = EntityRef.NULL;
 
     @Override
     public void initialise() {
+        // ui to manage zones
+        guiManager.registerWindow("zonebook", UIZoneBook.class);
+
         BlockSelectionComponent blockSelectionComponent = new BlockSelectionComponent();
         Color transparentGreen = new Color(0, 255, 0, 100);
         blockSelectionComponent.texture = Assets.get(TextureUtil.getTextureUriForColor(transparentGreen), Texture.class);

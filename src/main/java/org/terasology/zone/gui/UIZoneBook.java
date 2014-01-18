@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.miniion.gui;
+package org.terasology.zone.gui;
 
 import java.util.List;
 
@@ -26,11 +26,8 @@ import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.math.Region3i;
 import org.terasology.math.Vector3i;
-import org.terasology.miniion.components.ZoneComponent;
-import org.terasology.miniion.componentsystem.action.ZoneToolSystem;
-import org.terasology.miniion.componentsystem.controllers.MinionSystem;
-import org.terasology.miniion.gui.UIModButton.ButtonType;
-import org.terasology.miniion.minionenum.ZoneType;
+import org.terasology.module.common.gui.UIModButton;
+import org.terasology.module.common.gui.UIModButton.ButtonType;
 import org.terasology.rendering.assets.texture.Texture;
 import org.terasology.rendering.assets.texture.TextureUtil;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
@@ -44,6 +41,10 @@ import org.terasology.rendering.gui.widgets.UIText;
 import org.terasology.rendering.gui.widgets.UIWindow;
 import org.terasology.rendering.nui.Color;
 import org.terasology.world.selection.BlockSelectionComponent;
+import org.terasology.zone.ZoneComponent;
+import org.terasology.zone.ZoneTrackingSystem;
+import org.terasology.zone.ZoneType;
+import org.terasology.zone.selection.ZoneToolSystem;
 
 public class UIZoneBook extends UIWindow {
     private static final int MAX_SELECTED_BOUNDS = 50;
@@ -69,23 +70,23 @@ public class UIZoneBook extends UIWindow {
             List<EntityRef> currentZoneList = null;
             switch (((ZoneType) listitem.getValue())) {
                 case Gather: {
-                    currentZoneList = MinionSystem.getGatherZoneList();
+                    currentZoneList = ZoneTrackingSystem.getGatherZoneList();
                     break;
                 }
                 case Terraform: {
-                    currentZoneList = MinionSystem.getTerraformZoneList();
+                    currentZoneList = ZoneTrackingSystem.getTerraformZoneList();
                     break;
                 }
                 case Work: {
-                    currentZoneList = MinionSystem.getWorkZoneList();
+                    currentZoneList = ZoneTrackingSystem.getWorkZoneList();
                     break;
                 }
                 case Storage: {
-                    currentZoneList = MinionSystem.getStorageZoneList();
+                    currentZoneList = ZoneTrackingSystem.getStorageZoneList();
                     break;
                 }
                 case OreonFarm: {
-                    currentZoneList = MinionSystem.getOreonFarmZoneList();
+                    currentZoneList = ZoneTrackingSystem.getOreonFarmZoneList();
                     break;
                 }
                 default: {
@@ -375,7 +376,7 @@ public class UIZoneBook extends UIWindow {
         newzone.saveComponent(zoneComponent);
         newzone.saveComponent(blockSelectionComponent);
         
-        MinionSystem.addZone(newzone);
+        ZoneTrackingSystem.addZone(newzone);
         lblzonetype.setText("");
         zoneToolSystem.setCurrentlySelectedRegion(null);
         lastSelectedZone = newzone;
@@ -388,27 +389,27 @@ public class UIZoneBook extends UIWindow {
         switch (zoneComponent.zonetype) {
             case Gather: {
                 hideSelectedZone(deletezone);
-                MinionSystem.getGatherZoneList().remove(deletezone);
+                ZoneTrackingSystem.getGatherZoneList().remove(deletezone);
                 break;
             }
             case Work: {
                 hideSelectedZone(deletezone);
-                MinionSystem.getWorkZoneList().remove(deletezone);
+                ZoneTrackingSystem.getWorkZoneList().remove(deletezone);
                 break;
             }
             case Terraform: {
                 hideSelectedZone(deletezone);
-                MinionSystem.getTerraformZoneList().remove(deletezone);
+                ZoneTrackingSystem.getTerraformZoneList().remove(deletezone);
                 break;
             }
             case Storage: {
                 hideSelectedZone(deletezone);
-                MinionSystem.getStorageZoneList().remove(deletezone);
+                ZoneTrackingSystem.getStorageZoneList().remove(deletezone);
                 break;
             }
             case OreonFarm: {
                 hideSelectedZone(deletezone);
-                MinionSystem.getOreonFarmZoneList().remove(deletezone);
+                ZoneTrackingSystem.getOreonFarmZoneList().remove(deletezone);
                 break;
             }
         }

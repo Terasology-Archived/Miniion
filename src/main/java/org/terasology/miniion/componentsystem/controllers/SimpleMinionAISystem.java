@@ -46,10 +46,8 @@ import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.MinionFarmerComponent;
 import org.terasology.miniion.components.SimpleMinionAIComponent;
-import org.terasology.miniion.components.ZoneComponent;
 import org.terasology.miniion.events.MinionMessageEvent;
 import org.terasology.miniion.minionenum.MinionMessagePriority;
-import org.terasology.miniion.minionenum.ZoneType;
 import org.terasology.miniion.pathfinder.AStarPathing;
 import org.terasology.miniion.utilities.MinionMessage;
 import org.terasology.rendering.assets.animation.MeshAnimation;
@@ -60,6 +58,8 @@ import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.items.BlockItemComponent;
 import org.terasology.world.block.items.BlockItemFactory;
+import org.terasology.zone.ZoneComponent;
+import org.terasology.zone.ZoneType;
 
 /**
  * Created with IntelliJ IDEA. User: Overdhose Date: 7/05/12 Time: 18:25 first
