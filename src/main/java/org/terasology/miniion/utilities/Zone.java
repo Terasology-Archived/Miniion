@@ -16,13 +16,19 @@
 package org.terasology.miniion.utilities;
 
 import org.terasology.classMetadata.MappedContainer;
+import org.terasology.engine.CoreRegistry;
+import org.terasology.entitySystem.entity.EntityManager;
+import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.math.Region3i;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.minionenum.ZoneType;
+import org.terasology.world.selection.BlockSelectionComponent;
 
 @MappedContainer
 public class Zone {
 
+        public EntityRef blockSelectionEntity;
+        
         private Vector3i minbounds = new Vector3i(Integer.MAX_VALUE,
                         Integer.MAX_VALUE, Integer.MAX_VALUE);
         private Vector3i maxbounds = new Vector3i(Integer.MIN_VALUE,
@@ -35,7 +41,7 @@ public class Zone {
         private Vector3i endposition;
         private boolean terraformcomplete = false;
         //used to undo zones with unbreakable blocks
-        //zone set to delete untill blocks are removed
+        //zone set to delete until blocks are removed
         private boolean deleted = false;
 
         public String Name;
@@ -50,6 +56,14 @@ public class Zone {
         // TODO: should be replaced by a region
         public Zone(Region3i region) {
             this(region.min(), region.max());
+            
+            if (null == blockSelectionEntity) {
+                EntityManager entityManager = CoreRegistry.get(EntityManager.class);
+                blockSelectionEntity = entityManager.create(new BlockSelectionComponent());
+            }
+            BlockSelectionComponent selection = blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+            selection.currentSelection = region;
+            selection.shouldRender = false;
         }
 
         // TODO: should be replaced by a region
