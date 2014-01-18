@@ -162,9 +162,9 @@ public class UIZoneBook extends UIWindow {
                 hideSelectedZone();
                 Zone zone = (Zone) listitem.getValue();
                 txtzonename.setText(zone.Name);
-                txtheight.setText("" + zone.zoneheight);
-                txtwidth.setText("" + zone.zonewidth);
-                txtdepth.setText("" + zone.zonedepth);
+                txtheight.setText("" + zone.getZoneHeight());
+                txtwidth.setText("" + zone.getZoneWidth());
+                txtdepth.setText("" + zone.getZoneDepth());
                 switch (zone.zonetype) {
                     case Gather: {
                         lblzonetype.setText("Zonetype : Gather");
@@ -402,9 +402,10 @@ public class UIZoneBook extends UIWindow {
         Zone newzone = MinionSystem.getNewZone();
 
         newzone.Name = txtzonename.getText();
-        newzone.zoneheight = Integer.parseInt(txtheight.getText());
-        newzone.zonewidth = Integer.parseInt(txtwidth.getText());
-        newzone.zonedepth = Integer.parseInt(txtdepth.getText());
+        int zoneheight = Integer.parseInt(txtheight.getText());
+        int zonewidth = Integer.parseInt(txtwidth.getText());
+        int zonedepth = Integer.parseInt(txtdepth.getText());
+        newzone.resizeTo(zoneheight, zonedepth, zonewidth);
         if (cmbType.isVisible()) {
             newzone.zonetype = ZoneType.valueOf(cmbType.getSelection().getText());
         } else {

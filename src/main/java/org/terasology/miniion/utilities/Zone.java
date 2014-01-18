@@ -35,9 +35,6 @@ public class Zone {
 
     public String Name;
     public ZoneType zonetype;
-    public int zoneheight;
-    public int zonedepth;
-    public int zonewidth;
 
     public Zone() {
     }
@@ -107,12 +104,38 @@ public class Zone {
         return width;
     }
 
+    public BlockSelectionComponent getBlockSelectionComponent() {
+        return blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+    }
+
     public Region3i getBlockSelectionRegion() {
-        BlockSelectionComponent selection = blockSelectionEntity.getComponent(BlockSelectionComponent.class);
-        return selection.currentSelection;
+        return getBlockSelectionComponent().currentSelection;
     }
 
     public Vector3i getStartPosition() {
         return getBlockSelectionRegion().min();
+    }
+
+    public int getZoneHeight() {
+        Region3i region3i = getBlockSelectionRegion();
+        return region3i.size().y;
+    }
+
+    public int getZoneDepth() {
+        Region3i region3i = getBlockSelectionRegion();
+        return region3i.size().x;
+    }
+
+    public int getZoneWidth() {
+        Region3i region3i = getBlockSelectionRegion();
+        return region3i.size().z;
+    }
+
+    public void resizeTo(int zoneheight, int zonedepth, int zonewidth) {
+        BlockSelectionComponent blockSelectionComponent = getBlockSelectionComponent();
+        Region3i region3i = blockSelectionComponent.currentSelection;
+        Vector3i min = region3i.min();
+        Vector3i newSize = new Vector3i(zonedepth, zoneheight, zonewidth);
+        blockSelectionComponent.currentSelection = Region3i.createFromMinAndSize(min, newSize);
     }
 }
