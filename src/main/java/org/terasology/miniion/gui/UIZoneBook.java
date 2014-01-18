@@ -460,15 +460,7 @@ public class UIZoneBook extends UIWindow {
         initList();
         resetInput();
 
-        if (MinionSystem.getNewZone() != null && MinionSystem.getNewZone().getEndPosition() == null) {
-            if (checkSingleZone()) {
-                Vector3i minbounds = MinionSystem.getNewZone().getMinBounds();
-                Vector3i maxbounds = MinionSystem.getNewZone().getMaxBounds();
-                txtwidth.setText("1");
-                txtdepth.setText("1");
-                txtheight.setText("1");
-            }
-        } else if (MinionSystem.getNewZone() != null && MinionSystem.getNewZone().getEndPosition() != null) {
+        if (MinionSystem.getNewZone() != null) {
             newzonefound = true;
             MinionSystem.getNewZone().zonetype = ZoneType.Gather;
 

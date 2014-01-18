@@ -27,22 +27,11 @@ import org.terasology.world.selection.BlockSelectionComponent;
 @MappedContainer
 public class Zone {
 
+    private static final int MAX_SELECTED_BOUNDS = 50;
+
     public EntityRef blockSelectionEntity = EntityRef.NULL;
 
-    private Vector3i minbounds = new Vector3i(Integer.MAX_VALUE,
-            Integer.MAX_VALUE, Integer.MAX_VALUE);
-    private Vector3i maxbounds = new Vector3i(Integer.MIN_VALUE,
-            Integer.MIN_VALUE, Integer.MIN_VALUE);
-
-    /* CONST */
-    private static final int maxselectionbounds = 50;
-
-    private Vector3i startposition;
-    private Vector3i endposition;
     private boolean terraformcomplete = false;
-    //used to undo zones with unbreakable blocks
-    //zone set to delete until blocks are removed
-    private boolean deleted = false;
 
     public String Name;
     public ZoneType zonetype;
@@ -55,13 +44,6 @@ public class Zone {
 
     // TODO: should be replaced by a region
     public Zone(Region3i region) {
-        this.startposition = region.min();
-        this.endposition = region.max();
-        calcBounds(startposition);
-        if (endposition != null) {
-            calcBounds(endposition);
-        }
-
         EntityManager entityManager = CoreRegistry.get(EntityManager.class);
         blockSelectionEntity = entityManager.create(new BlockSelectionComponent());
         BlockSelectionComponent selection = blockSelectionEntity.getComponent(BlockSelectionComponent.class);
@@ -69,52 +51,12 @@ public class Zone {
         selection.shouldRender = false;
     }
 
-    private void calcBounds(Vector3i gridPosition) {
-        if (gridPosition.x < minbounds.x) {
-            minbounds.x = gridPosition.x;
-        }
-        if (gridPosition.y < minbounds.y) {
-            minbounds.y = gridPosition.y;
-        }
-        if (gridPosition.z < minbounds.z) {
-            minbounds.z = gridPosition.z;
-        }
-
-        if (gridPosition.x > maxbounds.x) {
-            maxbounds.x = gridPosition.x;
-        }
-        if (gridPosition.y > maxbounds.y) {
-            maxbounds.y = gridPosition.y;
-        }
-        if (gridPosition.z > maxbounds.z) {
-            maxbounds.z = gridPosition.z;
-        }
-    }
-
-    public void setStartPosition(Vector3i startpos) {
-        startposition = startpos;
-        calcBounds(startposition);
-    }
-
-    public Vector3i getStartPosition() {
-        return startposition;
-    }
-
-    public void setEndPosition(Vector3i endpos) {
-        endposition = endpos;
-        calcBounds(endposition);
-    }
-
-    public Vector3i getEndPosition() {
-        return endposition;
-    }
-
     public Vector3i getMinBounds() {
-        return minbounds;
+        return getBlockSelectionRegion().min();
     }
 
     public Vector3i getMaxBounds() {
-        return maxbounds;
+        return getBlockSelectionRegion().max();
     }
 
     public boolean isTerraformComplete() {
@@ -127,16 +69,14 @@ public class Zone {
 
     public boolean outofboundselection() {
         boolean retval = false;
-        if (startposition != null && endposition != null) {
-            if (getAbsoluteDiff(minbounds.x, maxbounds.x) > maxselectionbounds) {
-                retval = true;
-            }
-            if (getAbsoluteDiff(minbounds.y, maxbounds.y) > maxselectionbounds) {
-                retval = true;
-            }
-            if (getAbsoluteDiff(minbounds.z, maxbounds.z) > maxselectionbounds) {
-                retval = true;
-            }
+        if (getAbsoluteDiff(getMinBounds().x, getMaxBounds().x) > MAX_SELECTED_BOUNDS) {
+            retval = true;
+        }
+        if (getAbsoluteDiff(getMinBounds().y, getMaxBounds().y) > MAX_SELECTED_BOUNDS) {
+            retval = true;
+        }
+        if (getAbsoluteDiff(getMinBounds().z, getMaxBounds().z) > MAX_SELECTED_BOUNDS) {
+            retval = true;
         }
         return retval;
     }
@@ -165,5 +105,14 @@ public class Zone {
             width++;
         }
         return width;
+    }
+
+    public Region3i getBlockSelectionRegion() {
+        BlockSelectionComponent selection = blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+        return selection.currentSelection;
+    }
+
+    public Vector3i getStartPosition() {
+        return getBlockSelectionRegion().min();
     }
 }

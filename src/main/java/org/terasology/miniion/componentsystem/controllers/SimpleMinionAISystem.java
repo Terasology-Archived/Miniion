@@ -216,10 +216,6 @@ public class SimpleMinionAISystem implements ComponentSystem,
         }
     }
 
-    private void randomAnimation(EntityRef entity,
-                                 SkeletalMeshComponent skeletalcomp, AnimationComponent animcomp) {
-    }
-
     private void executeFollowAI(EntityRef entity) {
         LocalPlayer localPlayer = CoreRegistry.get(LocalPlayer.class);
         if (localPlayer == null) {
@@ -320,9 +316,6 @@ public class SimpleMinionAISystem implements ComponentSystem,
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
 
         if (minioncomp.assignedzone == null) {
-            changeAnimation(entity, animcomp.idleAnim, true);
-            return;
-        } else if (minioncomp.assignedzone.getStartPosition() == null) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
         } else if (minioncomp.assignedzone.zonetype != ZoneType.Work) {
@@ -439,9 +432,6 @@ public class SimpleMinionAISystem implements ComponentSystem,
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
 
         if (minioncomp.assignedzone == null) {
-            changeAnimation(entity, animcomp.idleAnim, true);
-            return;
-        } else if (minioncomp.assignedzone.getStartPosition() == null) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
         } else if (minioncomp.assignedzone.zonetype != ZoneType.Terraform && terraformFinalBlockType.isEmpty()) {
