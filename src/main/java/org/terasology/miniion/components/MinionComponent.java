@@ -27,38 +27,37 @@ import org.terasology.miniion.utilities.Zone;
  */
 public final class MinionComponent implements Component {
 
-	// simple uri defining an icon
-	public String icon;
-	// personal name for the minion, not set in prefab!
-	public String name = "unknown";
-	// minion type, eg : oreoBuilder, needs to be defined in prefab
-	public String flavortext = "unknown";
-        // skin to shown when minion is selected, eg : Oreons:OreonSkinSelected, needs to be defined in prefab
-        public String selectedSkin = null;
-        // skin to shown when minion is not selected, eg : Oreons:OreonSkin, needs to be defined in prefab
-        public String unselectedSkin = null;
+    // simple uri defining an icon
+    public String icon;
+    // personal name for the minion, not set in prefab!
+    public String name = "unknown";
+    // minion type, eg : oreoBuilder, needs to be defined in prefab
+    public String flavortext = "unknown";
+    // skin to shown when minion is selected, eg : Oreons:OreonSkinSelected, needs to be defined in prefab
+    public String selectedSkin = null;
+    // skin to shown when minion is not selected, eg : Oreons:OreonSkin, needs to be defined in prefab
+    public String unselectedSkin = null;
 
-	
-	// used by minionsystem, init at stay normally
-	public MinionBehaviour minionBehaviour = MinionBehaviour.Stay;
-	
-	public boolean dying = false;
-	
-	//stats
-	public int Health;
-	public int HealthTotal;
-	public int Hunger;
-	public int Hungertotal;
-	public int Stamina;
-	public int Staminatotal;
-	
-	//determines an action point for the minion
-	public Zone assignedzone;
-	//the recipe to craft when working
-	public MinionRecipe assignedrecipe;
+    // used by minionsystem, init at stay normally
+    public MinionBehaviour minionBehaviour = MinionBehaviour.Stay;
 
-	public MinionComponent() {
-		
-	}
+    public boolean dying = false;
+
+    //stats
+    public int Health;
+    public int HealthTotal;
+    public int Hunger;
+    public int Hungertotal;
+    public int Stamina;
+    public int Staminatotal;
+
+    //determines an action point for the minion
+    public Zone assignedzone;
+    //the recipe to craft when working
+    public MinionRecipe assignedrecipe;
+
+    public MinionComponent() {
+
+    }
 
 }

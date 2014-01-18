@@ -45,219 +45,219 @@ import org.terasology.rendering.gui.widgets.UILabel;
  */
 public class UIModButtonArrow extends UIDisplayContainer {
 
-	public enum ButtonType {
-		LEFT, RIGHT, UP, DOWN
-	};
-	private UILabel hoverlabel;
-	private boolean mouseover = false;
-	private final List<ChangedListener> changedListeners = new ArrayList<ChangedListener>();
-	private final Map<String, Vector2f[]> states = new HashMap<String, Vector2f[]>();
+    public enum ButtonType {
+        LEFT, RIGHT, UP, DOWN
+    };
 
-	/**
-	 * Create a simple button, where 2 types are possible. The normal button and
-	 * the toggle button.
-	 * 
-	 * @param size
-	 *            The size of the button.
-	 * @param buttontype
-	 *            The type of the button which can be normal or toggle.
-	 */
-	public UIModButtonArrow(Vector2f size, ButtonType buttontype) {
-		setSize(size);
+    private UILabel hoverlabel;
+    private boolean mouseover = false;
+    private final List<ChangedListener> changedListeners = new ArrayList<ChangedListener>();
+    private final Map<String, Vector2f[]> states = new HashMap<String, Vector2f[]>();
 
-		// default arrow buttons
-		setTexture("miniion:Arrows2");
-		switch(buttontype){
-			case LEFT :{
-				setNormalState(new Vector2f(0.0f, 0.0f), new Vector2f(12f, 23f));
-				setHoverState(new Vector2f(12f, 0.0f), new Vector2f(12f, 23f));
-				setPressedState(new Vector2f(24f, 0.0f), new Vector2f(12f, 23f));
-				break;
-			}
-			case RIGHT :{
-				setNormalState(new Vector2f(0.0f, 23f), new Vector2f(12f, 23f));
-				setHoverState(new Vector2f(12f, 23f), new Vector2f(12f, 23f));
-				setPressedState(new Vector2f(24f, 23f), new Vector2f(12f, 23f));
-				break;
-			}
-			case UP: {
-				setNormalState(new Vector2f(23f, 46f), new Vector2f(23f, 12f));
-				setHoverState(new Vector2f(23f, 58f), new Vector2f(23f, 12f));
-				setPressedState(new Vector2f(23f, 70f), new Vector2f(23f, 12f));
-				break;
-			}
-			case DOWN : {
-				setNormalState(new Vector2f(0.0f, 46f), new Vector2f(23f, 12f));
-				setHoverState(new Vector2f(0.0f, 58f), new Vector2f(23f, 12f));
-				setPressedState(new Vector2f(0.0f, 70f), new Vector2f(23f, 12f));
-				break;
-			}
-			default : {
-				setNormalState(new Vector2f(0.0f, 0.0f), new Vector2f(12f, 23f));
-				setHoverState(new Vector2f(12f, 0.0f), new Vector2f(12f, 23f));
-				setPressedState(new Vector2f(24f, 0.0f), new Vector2f(12f, 23f));
-				break;
-			} 
-		}		
-		
+    /**
+     * Create a simple button, where 2 types are possible. The normal button and
+     * the toggle button.
+     * 
+     * @param size
+     *            The size of the button.
+     * @param buttontype
+     *            The type of the button which can be normal or toggle.
+     */
+    public UIModButtonArrow(Vector2f size, ButtonType buttontype) {
+        setSize(size);
 
-		// default state
-		setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
+        // default arrow buttons
+        setTexture("miniion:Arrows2");
+        switch (buttontype) {
+            case LEFT: {
+                setNormalState(new Vector2f(0.0f, 0.0f), new Vector2f(12f, 23f));
+                setHoverState(new Vector2f(12f, 0.0f), new Vector2f(12f, 23f));
+                setPressedState(new Vector2f(24f, 0.0f), new Vector2f(12f, 23f));
+                break;
+            }
+            case RIGHT: {
+                setNormalState(new Vector2f(0.0f, 23f), new Vector2f(12f, 23f));
+                setHoverState(new Vector2f(12f, 23f), new Vector2f(12f, 23f));
+                setPressedState(new Vector2f(24f, 23f), new Vector2f(12f, 23f));
+                break;
+            }
+            case UP: {
+                setNormalState(new Vector2f(23f, 46f), new Vector2f(23f, 12f));
+                setHoverState(new Vector2f(23f, 58f), new Vector2f(23f, 12f));
+                setPressedState(new Vector2f(23f, 70f), new Vector2f(23f, 12f));
+                break;
+            }
+            case DOWN: {
+                setNormalState(new Vector2f(0.0f, 46f), new Vector2f(23f, 12f));
+                setHoverState(new Vector2f(0.0f, 58f), new Vector2f(23f, 12f));
+                setPressedState(new Vector2f(0.0f, 70f), new Vector2f(23f, 12f));
+                break;
+            }
+            default: {
+                setNormalState(new Vector2f(0.0f, 0.0f), new Vector2f(12f, 23f));
+                setHoverState(new Vector2f(12f, 0.0f), new Vector2f(12f, 23f));
+                setPressedState(new Vector2f(24f, 0.0f), new Vector2f(12f, 23f));
+                break;
+            }
+        }
 
-		addMouseMoveListener(new MouseMoveListener() {
-			@Override
-			public void leave(UIDisplayElement element) {
-				setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
-				if(hoverlabel != null){
-					hoverlabel.setVisible(false);
-					mouseover = false;
-				}
-			}
+        // default state
+        setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
 
-			@Override
-			public void hover(UIDisplayElement element) {
+        addMouseMoveListener(new MouseMoveListener() {
+            @Override
+            public void leave(UIDisplayElement element) {
+                setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
+                if (hoverlabel != null) {
+                    hoverlabel.setVisible(false);
+                    mouseover = false;
+                }
+            }
 
-			}
+            @Override
+            public void hover(UIDisplayElement element) {
 
-			@Override
-			public void enter(UIDisplayElement element) {
-				CoreRegistry.get(AudioManager.class).playSound(Assets.getSound("engine:click"), 1.0f);
-				setBackgroundImage(states.get("hover")[0], states.get("hover")[1]);
-				if(hoverlabel != null){
-					hoverlabel.setVisible(true);
-					mouseover = true;
-				}
-			}
+            }
 
-			@Override
-			public void move(UIDisplayElement element) {
+            @Override
+            public void enter(UIDisplayElement element) {
+                CoreRegistry.get(AudioManager.class).playSound(Assets.getSound("engine:click"), 1.0f);
+                setBackgroundImage(states.get("hover")[0], states.get("hover")[1]);
+                if (hoverlabel != null) {
+                    hoverlabel.setVisible(true);
+                    mouseover = true;
+                }
+            }
 
-			}
-		});
+            @Override
+            public void move(UIDisplayElement element) {
 
-		addMouseButtonListener(new MouseButtonListener() {
-			@Override
-			public void up(UIDisplayElement element, int button, boolean intersect) {
-				if (intersect) {
-					setBackgroundImage(states.get("hover")[0],	states.get("hover")[1]);					
-				}else{
-					setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
-				}
-			}
+            }
+        });
 
-			@Override
-			public void down(UIDisplayElement element, int button, boolean intersect) {
-				if (intersect) {
-					setBackgroundImage(states.get("pressed")[0], states.get("pressed")[1]);
-				}
-			}
+        addMouseButtonListener(new MouseButtonListener() {
+            @Override
+            public void up(UIDisplayElement element, int button, boolean intersect) {
+                if (intersect) {
+                    setBackgroundImage(states.get("hover")[0], states.get("hover")[1]);
+                } else {
+                    setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
+                }
+            }
 
-			@Override
-			public void wheel(UIDisplayElement element, int wheel,
-					boolean intersect) {
+            @Override
+            public void down(UIDisplayElement element, int button, boolean intersect) {
+                if (intersect) {
+                    setBackgroundImage(states.get("pressed")[0], states.get("pressed")[1]);
+                }
+            }
 
-			}
-		});
+            @Override
+            public void wheel(UIDisplayElement element, int wheel,
+                              boolean intersect) {
 
-	}
-	
-	public UIModButtonArrow(Vector2f size, ButtonType buttontype, String Hovertext) {
-		this(size,buttontype);
-		hoverlabel = new UILabel(Hovertext);
-		hoverlabel.setPosition(new Vector2f((this.getPosition().x - Hovertext.length() * 2), (this.getPosition().y - 18)));
-		hoverlabel.setVisible(false);
-		addDisplayElement(hoverlabel);
-	}
+            }
+        });
 
-	public void setColorOffset(int offset, ButtonType buttontype) {
-		switch(buttontype)
-		{
-			case UP : {
-				setNormalState(new Vector2f(0.0f, offset), new Vector2f(23f, 12f));
-				break;
-			}
-			case DOWN : {
-				setNormalState(new Vector2f(0.0f, offset), new Vector2f(23f, 12f));
-				break;
-			}
-			default : {
-				setNormalState(new Vector2f(0.0f, offset), new Vector2f(12f, 23f));
-			}		
-		}
-	}
+    }
 
-	/**
-	 * Set the texture of the button. Use setNormalTexture, setHoverTexture and
-	 * setPressedTexture to configure the texture origin and size of the
-	 * different states.
-	 * 
-	 * @param texture
-	 *            The texture to load by the AssetManager.
-	 */
-	public void setTexture(String texture) {
-		setBackgroundImage(texture);
-	}
+    public UIModButtonArrow(Vector2f size, ButtonType buttontype, String Hovertext) {
+        this(size, buttontype);
+        hoverlabel = new UILabel(Hovertext);
+        hoverlabel.setPosition(new Vector2f((this.getPosition().x - Hovertext.length() * 2), (this.getPosition().y - 18)));
+        hoverlabel.setVisible(false);
+        addDisplayElement(hoverlabel);
+    }
 
-	/**
-	 * Set the normal states texture origin and size. Set the texture by using
-	 * setTexture.
-	 * 
-	 * @param origin
-	 *            The origin.
-	 * @param size
-	 *            The size.
-	 */
-	public void setNormalState(Vector2f origin, Vector2f size) {
-		states.remove("normal");
-		states.put("normal", new Vector2f[] { origin, size });
+    public void setColorOffset(int offset, ButtonType buttontype) {
+        switch (buttontype)
+        {
+            case UP: {
+                setNormalState(new Vector2f(0.0f, offset), new Vector2f(23f, 12f));
+                break;
+            }
+            case DOWN: {
+                setNormalState(new Vector2f(0.0f, offset), new Vector2f(23f, 12f));
+                break;
+            }
+            default: {
+                setNormalState(new Vector2f(0.0f, offset), new Vector2f(12f, 23f));
+            }
+        }
+    }
 
-		// set default state
-		setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
-	}
+    /**
+     * Set the texture of the button. Use setNormalTexture, setHoverTexture and
+     * setPressedTexture to configure the texture origin and size of the
+     * different states.
+     * 
+     * @param texture
+     *            The texture to load by the AssetManager.
+     */
+    public void setTexture(String texture) {
+        setBackgroundImage(texture);
+    }
 
-	/**
-	 * Set the hover states texture origin and size. Set the texture by using
-	 * setTexture. In toggle mode this texture will be ignored.
-	 * 
-	 * @param origin
-	 *            The origin.
-	 * @param size
-	 *            The size.
-	 */
-	public void setHoverState(Vector2f origin, Vector2f size) {
-		states.remove("hover");
-		states.put("hover", new Vector2f[] { origin, size });
+    /**
+     * Set the normal states texture origin and size. Set the texture by using
+     * setTexture.
+     * 
+     * @param origin
+     *            The origin.
+     * @param size
+     *            The size.
+     */
+    public void setNormalState(Vector2f origin, Vector2f size) {
+        states.remove("normal");
+        states.put("normal", new Vector2f[]{origin, size});
 
-		// set default state
-		setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
-	}
+        // set default state
+        setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
+    }
 
-	/**
-	 * Set the pressed states texture origin and size. Set the texture by using
-	 * setTexture.
-	 * 
-	 * @param origin
-	 *            The origin.
-	 * @param size
-	 *            The size.
-	 */
-	public void setPressedState(Vector2f origin, Vector2f size) {
-		states.remove("pressed");
-		states.put("pressed", new Vector2f[] { origin, size });
+    /**
+     * Set the hover states texture origin and size. Set the texture by using
+     * setTexture. In toggle mode this texture will be ignored.
+     * 
+     * @param origin
+     *            The origin.
+     * @param size
+     *            The size.
+     */
+    public void setHoverState(Vector2f origin, Vector2f size) {
+        states.remove("hover");
+        states.put("hover", new Vector2f[]{origin, size});
 
-		// set default state
-		setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
-	}
+        // set default state
+        setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
+    }
 
-	public void addChangedListener(ChangedListener listener) {
-		changedListeners.add(listener);
-	}
+    /**
+     * Set the pressed states texture origin and size. Set the texture by using
+     * setTexture.
+     * 
+     * @param origin
+     *            The origin.
+     * @param size
+     *            The size.
+     */
+    public void setPressedState(Vector2f origin, Vector2f size) {
+        states.remove("pressed");
+        states.put("pressed", new Vector2f[]{origin, size});
 
-	public void removeChangedListener(ChangedListener listener) {
-		changedListeners.remove(listener);
-	}
-	
-	public boolean isMouseOver(){
-		return mouseover;
-	}
+        // set default state
+        setBackgroundImage(states.get("normal")[0], states.get("normal")[1]);
+    }
+
+    public void addChangedListener(ChangedListener listener) {
+        changedListeners.add(listener);
+    }
+
+    public void removeChangedListener(ChangedListener listener) {
+        changedListeners.remove(listener);
+    }
+
+    public boolean isMouseOver() {
+        return mouseover;
+    }
 }

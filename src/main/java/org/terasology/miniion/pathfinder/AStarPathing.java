@@ -141,7 +141,6 @@ public class AStarPathing extends Pathfinder {
 
         PathNode node = targetNode;
 
-
         while (node != null) {
             if (node.parent == null) { // skip starting node
                 node = node.parent; //skipping the first point in the list

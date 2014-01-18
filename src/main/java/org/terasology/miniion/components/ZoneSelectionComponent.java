@@ -20,7 +20,7 @@ import org.terasology.math.Vector3i;
 import org.terasology.miniion.minionenum.ZoneType;
 
 public class ZoneSelectionComponent implements Component {
-	public Vector3i startpos;
-	public Vector3i endpos;
-	public ZoneType zonetype;
+    public Vector3i startpos;
+    public Vector3i endpos;
+    public ZoneType zonetype;
 }

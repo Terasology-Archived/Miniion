@@ -37,7 +37,7 @@ public class CharacterMovementSystem implements UpdateSubscriberSystem {
     private LocalPlayer localPlayer;
     @In
     private EntityManager entityManager;
-    
+
     private int inputSequenceNumber = 1;
 
     @Override
@@ -63,8 +63,8 @@ public class CharacterMovementSystem implements UpdateSubscriberSystem {
             boolean isRunning = false; // not sure how to determine this yet
             boolean jumpRequested = characterMovementComponent.jump;
             entity.send(new CharacterMoveInputEvent(inputSequenceNumber++, characterComp.pitch, characterComp.yaw,
-                        characterMovementComponent.getVelocity(),
-                        isRunning, jumpRequested));
+                    characterMovementComponent.getVelocity(),
+                    isRunning, jumpRequested));
         }
     }
 

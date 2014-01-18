@@ -47,5 +47,3 @@ public enum MinionMessageType {
         }
     }
 }
-
-

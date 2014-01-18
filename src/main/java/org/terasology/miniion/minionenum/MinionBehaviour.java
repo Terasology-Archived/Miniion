@@ -23,7 +23,7 @@ package org.terasology.miniion.minionenum;
  * To change this template use File | Settings | File Templates.
  */
 public enum MinionBehaviour {
-	Stay,
+    Stay,
     Follow,
     Attack,
     Die,

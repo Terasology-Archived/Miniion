@@ -1,4 +1,3 @@
-
 package org.terasology.miniion.components;
 
 import org.terasology.entitySystem.Component;
