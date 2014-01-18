@@ -25,6 +25,8 @@ import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.miniion.minionenum.ZoneType;
 import org.terasology.miniion.utilities.Zone;
+import org.terasology.rendering.assets.texture.Texture;
+import org.terasology.rendering.assets.texture.TextureUtil;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
 import org.terasology.rendering.gui.framework.events.ClickListener;
 import org.terasology.rendering.gui.widgets.UIComboBox;
@@ -37,6 +39,7 @@ import org.terasology.rendering.gui.widgets.UIWindow;
 import org.terasology.rendering.nui.Color;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
+import org.terasology.world.selection.BlockSelectionComponent;
 
 public class UIZoneBook extends UIWindow {
 	/*
@@ -52,6 +55,8 @@ public class UIZoneBook extends UIWindow {
 	private UIModButton btnSave, btnDelete, btnBack;
 	//private EntityRef zoneselection;
 	private boolean newzonefound;
+	
+	private Zone lastSelectedZone;
 	
 	private ClickListener zonelistener = new ClickListener() {		
 		@Override
@@ -154,6 +159,7 @@ public class UIZoneBook extends UIWindow {
 					cmbType.setVisible(false);
 				}
 				lblError.setText("");
+				hideSelectedZone();
 				Zone zone = (Zone)listitem.getValue();
 				txtzonename.setText(zone.Name);
 				txtheight.setText("" + zone.zoneheight);
@@ -180,6 +186,8 @@ public class UIZoneBook extends UIWindow {
 				
 				btnSave.setVisible(false);
 				btnDelete.setVisible(true);
+				lastSelectedZone = zone;
+                                showSelectedZone();
 			}
 		}
 	};
@@ -391,8 +399,8 @@ public class UIZoneBook extends UIWindow {
 		} catch (NumberFormatException e) {
 			return;
 		}
-		Zone newzone = new Zone(MinionSystem.getNewZone().getStartPosition(),
-								MinionSystem.getNewZone().getEndPosition());
+		Zone newzone = MinionSystem.getNewZone();
+
 		newzone.Name = txtzonename.getText();
 		newzone.zoneheight = Integer.parseInt(txtheight.getText());
 		newzone.zonewidth = Integer.parseInt(txtwidth.getText());
@@ -406,28 +414,35 @@ public class UIZoneBook extends UIWindow {
 		newzonefound = false;
 		lblzonetype.setText("");
 		MinionSystem.setNewZone(null);
+		lastSelectedZone = newzone;
+                showSelectedZone();
 		this.close();
 	}
 	
 	private void executeDelClick(UIDisplayElement element, int id, Zone deletezone) {
 		switch(deletezone.zonetype){
 			case Gather : {
+                                hideSelectedZone(deletezone);
 				MinionSystem.getGatherZoneList().remove(deletezone);
 				break;
 			}
 			case Work : {
+                                hideSelectedZone(deletezone);
 				MinionSystem.getWorkZoneList().remove(deletezone);
 				break;
 			}
 			case Terraform : {
+                                hideSelectedZone(deletezone);
 				MinionSystem.getTerraformZoneList().remove(deletezone);
 				break;
 			}
 			case Storage : {
+                                hideSelectedZone(deletezone);
 				MinionSystem.getStorageZoneList().remove(deletezone);
 				break;
 			}
 			case OreonFarm : {
+                                hideSelectedZone(deletezone);
 				MinionSystem.getOreonFarmZoneList().remove(deletezone);
 				break;
 			}
@@ -578,4 +593,29 @@ public class UIZoneBook extends UIWindow {
 		}
 		return width;
 	}
+
+    private void hideSelectedZone() {
+        hideSelectedZone(lastSelectedZone);
+    }
+
+    private void hideSelectedZone(Zone zone) {
+        if (null != zone) {
+            BlockSelectionComponent blockSelectionComponent = zone.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+            blockSelectionComponent.shouldRender = false;
+        }
+    }
+
+    private void showSelectedZone() {
+        if (null != lastSelectedZone) {
+            BlockSelectionComponent blockSelectionComponent = lastSelectedZone.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+            blockSelectionComponent.texture = Assets.get(TextureUtil.getTextureUriForColor(new java.awt.Color(255,255,0,100)), Texture.class);
+            blockSelectionComponent.shouldRender = true;
+        }
+    }
+    
+    public void shutdown() {
+        hideSelectedZone();
+        lastSelectedZone = null;
+        super.shutdown();
+    }
 }

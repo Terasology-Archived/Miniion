@@ -67,7 +67,7 @@ public class Zone {
         }
 
         // TODO: should be replaced by a region
-        public Zone(Vector3i startposition, Vector3i endposition) {
+        private Zone(Vector3i startposition, Vector3i endposition) {
                 this();
                 this.startposition = startposition;
                 this.endposition = endposition;
