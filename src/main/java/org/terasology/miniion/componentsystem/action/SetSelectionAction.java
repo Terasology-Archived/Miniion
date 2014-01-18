@@ -45,12 +45,6 @@ public class SetSelectionAction implements ComponentSystem {
     @ReceiveEvent
     public void onSelection(ApplyBlockSelectionEvent event, EntityRef entity) {
         // TODO: this should be done with a new zone event, not method calls
-        Region3i selectedRegion = event.getSelection();
-        ZoneComponent zoneComponent = new ZoneComponent(selectedRegion);
-        // TODO: should include BlockSelectionComponent eventually instead of being part of ZoneComponent
-        EntityRef newZone = entityManager.create(zoneComponent);
-        // we do not persist the temporary zone selection
-        // newZone.saveComponent(zoneComponent);
-        MinionSystem.setNewZone(newZone);
+        MinionSystem.setCurrentBlockSelectionRegion(event.getSelection());
     }
 }

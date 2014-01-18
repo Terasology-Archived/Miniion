@@ -37,6 +37,7 @@ import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.manager.GUIManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
+import org.terasology.math.Region3i;
 import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.ZoneComponent;
@@ -77,7 +78,7 @@ public class MinionSystem implements ComponentSystem {
     private static EntityRef activeminion;
     // TODO : a better way to save / load zones, but it does the trick
     private static EntityRef zonelist = EntityRef.NULL;
-    private static EntityRef newzone = EntityRef.NULL;
+    private static EntityRef currentBlockSelectionEntity = EntityRef.NULL;
 
     private static List<MinionRecipe> recipeslist = new ArrayList<MinionRecipe>();
 
@@ -201,29 +202,37 @@ public class MinionSystem implements ComponentSystem {
         return activeminion;
     }
 
-    public static void setNewZone(EntityRef zone) {
-        if ((newzone != EntityRef.NULL) && (!newzone.equals(zone))) {
-            ZoneComponent newZoneComponent = newzone.getComponent(ZoneComponent.class);
-            BlockSelectionComponent selection = newZoneComponent.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
-            selection.shouldRender = false;
-            // TODO: we don't want to persist this zone's block selection yet as the zone isn't persisted
-            // newZoneComponent.blockSelectionEntity.saveComponent(selection);
-        }
-        newzone = zone;
-
-        if (newzone != EntityRef.NULL) {
-            ZoneComponent newZoneComponent = newzone.getComponent(ZoneComponent.class);
-            BlockSelectionComponent selection = newZoneComponent.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
-            selection.shouldRender = true;
+    public static void setCurrentBlockSelectionRegion(Region3i currentBlockSelectionRegion) {
+        
+        BlockSelectionComponent blockSelectionComponent;
+        if (currentBlockSelectionEntity == EntityRef.NULL) {
+            EntityManager entityManager = CoreRegistry.get(EntityManager.class);
+            blockSelectionComponent = new BlockSelectionComponent();
             Color transparentGreen = new Color(0, 255, 0, 100);
-            selection.texture = Assets.get(TextureUtil.getTextureUriForColor(transparentGreen), Texture.class);
-            // TODO: we don't want to persist this zone's block selection yet as the zone isn't persisted
-            // newZoneComponent.blockSelectionEntity.saveComponent(selection);
+            blockSelectionComponent.texture = Assets.get(TextureUtil.getTextureUriForColor(transparentGreen), Texture.class);
+            currentBlockSelectionEntity = entityManager.create(blockSelectionComponent);
+        } else {
+            blockSelectionComponent = currentBlockSelectionEntity.getComponent(BlockSelectionComponent.class);
         }
+
+        blockSelectionComponent.currentSelection = currentBlockSelectionRegion;
+        if (null != currentBlockSelectionRegion) {
+            blockSelectionComponent.shouldRender = true;
+        } else {
+            blockSelectionComponent.shouldRender = false;
+        }
+
+        // TODO: it would be better if we didn't persist this entity and block selection component
+        currentBlockSelectionEntity.saveComponent(blockSelectionComponent);
     }
 
-    public static EntityRef getNewZone() {
-        return newzone;
+    public static Region3i getCurrentBlockSelectionRegion() {
+        if (currentBlockSelectionEntity == EntityRef.NULL) {
+            return null;
+        } else {
+            BlockSelectionComponent selection = currentBlockSelectionEntity.getComponent(BlockSelectionComponent.class);
+            return selection.currentSelection;
+        }
     }
 
     /**

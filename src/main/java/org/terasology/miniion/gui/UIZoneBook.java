@@ -24,6 +24,8 @@ import org.terasology.asset.Assets;
 import org.terasology.engine.CoreRegistry;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.math.Region3i;
+import org.terasology.math.Vector3i;
 import org.terasology.miniion.components.ZoneComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.miniion.gui.UIModButton.ButtonType;
@@ -43,6 +45,8 @@ import org.terasology.rendering.nui.Color;
 import org.terasology.world.selection.BlockSelectionComponent;
 
 public class UIZoneBook extends UIWindow {
+    private static final int MAX_SELECTED_BOUNDS = 50;
+
     /*
      * @In private LocalPlayer localPlayer;
      * 
@@ -54,8 +58,6 @@ public class UIZoneBook extends UIWindow {
     private final UIComboBox cmbType;
     private UIList uizonelistgroup, uizonelist;
     private UIModButton btnSave, btnDelete, btnBack;
-    //private EntityRef zoneselection;
-    private boolean newzonefound;
 
     private EntityRef lastSelectedZone = EntityRef.NULL;
 
@@ -291,12 +293,10 @@ public class UIZoneBook extends UIWindow {
 
     private void saveMinion(UIDisplayElement element, int id) {
         lblError.setText("");
-        if (MinionSystem.getNewZone() == EntityRef.NULL) {
-            newzonefound = false;
+        if (null == MinionSystem.getCurrentBlockSelectionRegion()) {
             lblError.setText("Something went wrong. Please close the book and recreate the selection.");
         }
-        if ((!cmbType.isVisible()) && MinionSystem.getNewZone() == EntityRef.NULL) {
-            newzonefound = false;
+        if ((!cmbType.isVisible())) {
             this.close();
         }
         if (cmbType.isVisible() && cmbType.getSelection() == null) {
@@ -310,9 +310,8 @@ public class UIZoneBook extends UIWindow {
         if (cmbType.isVisible() && cmbType.getSelection() != null) {
             ZoneType zoneType = ZoneType.valueOf(cmbType.getSelection().getText());
             if (zoneType == ZoneType.OreonFarm) {
-                ZoneComponent zoneComponent = MinionSystem.getNewZone().getComponent(ZoneComponent.class);
-                if (zoneComponent.getMinBounds().y != zoneComponent.getMaxBounds().y) {
-                    newzonefound = false;
+                Region3i region = MinionSystem.getCurrentBlockSelectionRegion();
+                if (region.min().y != region.max().y) {
                     lblError.setText("A farm zone needs to be level. Please select a flat zone and try again");
                     return;
                 }
@@ -355,21 +354,28 @@ public class UIZoneBook extends UIWindow {
             return;
         }
 
-        EntityRef newzone = MinionSystem.getNewZone();
-        ZoneComponent zoneComponent = newzone.getComponent(ZoneComponent.class);
+        Region3i newZoneRegion = MinionSystem.getCurrentBlockSelectionRegion();
+        Vector3i min = newZoneRegion.min();
+        Vector3i newSize = new Vector3i(zonedepth, zoneheight, zonewidth);
+        newZoneRegion = Region3i.createFromMinAndSize(min, newSize);
+
+        ZoneComponent zoneComponent = new ZoneComponent(newZoneRegion);
+
+        BlockSelectionComponent blockSelectionComponent = new BlockSelectionComponent();
+        blockSelectionComponent.currentSelection = newZoneRegion;
+        blockSelectionComponent.shouldRender = false;
 
         zoneComponent.Name = newZoneName;
-        zoneComponent.resizeTo(zoneheight, zonedepth, zonewidth);
         zoneComponent.zonetype = ZoneType.valueOf(cmbType.getSelection().getText());
+        
+        EntityRef newzone = entityManager.create(zoneComponent, blockSelectionComponent);
+
         newzone.saveComponent(zoneComponent);
-        BlockSelectionComponent blockSelection = zoneComponent.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
-        blockSelection.shouldRender = false;
-        blockSelection.texture = null;
-        zoneComponent.blockSelectionEntity.saveComponent(blockSelection);
+        newzone.saveComponent(blockSelectionComponent);
+        
         MinionSystem.addZone(newzone);
-        newzonefound = false;
         lblzonetype.setText("");
-        MinionSystem.setNewZone(EntityRef.NULL);
+        MinionSystem.setCurrentBlockSelectionRegion(null);
         lastSelectedZone = newzone;
         showSelectedZone();
         this.close();
@@ -413,17 +419,52 @@ public class UIZoneBook extends UIWindow {
         fillUI();
     }
 
+    public boolean outofboundselection(Region3i region) {
+        boolean retval = false;
+        if (getAbsoluteDiff(region.min().x, region.max().x) > MAX_SELECTED_BOUNDS) {
+            retval = true;
+        }
+        if (getAbsoluteDiff(region.min().y, region.max().y) > MAX_SELECTED_BOUNDS) {
+            retval = true;
+        }
+        if (getAbsoluteDiff(region.min().z, region.max().z) > MAX_SELECTED_BOUNDS) {
+            retval = true;
+        }
+        return retval;
+    }
+
+    private int getAbsoluteDiff(int val1, int val2) {
+        int width;
+        if (val1 == val2) {
+            width = 1;
+        } else if (val1 < 0) {
+            if (val2 < 0 && val2 < val1) {
+                width = Math.abs(val2) - Math.abs(val1);
+            } else if (val2 < 0 && val2 > val1) {
+                width = Math.abs(val1) - Math.abs(val2);
+            } else {
+                width = Math.abs(val1) + val2;
+            }
+            width++;
+        } else {
+            if (val2 > -1 && val2 < val1) {
+                width = val1 - val2;
+            } else if (val2 > -1 && val2 > val1) {
+                width = val2 - val1;
+            } else {
+                width = Math.abs(val2) + val1;
+            }
+            width++;
+        }
+        return width;
+    }
+
     private void fillUI() {
         initList();
         resetInput();
 
-        EntityRef newZone = MinionSystem.getNewZone();
-        if (newZone != EntityRef.NULL) {
-            newzonefound = true;
-            ZoneComponent zoneComponent = newZone.getComponent(ZoneComponent.class);
-            zoneComponent.zonetype = ZoneType.Gather;
-            newZone.saveComponent(zoneComponent);
-
+        Region3i currentSelectedRegion = MinionSystem.getCurrentBlockSelectionRegion();
+        if (null != currentSelectedRegion) {
             EntityManager entityManager = CoreRegistry.get(EntityManager.class);
             // TODO: this should really be a count of active zones owned by this player
             int zoneCount = entityManager.getCountOfEntitiesWith(ZoneComponent.class);
@@ -431,13 +472,11 @@ public class UIZoneBook extends UIWindow {
             txtzonename.setText("Zone" + String.valueOf(zoneCount));
             lblzonetype.setText("ZoneType :");
             cmbType.setVisible(true);
-            txtwidth.setText(String.valueOf(zoneComponent.getZoneWidth()));
-            txtdepth.setText(String.valueOf(zoneComponent.getZoneDepth()));
-            txtheight.setText(String.valueOf(zoneComponent.getZoneHeight()));
-        }
-        if (newzonefound) {
-            ZoneComponent zoneComponent = newZone.getComponent(ZoneComponent.class);
-            if (zoneComponent.outofboundselection()) {
+            txtwidth.setText(String.valueOf(ZoneComponent.getZoneWidth(currentSelectedRegion)));
+            txtdepth.setText(String.valueOf(ZoneComponent.getZoneDepth(currentSelectedRegion)));
+            txtheight.setText(String.valueOf(ZoneComponent.getZoneHeight(currentSelectedRegion)));
+
+            if (outofboundselection(currentSelectedRegion)) {
                 btnSave.setVisible(true);
                 lblError.setText("The zone is to big to be saved, depth, width, height should not exceed 50");
             }
@@ -445,7 +484,6 @@ public class UIZoneBook extends UIWindow {
                 btnSave.setVisible(true);
             }
             btnDelete.setVisible(false);
-
         }
     }
 
@@ -482,7 +520,6 @@ public class UIZoneBook extends UIWindow {
         txtdepth.setText("");
         lblzonetype.setText("");
         lblError.setText("");
-        newzonefound = false;
         btnSave.setVisible(false);
         btnDelete.setVisible(false);
     }
@@ -493,17 +530,15 @@ public class UIZoneBook extends UIWindow {
 
     private void hideSelectedZone(EntityRef zone) {
         if (EntityRef.NULL != zone) {
-            ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-            BlockSelectionComponent blockSelectionComponent = zoneComponent.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+            BlockSelectionComponent blockSelectionComponent = zone.getComponent(BlockSelectionComponent.class);
             blockSelectionComponent.shouldRender = false;
-            zoneComponent.blockSelectionEntity.saveComponent(blockSelectionComponent);
+            zone.saveComponent(blockSelectionComponent);
         }
     }
 
     private void showSelectedZone() {
         if (EntityRef.NULL != lastSelectedZone) {
-            ZoneComponent zoneComponent = lastSelectedZone.getComponent(ZoneComponent.class);
-            BlockSelectionComponent blockSelectionComponent = zoneComponent.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+            BlockSelectionComponent blockSelectionComponent = lastSelectedZone.getComponent(BlockSelectionComponent.class);
             blockSelectionComponent.texture = Assets.get(TextureUtil.getTextureUriForColor(new java.awt.Color(255, 255, 0, 100)), Texture.class);
             blockSelectionComponent.shouldRender = true;
             // we probably don't want to save a selected zone rendering state as on

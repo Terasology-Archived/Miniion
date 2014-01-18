@@ -15,21 +15,15 @@
  */
 package org.terasology.miniion.components;
 
-import org.terasology.engine.CoreRegistry;
 import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.math.Region3i;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.minionenum.ZoneType;
-import org.terasology.world.selection.BlockSelectionComponent;
 
 public final class ZoneComponent implements Component {
 
-    private static final int MAX_SELECTED_BOUNDS = 50;
-
-    public EntityRef blockSelectionEntity = EntityRef.NULL;
-
+    private Region3i region;
+    
     public String Name;
     public ZoneType zonetype;
 
@@ -37,11 +31,7 @@ public final class ZoneComponent implements Component {
     }
     
     public ZoneComponent(Region3i region) {
-        EntityManager entityManager = CoreRegistry.get(EntityManager.class);
-        blockSelectionEntity = entityManager.create(new BlockSelectionComponent());
-        BlockSelectionComponent selection = blockSelectionEntity.getComponent(BlockSelectionComponent.class);
-        selection.currentSelection = region;
-        selection.shouldRender = false;
+        this.region = region;
     }
 
     public Vector3i getMinBounds() {
@@ -52,52 +42,8 @@ public final class ZoneComponent implements Component {
         return getBlockSelectionRegion().max();
     }
 
-    public boolean outofboundselection() {
-        boolean retval = false;
-        if (getAbsoluteDiff(getMinBounds().x, getMaxBounds().x) > MAX_SELECTED_BOUNDS) {
-            retval = true;
-        }
-        if (getAbsoluteDiff(getMinBounds().y, getMaxBounds().y) > MAX_SELECTED_BOUNDS) {
-            retval = true;
-        }
-        if (getAbsoluteDiff(getMinBounds().z, getMaxBounds().z) > MAX_SELECTED_BOUNDS) {
-            retval = true;
-        }
-        return retval;
-    }
-
-    private int getAbsoluteDiff(int val1, int val2) {
-        int width;
-        if (val1 == val2) {
-            width = 1;
-        } else if (val1 < 0) {
-            if (val2 < 0 && val2 < val1) {
-                width = Math.abs(val2) - Math.abs(val1);
-            } else if (val2 < 0 && val2 > val1) {
-                width = Math.abs(val1) - Math.abs(val2);
-            } else {
-                width = Math.abs(val1) + val2;
-            }
-            width++;
-        } else {
-            if (val2 > -1 && val2 < val1) {
-                width = val1 - val2;
-            } else if (val2 > -1 && val2 > val1) {
-                width = val2 - val1;
-            } else {
-                width = Math.abs(val2) + val1;
-            }
-            width++;
-        }
-        return width;
-    }
-
-    public BlockSelectionComponent getBlockSelectionComponent() {
-        return blockSelectionEntity.getComponent(BlockSelectionComponent.class);
-    }
-
     public Region3i getBlockSelectionRegion() {
-        return getBlockSelectionComponent().currentSelection;
+        return region;
     }
 
     public Vector3i getStartPosition() {
@@ -105,25 +51,26 @@ public final class ZoneComponent implements Component {
     }
 
     public int getZoneHeight() {
-        Region3i region3i = getBlockSelectionRegion();
-        return region3i.size().y;
+        return getZoneHeight(getBlockSelectionRegion());
     }
 
     public int getZoneDepth() {
-        Region3i region3i = getBlockSelectionRegion();
-        return region3i.size().x;
+        return getZoneDepth(getBlockSelectionRegion());
     }
 
     public int getZoneWidth() {
-        Region3i region3i = getBlockSelectionRegion();
-        return region3i.size().z;
+        return getZoneWidth(getBlockSelectionRegion());
     }
 
-    public void resizeTo(int zoneheight, int zonedepth, int zonewidth) {
-        BlockSelectionComponent blockSelectionComponent = getBlockSelectionComponent();
-        Region3i region3i = blockSelectionComponent.currentSelection;
-        Vector3i min = region3i.min();
-        Vector3i newSize = new Vector3i(zonedepth, zoneheight, zonewidth);
-        blockSelectionComponent.currentSelection = Region3i.createFromMinAndSize(min, newSize);
+    public static int getZoneHeight(Region3i region3i) {
+        return region3i.size().y;
+    }
+
+    public static int getZoneDepth(Region3i region3i) {
+        return region3i.size().x;
+    }
+
+    public static int getZoneWidth(Region3i region3i) {
+        return region3i.size().z;
     }
 }
