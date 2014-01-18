@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.terasology.entitySystem.Component;
-import org.terasology.miniion.utilities.Zone;
+import org.terasology.entitySystem.entity.EntityRef;
 
 /**
  * Zonelist to be used exclusively by minionsystem no prefab should use this
@@ -29,9 +29,9 @@ import org.terasology.miniion.utilities.Zone;
  * 
  */
 public class ZoneListComponent implements Component {
-    public List<Zone> Gatherzones = new ArrayList<Zone>();
-    public List<Zone> Workzones = new ArrayList<Zone>();
-    public List<Zone> Terrazones = new ArrayList<Zone>();
-    public List<Zone> Storagezones = new ArrayList<Zone>();
-    public List<Zone> OreonFarmzones = new ArrayList<Zone>();
+    public List<EntityRef> Gatherzones = new ArrayList<EntityRef>();
+    public List<EntityRef> Workzones = new ArrayList<EntityRef>();
+    public List<EntityRef> Terrazones = new ArrayList<EntityRef>();
+    public List<EntityRef> Storagezones = new ArrayList<EntityRef>();
+    public List<EntityRef> OreonFarmzones = new ArrayList<EntityRef>();
 }

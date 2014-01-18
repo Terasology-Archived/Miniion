@@ -15,40 +15,42 @@
  */
 package org.terasology.miniion.componentsystem.action;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.ComponentSystem;
+import org.terasology.entitySystem.systems.In;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.selection.ApplyBlockSelectionEvent;
 import org.terasology.math.Region3i;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
-import org.terasology.miniion.utilities.Zone;
+import org.terasology.miniion.utilities.ZoneComponent;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SetSelectionAction implements ComponentSystem {
 
-    private static final Logger logger = LoggerFactory.getLogger(SetSelectionAction.class);
-
+    @In
+    private EntityManager entityManager;
+    
     @Override
     public void initialise() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void shutdown() {
-        // TODO Auto-generated method stub
-
     }
 
     @ReceiveEvent
     public void onSelection(ApplyBlockSelectionEvent event, EntityRef entity) {
         // TODO: this should be done with a new zone event, not method calls
         Region3i selectedRegion = event.getSelection();
-        Zone newzone = new Zone(selectedRegion);
-        MinionSystem.setNewZone(newzone);
+        ZoneComponent zoneComponent = new ZoneComponent(selectedRegion);
+        // TODO: should include BlockSelectionComponent eventually instead of being part of ZoneComponent
+        EntityRef newZone = entityManager.create(zoneComponent);
+        // we do not persist the temporary zone selection
+        // newZone.saveComponent(zoneComponent);
+        MinionSystem.setNewZone(newZone);
     }
 }

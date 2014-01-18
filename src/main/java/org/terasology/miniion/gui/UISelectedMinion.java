@@ -37,7 +37,7 @@ import org.terasology.rendering.gui.framework.events.ClickListener;
 import org.terasology.miniion.gui.UIModButton;
 import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.miniion.minionenum.MinionBehaviour;
-import org.terasology.miniion.utilities.Zone;
+import org.terasology.miniion.utilities.ZoneComponent;
 import org.terasology.rendering.gui.widgets.*;
 import org.terasology.rendering.icons.Icon;
 import org.terasology.rendering.nui.Color;
@@ -251,7 +251,7 @@ public class UISelectedMinion extends UICompositeScrollable {
                 aicomp.ClearCommands();
                 cell.minion.saveComponent(aicomp);
                 MinionComponent minioncomp = cell.minion.getComponent(MinionComponent.class);
-                minioncomp.assignedzone = null;
+                minioncomp.assignedZoneEntity = EntityRef.NULL;
                 cell.minion.saveComponent(minioncomp);
             }
         });
@@ -402,8 +402,9 @@ public class UISelectedMinion extends UICompositeScrollable {
      */
     private void setZone() {
         uizonelist.removeAll();
-        for (Zone zone : MinionSystem.getGatherZoneList()) {
-            UIListItem listitem = new UIListItem(zone.Name, zone);
+        for (EntityRef zone : MinionSystem.getGatherZoneList()) {
+            ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+            UIListItem listitem = new UIListItem(zoneComponent.Name, zone);
             listitem.setTextColor(Color.toColorString(Color.BLACK));
             uizonelist.addItem(listitem);
         }
@@ -414,9 +415,10 @@ public class UISelectedMinion extends UICompositeScrollable {
         if (uizonelist.getSelection() != null) {
             MinionComponent minioncomp = cell.minion
                     .getComponent(MinionComponent.class);
-            for (Zone zone : MinionSystem.getGatherZoneList()) {
-                if (zone.Name.matches(uizonelist.getSelection().getText())) {
-                    minioncomp.assignedzone = zone;
+            for (EntityRef zone : MinionSystem.getGatherZoneList()) {
+                ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+                if (zoneComponent.Name.matches(uizonelist.getSelection().getText())) {
+                    minioncomp.assignedZoneEntity = zone;
                 }
             }
             cell.minion.saveComponent(minioncomp);

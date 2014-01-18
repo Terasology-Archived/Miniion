@@ -15,8 +15,8 @@
  */
 package org.terasology.miniion.utilities;
 
-import org.terasology.classMetadata.MappedContainer;
 import org.terasology.engine.CoreRegistry;
+import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.math.Region3i;
@@ -24,8 +24,7 @@ import org.terasology.math.Vector3i;
 import org.terasology.miniion.minionenum.ZoneType;
 import org.terasology.world.selection.BlockSelectionComponent;
 
-@MappedContainer
-public class Zone {
+public final class ZoneComponent implements Component {
 
     private static final int MAX_SELECTED_BOUNDS = 50;
 
@@ -34,10 +33,10 @@ public class Zone {
     public String Name;
     public ZoneType zonetype;
 
-    public Zone() {
+    private ZoneComponent() {
     }
-
-    public Zone(Region3i region) {
+    
+    public ZoneComponent(Region3i region) {
         EntityManager entityManager = CoreRegistry.get(EntityManager.class);
         blockSelectionEntity = entityManager.create(new BlockSelectionComponent());
         BlockSelectionComponent selection = blockSelectionEntity.getComponent(BlockSelectionComponent.class);

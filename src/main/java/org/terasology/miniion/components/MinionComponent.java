@@ -16,9 +16,9 @@
 package org.terasology.miniion.components;
 
 import org.terasology.entitySystem.Component;
+import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.miniion.minionenum.MinionBehaviour;
 import org.terasology.miniion.utilities.MinionRecipe;
-import org.terasology.miniion.utilities.Zone;
 
 /**
  * Allows an entity to store items
@@ -52,7 +52,7 @@ public final class MinionComponent implements Component {
     public int Staminatotal;
 
     //determines an action point for the minion
-    public Zone assignedzone;
+    public EntityRef assignedZoneEntity = EntityRef.NULL;
     //the recipe to craft when working
     public MinionRecipe assignedrecipe;
 

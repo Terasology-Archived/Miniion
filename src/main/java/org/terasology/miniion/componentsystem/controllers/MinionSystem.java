@@ -37,7 +37,6 @@ import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.manager.GUIManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
-import org.terasology.math.Vector3i;
 import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.ZoneListComponent;
@@ -48,7 +47,7 @@ import org.terasology.miniion.gui.UIScreenBookOreo;
 import org.terasology.miniion.gui.UIZoneBook;
 import org.terasology.miniion.utilities.MinionRecipe;
 import org.terasology.miniion.utilities.ModIcons;
-import org.terasology.miniion.utilities.Zone;
+import org.terasology.miniion.utilities.ZoneComponent;
 import org.terasology.rendering.assets.texture.Texture;
 import org.terasology.rendering.assets.texture.TextureUtil;
 import org.terasology.rendering.logic.AnimEndEvent;
@@ -77,8 +76,8 @@ public class MinionSystem implements ComponentSystem {
     private static boolean showSelectionOverlay = false;
     private static EntityRef activeminion;
     // TODO : a better way to save / load zones, but it does the trick
-    private static EntityRef zonelist;
-    private static Zone newzone;
+    private static EntityRef zonelist = EntityRef.NULL;
+    private static EntityRef newzone = EntityRef.NULL;
 
     private static List<MinionRecipe> recipeslist = new ArrayList<MinionRecipe>();
 
@@ -202,23 +201,25 @@ public class MinionSystem implements ComponentSystem {
         return activeminion;
     }
 
-    public static void setNewZone(Zone zone) {
-        if ((newzone != null) && (!newzone.equals(zone))) {
-            BlockSelectionComponent selection = newzone.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+    public static void setNewZone(EntityRef zone) {
+        if ((newzone != EntityRef.NULL) && (!newzone.equals(zone))) {
+            ZoneComponent newZoneComponent = newzone.getComponent(ZoneComponent.class);
+            BlockSelectionComponent selection = newZoneComponent.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
             selection.shouldRender = false;
-            newzone.blockSelectionEntity.saveComponent(selection);
+            newZoneComponent.blockSelectionEntity.saveComponent(selection);
         }
         newzone = zone;
 
-        if (zone != null) {
-            BlockSelectionComponent selection = newzone.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+        if (newzone != EntityRef.NULL) {
+            ZoneComponent newZoneComponent = newzone.getComponent(ZoneComponent.class);
+            BlockSelectionComponent selection = newZoneComponent.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
             selection.shouldRender = true;
             selection.texture = Assets.get(TextureUtil.getTextureUriForColor(new Color(0, 255, 0, 100)), Texture.class);
-            newzone.blockSelectionEntity.saveComponent(selection);
+            newZoneComponent.blockSelectionEntity.saveComponent(selection);
         }
     }
 
-    public static Zone getNewZone() {
+    public static EntityRef getNewZone() {
         return newzone;
     }
 
@@ -227,9 +228,10 @@ public class MinionSystem implements ComponentSystem {
      * @param zone
      * 				the zone to be added
      */
-    public static void addZone(Zone zone) {
+    public static void addZone(EntityRef zone) {
         ZoneListComponent zonelistcomp = zonelist.getComponent(ZoneListComponent.class);
-        switch (zone.zonetype) {
+        ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+        switch (zoneComponent.zonetype) {
             case Gather: {
                 zonelistcomp.Gatherzones.add(zone);
                 break;
@@ -259,8 +261,8 @@ public class MinionSystem implements ComponentSystem {
      * @return
      * 			a list with all gather zones
      */
-    public static List<Zone> getGatherZoneList() {
-        if (zonelist == null) {
+    public static List<EntityRef> getGatherZoneList() {
+        if (zonelist == EntityRef.NULL) {
             return null;
         }
         return zonelist.getComponent(ZoneListComponent.class).Gatherzones;
@@ -271,8 +273,8 @@ public class MinionSystem implements ComponentSystem {
      * @return
      * 			a list with all work zones
      */
-    public static List<Zone> getWorkZoneList() {
-        if (zonelist == null) {
+    public static List<EntityRef> getWorkZoneList() {
+        if (zonelist == EntityRef.NULL) {
             return null;
         }
         return zonelist.getComponent(ZoneListComponent.class).Workzones;
@@ -283,8 +285,8 @@ public class MinionSystem implements ComponentSystem {
      * @return
      * 			a list with all terraform zones
      */
-    public static List<Zone> getTerraformZoneList() {
-        if (zonelist == null) {
+    public static List<EntityRef> getTerraformZoneList() {
+        if (zonelist == EntityRef.NULL) {
             return null;
         }
         return zonelist.getComponent(ZoneListComponent.class).Terrazones;
@@ -295,8 +297,8 @@ public class MinionSystem implements ComponentSystem {
      * @return
      * 			a list with all storage zones
      */
-    public static List<Zone> getStorageZoneList() {
-        if (zonelist == null) {
+    public static List<EntityRef> getStorageZoneList() {
+        if (zonelist == EntityRef.NULL) {
             return null;
         }
         return zonelist.getComponent(ZoneListComponent.class).Storagezones;
@@ -307,8 +309,8 @@ public class MinionSystem implements ComponentSystem {
      * @return
      * 			a list with all Oreon farm zones
      */
-    public static List<Zone> getOreonFarmZoneList() {
-        if (zonelist == null) {
+    public static List<EntityRef> getOreonFarmZoneList() {
+        if (zonelist == EntityRef.NULL) {
             return null;
         }
         return zonelist.getComponent(ZoneListComponent.class).OreonFarmzones;
@@ -329,8 +331,6 @@ public class MinionSystem implements ComponentSystem {
         zonelist = CoreRegistry.get(EntityManager.class).create();
         ZoneListComponent zonecomp = new ZoneListComponent();
         zonelist.addComponent(zonecomp);
-        // Pretty sure entities are persisted by default now
-        //		zonelist.setPersisted(true);
         zonelist.saveComponent(zonecomp);
     }
 

@@ -31,7 +31,7 @@ import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.miniion.minionenum.MinionBehaviour;
 import org.terasology.miniion.minionenum.ZoneType;
 import org.terasology.miniion.utilities.MinionRecipe;
-import org.terasology.miniion.utilities.Zone;
+import org.terasology.miniion.utilities.ZoneComponent;
 import org.terasology.rendering.gui.framework.UIDisplayElement;
 import org.terasology.rendering.gui.framework.events.ClickListener;
 import org.terasology.rendering.gui.framework.events.MouseButtonListener;
@@ -48,15 +48,15 @@ public class UIActiveMinion extends UIWindow {
 
     private final UILabel lblname, lblflavor, lblzone, lblrecipe;
     private final UIImage backgroundmain;
-    private final UIComposite behaviourlist, actionlist;
+    private final UIComposite pulldownBehaviorList, pulldownActionList;
     private final UIList uiMainlist, uiDetailList;
     private final UIScreenStats uistats;
     private final UIScreenSettings uisettings;
-    private final UIModButtonArrow btnLeft, btnRight, btnBehaviour, btnActions, btnStats;
+    private final UIModButtonArrow btnPreviousMinion, btnNextMinion, btnBehaviour, btnActions, btnStats;
     //behaviour buttons
     private final UIModButtonMenu btnStay, btnFollow, btnAttack, btnGather, btnWork, btnTerra;
     //action buttons
-    private final UIModButtonMenu btnInventory, btnZone, btnRecipe, btnClear, btnBye, btnMinionlist, btnSettings;
+    private final UIModButtonMenu btnInventory, btnSetZone, btnRecipe, btnClear, btnBye, btnMinionlist, btnSettings;
 
     public UIActiveMinion() {
         setId("activeminiion");
@@ -121,29 +121,19 @@ public class UIActiveMinion extends UIWindow {
         lblrecipe.setVisible(true);
         backgroundmain.addDisplayElement(lblrecipe);
 
-        btnLeft = new UIModButtonArrow(new Vector2f(12, 23), org.terasology.miniion.gui.UIModButtonArrow.ButtonType.LEFT);
-        btnLeft.setPosition(new Vector2f(8, 41));
-        btnLeft.setId("previousminion");
-        btnLeft.addClickListener(executeArrowButton);
-        btnLeft.setVisible(true);
-        backgroundmain.addDisplayElement(btnLeft);
+        btnPreviousMinion = new UIModButtonArrow(new Vector2f(12, 23), org.terasology.miniion.gui.UIModButtonArrow.ButtonType.LEFT);
+        btnPreviousMinion.setPosition(new Vector2f(8, 41));
+        btnPreviousMinion.setId("previousminion");
+        btnPreviousMinion.addClickListener(executeArrowButton);
+        btnPreviousMinion.setVisible(true);
+        backgroundmain.addDisplayElement(btnPreviousMinion);
 
-        btnRight = new UIModButtonArrow(new Vector2f(12, 23), org.terasology.miniion.gui.UIModButtonArrow.ButtonType.RIGHT);
-        btnRight.setPosition(new Vector2f(260, 41));
-        btnRight.setId("nextminion");
-        btnRight.addClickListener(executeArrowButton);
-        btnRight.setVisible(true);
-        backgroundmain.addDisplayElement(btnRight);
-
-        GridLayout layout = new GridLayout(1);
-        layout.setCellPadding(new Vector4f(0f, 0f, 0f, 0f));
-        behaviourlist = new UIComposite();
-        behaviourlist.setSize(new Vector2f(100, 120));
-        behaviourlist.setPosition(new Vector2f(200, 200));
-        behaviourlist.setBackgroundImage("miniion:modularback");
-        behaviourlist.setLayout(layout);
-        behaviourlist.setVisible(false);
-        backgroundmain.addDisplayElement(behaviourlist);
+        btnNextMinion = new UIModButtonArrow(new Vector2f(12, 23), org.terasology.miniion.gui.UIModButtonArrow.ButtonType.RIGHT);
+        btnNextMinion.setPosition(new Vector2f(260, 41));
+        btnNextMinion.setId("nextminion");
+        btnNextMinion.addClickListener(executeArrowButton);
+        btnNextMinion.setVisible(true);
+        backgroundmain.addDisplayElement(btnNextMinion);
 
         btnBehaviour = new UIModButtonArrow(new Vector2f(46, 12), org.terasology.miniion.gui.UIModButtonArrow.ButtonType.DOWN, "set behaviour");
         btnBehaviour.setPosition(new Vector2f(237, 186));
@@ -152,47 +142,57 @@ public class UIActiveMinion extends UIWindow {
         btnBehaviour.addClickListener(executeArrowButton);
         backgroundmain.addDisplayElement(btnBehaviour);
 
+        GridLayout layout = new GridLayout(1);
+        layout.setCellPadding(new Vector4f(0f, 0f, 0f, 0f));
+        pulldownBehaviorList = new UIComposite();
+        pulldownBehaviorList.setSize(new Vector2f(100, 120));
+        pulldownBehaviorList.setPosition(new Vector2f(200, 200));
+        pulldownBehaviorList.setBackgroundImage("miniion:modularback");
+        pulldownBehaviorList.setLayout(layout);
+        pulldownBehaviorList.setVisible(false);
+        backgroundmain.addDisplayElement(pulldownBehaviorList);
+
         btnStay = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.TOGGLE);
         btnStay.setLabel("STAY");
         btnStay.setId("stay");
         btnStay.addClickListener(behaviourToggleListener);
         btnStay.setVisible(true);
-        behaviourlist.addDisplayElement(btnStay);
+        pulldownBehaviorList.addDisplayElement(btnStay);
 
         btnFollow = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.TOGGLE);
         btnFollow.setLabel("FOLLOW");
         btnFollow.setId("foll");
         btnFollow.addClickListener(behaviourToggleListener);
         btnFollow.setVisible(true);
-        behaviourlist.addDisplayElement(btnFollow);
+        pulldownBehaviorList.addDisplayElement(btnFollow);
 
         btnAttack = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.TOGGLE);
         btnAttack.setLabel("ATTACK");
         btnAttack.setId("atta");
         btnAttack.addClickListener(behaviourToggleListener);
         btnAttack.setVisible(true);
-        behaviourlist.addDisplayElement(btnAttack);
+        pulldownBehaviorList.addDisplayElement(btnAttack);
 
         btnGather = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.TOGGLE);
         btnGather.setLabel("GATHER");
         btnGather.setId("gath");
         btnGather.addClickListener(behaviourToggleListener);
         btnGather.setVisible(true);
-        behaviourlist.addDisplayElement(btnGather);
+        pulldownBehaviorList.addDisplayElement(btnGather);
 
         btnWork = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.TOGGLE);
         btnWork.setLabel("WORK");
         btnWork.setId("work");
         btnWork.addClickListener(behaviourToggleListener);
         btnWork.setVisible(true);
-        behaviourlist.addDisplayElement(btnWork);
+        pulldownBehaviorList.addDisplayElement(btnWork);
 
         btnTerra = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.TOGGLE);
         btnTerra.setLabel("Terrafrom");
         btnTerra.setId("terr");
         btnTerra.addClickListener(behaviourToggleListener);
         btnTerra.setVisible(true);
-        behaviourlist.addDisplayElement(btnTerra);
+        pulldownBehaviorList.addDisplayElement(btnTerra);
 
         btnActions = new UIModButtonArrow(new Vector2f(46, 12), org.terasology.miniion.gui.UIModButtonArrow.ButtonType.DOWN, "select action");
         btnActions.setPosition(new Vector2f(137, 186));
@@ -201,55 +201,55 @@ public class UIActiveMinion extends UIWindow {
         btnActions.addClickListener(executeArrowButton);
         backgroundmain.addDisplayElement(btnActions);
 
-        actionlist = new UIComposite();
-        actionlist.setSize(new Vector2f(100, 120));
-        actionlist.setPosition(new Vector2f(100, 200));
-        actionlist.setBackgroundImage("miniion:modularback");
-        actionlist.setLayout(layout);
-        actionlist.setVisible(false);
-        backgroundmain.addDisplayElement(actionlist);
+        pulldownActionList = new UIComposite();
+        pulldownActionList.setSize(new Vector2f(100, 120));
+        pulldownActionList.setPosition(new Vector2f(100, 200));
+        pulldownActionList.setBackgroundImage("miniion:modularback");
+        pulldownActionList.setLayout(layout);
+        pulldownActionList.setVisible(false);
+        backgroundmain.addDisplayElement(pulldownActionList);
 
         btnInventory = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.NORMAL);
         btnInventory.setLabel("inventory");
         btnInventory.setId("inve");
         btnInventory.addClickListener(actionListener);
         btnInventory.setVisible(true);
-        actionlist.addDisplayElement(btnInventory);
+        pulldownActionList.addDisplayElement(btnInventory);
 
-        btnZone = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.NORMAL);
-        btnZone.setLabel("zone");
-        btnZone.setId("zone");
-        btnZone.addClickListener(actionListener);
-        btnZone.setVisible(true);
-        actionlist.addDisplayElement(btnZone);
+        btnSetZone = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.NORMAL);
+        btnSetZone.setLabel("zone");
+        btnSetZone.setId("zone");
+        btnSetZone.addClickListener(actionListener);
+        btnSetZone.setVisible(true);
+        pulldownActionList.addDisplayElement(btnSetZone);
 
         btnRecipe = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.NORMAL);
         btnRecipe.setLabel("recipe");
         btnRecipe.setId("reci");
         btnRecipe.addClickListener(actionListener);
         btnRecipe.setVisible(true);
-        actionlist.addDisplayElement(btnRecipe);
+        pulldownActionList.addDisplayElement(btnRecipe);
 
         btnMinionlist = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.NORMAL);
         btnMinionlist.setLabel("minionlist");
         btnMinionlist.setId("list");
         btnMinionlist.addClickListener(actionListener);
         btnMinionlist.setVisible(true);
-        actionlist.addDisplayElement(btnMinionlist);
+        pulldownActionList.addDisplayElement(btnMinionlist);
 
         btnClear = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.NORMAL);
         btnClear.setLabel("clear orders");
         btnClear.setId("clea");
         btnClear.addClickListener(actionListener);
         btnClear.setVisible(true);
-        actionlist.addDisplayElement(btnClear);
+        pulldownActionList.addDisplayElement(btnClear);
 
         btnBye = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.NORMAL);
         btnBye.setLabel("bye bye");
         btnBye.setId("byeb");
         btnBye.addClickListener(actionListener);
         btnBye.setVisible(true);
-        actionlist.addDisplayElement(btnBye);
+        pulldownActionList.addDisplayElement(btnBye);
 
         btnSettings = new UIModButtonMenu(new Vector2f(100, 20), org.terasology.miniion.gui.UIModButtonMenu.ButtonType.NORMAL);
         btnSettings.setPosition(new Vector2f(200, 130));
@@ -315,12 +315,12 @@ public class UIActiveMinion extends UIWindow {
             UIModButtonArrow arrow = (UIModButtonArrow) element;
             if (arrow.getId() == "showbehaviour") {
                 if (MinionSystem.getActiveMinion() != null) {
-                    behaviourlist.setVisible(!behaviourlist.isVisible());
+                    pulldownBehaviorList.setVisible(!pulldownBehaviorList.isVisible());
                 }
             } else
             if (arrow.getId() == "showactions") {
                 if (MinionSystem.getActiveMinion() != null) {
-                    actionlist.setVisible(!actionlist.isVisible());
+                    pulldownActionList.setVisible(!pulldownActionList.isVisible());
                 }
             } else
             if (arrow.getId() == "showstats") {
@@ -343,8 +343,8 @@ public class UIActiveMinion extends UIWindow {
     };
 
     private void closeAllFoldouts() {
-        behaviourlist.setVisible(false);
-        actionlist.setVisible(false);
+        pulldownBehaviorList.setVisible(false);
+        pulldownActionList.setVisible(false);
         uistats.setVisible(false);
         uiMainlist.setVisible(false);
         uiDetailList.setVisible(false);
@@ -381,7 +381,7 @@ public class UIActiveMinion extends UIWindow {
                 }
                 MinionSystem.getActiveMinion().saveComponent(minioncomp);
             }
-            behaviourlist.setVisible(false);
+            pulldownBehaviorList.setVisible(false);
         }
     };
 
@@ -415,7 +415,7 @@ public class UIActiveMinion extends UIWindow {
                         uiMainlist.removeAll();
                         for (ZoneType zonetype : ZoneType.values()) {
                             UIListItem listitem = new UIListItem(zonetype.toString(), zonetype);
-                            listitem.addClickListener(zoneItemListener);
+                            listitem.addClickListener(zoneTypeClickedListener);
                             uiMainlist.addItem(listitem);
                         }
                         uiMainlist.setVisible(true);
@@ -455,7 +455,7 @@ public class UIActiveMinion extends UIWindow {
                     SimpleMinionAIComponent aicomp = MinionSystem.getActiveMinion().getComponent(SimpleMinionAIComponent.class);
                     aicomp.ClearCommands();
                     MinionSystem.getActiveMinion().saveComponent(aicomp);
-                    minioncomp.assignedzone = null;
+                    minioncomp.assignedZoneEntity = EntityRef.NULL;
                     minioncomp.assignedrecipe = null;
                     MinionSystem.getActiveMinion().saveComponent(minioncomp);
                     refreshScreen();
@@ -475,83 +475,91 @@ public class UIActiveMinion extends UIWindow {
         }
     };
 
-    private ClickListener zoneItemListener = new ClickListener() {
+    private ClickListener zoneTypeClickedListener = new ClickListener() {
 
         @Override
         public void click(UIDisplayElement element, int button) {
             UIListItem listitem = (UIListItem) element;
-            if (listitem.getValue().getClass().equals(ZoneType.class)) {
-                switch (((ZoneType) listitem.getValue())) {
-                    case Gather: {
-                        uiDetailList.removeAll();
-                        for (Zone zone : MinionSystem.getGatherZoneList()) {
-                            UIListItem newlistitem = new UIListItem(zone.Name, zone);
-                            newlistitem.addClickListener(zoneItemListener);
-                            uiDetailList.addItem(newlistitem);
-                        }
-                        uiMainlist.setVisible(false);
-                        uiDetailList.setVisible(true);
-                        break;
+            ZoneType selectedZoneType = (ZoneType) listitem.getValue();
+            switch (selectedZoneType) {
+                case Gather: {
+                    uiDetailList.removeAll();
+                    for (EntityRef zone : MinionSystem.getGatherZoneList()) {
+                        ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+                        UIListItem newlistitem = new UIListItem(zoneComponent.Name, zone);
+                        newlistitem.addClickListener(zoneClickedListener);
+                        uiDetailList.addItem(newlistitem);
                     }
-                    case Terraform: {
-                        uiDetailList.removeAll();
-                        for (Zone zone : MinionSystem.getTerraformZoneList()) {
-                            if (null == zone.Name) {
-                                zone.Name = "unnamed";
-                            }
-                            UIListItem newlistitem = new UIListItem(zone.Name, zone);
-                            newlistitem.addClickListener(zoneItemListener);
-                            uiDetailList.addItem(newlistitem);
-                        }
-                        uiMainlist.setVisible(false);
-                        uiDetailList.setVisible(true);
-                        break;
-                    }
-                    case Work: {
-                        uiDetailList.removeAll();
-                        for (Zone zone : MinionSystem.getWorkZoneList()) {
-                            UIListItem newlistitem = new UIListItem(zone.Name, zone);
-                            newlistitem.addClickListener(zoneItemListener);
-                            uiDetailList.addItem(newlistitem);
-                        }
-                        uiMainlist.setVisible(false);
-                        uiDetailList.setVisible(true);
-                        break;
-                    }
-                    case Storage: {
-                        uiDetailList.removeAll();
-                        for (Zone zone : MinionSystem.getStorageZoneList()) {
-                            UIListItem newlistitem = new UIListItem(zone.Name, zone);
-                            newlistitem.addClickListener(zoneItemListener);
-                            uiDetailList.addItem(newlistitem);
-                        }
-                        uiMainlist.setVisible(false);
-                        uiDetailList.setVisible(true);
-                        break;
-                    }
-                    case OreonFarm: {
-                        uiDetailList.removeAll();
-                        for (Zone zone : MinionSystem.getOreonFarmZoneList()) {
-                            UIListItem newlistitem = new UIListItem(zone.Name, zone);
-                            newlistitem.addClickListener(zoneItemListener);
-                            uiDetailList.addItem(newlistitem);
-                        }
-                        uiMainlist.setVisible(false);
-                        uiDetailList.setVisible(true);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+                    uiMainlist.setVisible(false);
+                    uiDetailList.setVisible(true);
+                    break;
                 }
-            } else if (listitem.getValue().getClass().equals(Zone.class)) {
-                Zone selectedzone = (Zone) ((UIListItem) element).getValue();
-                MinionComponent minioncomp = MinionSystem.getActiveMinion().getComponent(MinionComponent.class);
-                minioncomp.assignedzone = selectedzone;
-                MinionSystem.getActiveMinion().saveComponent(minioncomp);
-                uiDetailList.setVisible(false);
-                refreshScreen();
+                case Terraform: {
+                    uiDetailList.removeAll();
+                    for (EntityRef zone : MinionSystem.getTerraformZoneList()) {
+                        ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+                        UIListItem newlistitem = new UIListItem(zoneComponent.Name, zone);
+                        newlistitem.addClickListener(zoneClickedListener);
+                        uiDetailList.addItem(newlistitem);
+                    }
+                    uiMainlist.setVisible(false);
+                    uiDetailList.setVisible(true);
+                    break;
+                }
+                case Work: {
+                    uiDetailList.removeAll();
+                    for (EntityRef zone : MinionSystem.getWorkZoneList()) {
+                        ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+                        UIListItem newlistitem = new UIListItem(zoneComponent.Name, zone);
+                        newlistitem.addClickListener(zoneClickedListener);
+                        uiDetailList.addItem(newlistitem);
+                    }
+                    uiMainlist.setVisible(false);
+                    uiDetailList.setVisible(true);
+                    break;
+                }
+                case Storage: {
+                    uiDetailList.removeAll();
+                    for (EntityRef zone : MinionSystem.getStorageZoneList()) {
+                        ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+                        UIListItem newlistitem = new UIListItem(zoneComponent.Name, zone);
+                        newlistitem.addClickListener(zoneClickedListener);
+                        uiDetailList.addItem(newlistitem);
+                    }
+                    uiMainlist.setVisible(false);
+                    uiDetailList.setVisible(true);
+                    break;
+                }
+                case OreonFarm: {
+                    uiDetailList.removeAll();
+                    for (EntityRef zone : MinionSystem.getOreonFarmZoneList()) {
+                        ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+                        UIListItem newlistitem = new UIListItem(zoneComponent.Name, zone);
+                        newlistitem.addClickListener(zoneClickedListener);
+                        uiDetailList.addItem(newlistitem);
+                    }
+                    uiMainlist.setVisible(false);
+                    uiDetailList.setVisible(true);
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
+        }
+    };
+
+    private ClickListener zoneClickedListener = new ClickListener() {
+
+        @Override
+        public void click(UIDisplayElement element, int button) {
+            UIListItem listitem = (UIListItem) element;
+            EntityRef selectedzone = (EntityRef) listitem.getValue();
+            MinionComponent minioncomp = MinionSystem.getActiveMinion().getComponent(MinionComponent.class);
+            minioncomp.assignedZoneEntity = selectedzone;
+            MinionSystem.getActiveMinion().saveComponent(minioncomp);
+            uiDetailList.setVisible(false);
+            refreshScreen();
         }
     };
 
@@ -588,7 +596,7 @@ public class UIActiveMinion extends UIWindow {
      * 				the selected button
      */
     private void toggleBehaviour(UIModButtonMenu button) {
-        for (UIDisplayElement modbutton : behaviourlist.getDisplayElements()) {
+        for (UIDisplayElement modbutton : pulldownBehaviorList.getDisplayElements()) {
             if (modbutton.equals(button)) {
                 ((UIModButtonMenu) modbutton).setToggleState(true);
             } else {
@@ -618,11 +626,11 @@ public class UIActiveMinion extends UIWindow {
             } else {
                 lblname.setText(minioncomp.name);
                 lblflavor.setText(minioncomp.flavortext);
-                if (minioncomp.assignedzone == null) {
+                if (minioncomp.assignedZoneEntity == EntityRef.NULL) {
                     lblzone.setText("no zone assigned");
-                } else
-                {
-                    lblzone.setText("workzone : " + minioncomp.assignedzone.Name);
+                } else {
+                    ZoneComponent assignedZoneComponent = minioncomp.assignedZoneEntity.getComponent(ZoneComponent.class);
+                    lblzone.setText("workzone : " + assignedZoneComponent.Name);
                 }
                 if (minioncomp.assignedrecipe == null) {
                     lblrecipe.setText("");

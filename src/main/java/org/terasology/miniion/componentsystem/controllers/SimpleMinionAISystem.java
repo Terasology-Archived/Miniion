@@ -51,7 +51,7 @@ import org.terasology.miniion.minionenum.MinionMessagePriority;
 import org.terasology.miniion.minionenum.ZoneType;
 import org.terasology.miniion.pathfinder.AStarPathing;
 import org.terasology.miniion.utilities.MinionMessage;
-import org.terasology.miniion.utilities.Zone;
+import org.terasology.miniion.utilities.ZoneComponent;
 import org.terasology.rendering.assets.animation.MeshAnimation;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
 import org.terasology.world.BlockEntityRegistry;
@@ -250,8 +250,9 @@ public class SimpleMinionAISystem implements ComponentSystem,
         AnimationComponent animcomp = entity
                 .getComponent(AnimationComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
+        ZoneComponent assignedZoneComponent = minioncomp.assignedZoneEntity.getComponent(ZoneComponent.class);
 
-        if (ai.gatherTargets.size() == 0 && minioncomp.assignedzone != null && minioncomp.assignedzone.zonetype == ZoneType.Gather) {
+        if ((ai.gatherTargets.size() == 0) && (minioncomp.assignedZoneEntity != EntityRef.NULL) && (assignedZoneComponent.zonetype == ZoneType.Gather)) {
             getTargetsfromZone(minioncomp, ai);
         }
 
@@ -289,11 +290,12 @@ public class SimpleMinionAISystem implements ComponentSystem,
 
     private void getTargetsfromZone(MinionComponent minioncomp,
                                     SimpleMinionAIComponent ai) {
-        Zone zone = minioncomp.assignedzone;
+        EntityRef zone = minioncomp.assignedZoneEntity;
+        ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
         // first loop at highest blocks (y)
-        for (int y = zone.getMaxBounds().y; y >= zone.getMinBounds().y; y--) {
-            for (int x = zone.getMinBounds().x; x <= zone.getMaxBounds().x; x++) {
-                for (int z = zone.getMinBounds().z; z <= zone.getMaxBounds().z; z++) {
+        for (int y = zoneComponent.getMaxBounds().y; y >= zoneComponent.getMinBounds().y; y--) {
+            for (int x = zoneComponent.getMinBounds().x; x <= zoneComponent.getMaxBounds().x; x++) {
+                for (int z = zoneComponent.getMinBounds().z; z <= zoneComponent.getMaxBounds().z; z++) {
                     Block tmpblock = worldProvider.getBlock(x, y, z);
                     if (!tmpblock.isInvisible()) {
                         ai.gatherTargets.add(new Vector3f(x, y + 0.5f, z));
@@ -313,13 +315,14 @@ public class SimpleMinionAISystem implements ComponentSystem,
         AnimationComponent animcomp = entity
                 .getComponent(AnimationComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
+        ZoneComponent assignedZoneComponent = minioncomp.assignedZoneEntity.getComponent(ZoneComponent.class);
 
-        if (minioncomp.assignedzone == null) {
+        if (minioncomp.assignedZoneEntity == EntityRef.NULL) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
-        } else if (minioncomp.assignedzone.zonetype != ZoneType.Work) {
-            if (minioncomp.assignedzone.zonetype == ZoneType.OreonFarm) {
-                if (isTerraformComplete(minioncomp.assignedzone, minionFarmer.farmFieldBlockName)) {
+        } else if (assignedZoneComponent.zonetype != ZoneType.Work) {
+            if (assignedZoneComponent.zonetype == ZoneType.OreonFarm) {
+                if (isTerraformComplete(minioncomp.assignedZoneEntity, minionFarmer.farmFieldBlockName)) {
                     //farming
                     executeFarmAI(entity);
                 } else {
@@ -332,7 +335,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
             return;
         }
 
-        Vector3f currentTarget = minioncomp.assignedzone.getStartPosition().toVector3f();
+        Vector3f currentTarget = assignedZoneComponent.getStartPosition().toVector3f();
         currentTarget.y += 0.5;
 
         Vector3f dist = new Vector3f(worldPos);
@@ -412,14 +415,15 @@ public class SimpleMinionAISystem implements ComponentSystem,
         setMovement(currentTarget, entity);
     }
 
-    private boolean isTerraformComplete(Zone zone, String blockTypeName) {
+    private boolean isTerraformComplete(EntityRef zone, String blockTypeName) {
         return isZoneComposedOnlyOfBlockType(zone, blockTypeName);
     }
 
-    private boolean isZoneComposedOnlyOfBlockType(Zone zone, String blockTypeName) {
-        for (int y = zone.getMaxBounds().y; y >= zone.getMinBounds().y; y--) {
-            for (int x = zone.getMinBounds().x; x <= zone.getMaxBounds().x; x++) {
-                for (int z = zone.getMinBounds().z; z <= zone.getMaxBounds().z; z++) {
+    private boolean isZoneComposedOnlyOfBlockType(EntityRef zone, String blockTypeName) {
+        ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+        for (int y = zoneComponent.getMaxBounds().y; y >= zoneComponent.getMinBounds().y; y--) {
+            for (int x = zoneComponent.getMinBounds().x; x <= zoneComponent.getMaxBounds().x; x++) {
+                for (int z = zoneComponent.getMinBounds().z; z <= zoneComponent.getMaxBounds().z; z++) {
                     Block block = worldProvider.getBlock(x, y, z);
                     if (!block.getURI().toString().toLowerCase().equals(blockTypeName.toLowerCase())) {
                         return false;
@@ -448,16 +452,18 @@ public class SimpleMinionAISystem implements ComponentSystem,
         AnimationComponent animcomp = entity
                 .getComponent(AnimationComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
+        ZoneComponent assignedZoneComponent = minioncomp.assignedZoneEntity.getComponent(ZoneComponent.class);
 
-        if (minioncomp.assignedzone == null) {
+        if (minioncomp == null) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
-        } else if (minioncomp.assignedzone.zonetype != ZoneType.Terraform && terraformFinalBlockType.isEmpty()) {
+        } else if (assignedZoneComponent.zonetype != ZoneType.Terraform && terraformFinalBlockType.isEmpty()) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
 
-            // Not sure why we're checking for oreonfarm when we're in Terraform mode
-            //        } else if (minioncomp.assignedzone.zonetype != ZoneType.OreonFarm) {
+            // Not sure why we're checking for OreonFarm when we're in Terraform mode
+            // Maybe because we only want to terraform when we're building a farm?
+            //        } else if (minioncomp.assignedZoneComponent.zonetype != ZoneType.OreonFarm) {
             //            changeAnimation(entity, animcomp.idleAnim, true);
             //            return;
         }
@@ -488,7 +494,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
             changeAnimation(entity, animcomp.terraformAnim, true);
             if (timer.getGameTimeInMs() - ai.lastAttacktime > 200) {
                 ai.lastAttacktime = timer.getGameTimeInMs();
-                for (int y = (int) (currentTarget.y - 0.5); y >= minioncomp.assignedzone.getMinBounds().y; y--) {
+                for (int y = (int) (currentTarget.y - 0.5); y >= assignedZoneComponent.getMinBounds().y; y--) {
                     Block tmpblock = worldProvider.getBlock((int) currentTarget.x, y, (int) currentTarget.z);
                     if (!tmpblock.isInvisible()) {
                         String moduleName = tmpblock.getBlockFamily().getURI().getModuleName();
@@ -514,20 +520,20 @@ public class SimpleMinionAISystem implements ComponentSystem,
 
                                 worldProvider.setBlock(new Vector3i(currentTarget.x, y, currentTarget.z), newBlock);
                                 ai.craftprogress = 0;
-                                if (y == minioncomp.assignedzone.getMinBounds().y) {
+                                if (y == assignedZoneComponent.getMinBounds().y) {
                                     ai.movementTargets.remove(currentTarget);
                                 }
                             }
                             break;
                         } else
                         {
-                            if (y == minioncomp.assignedzone.getMinBounds().y) {
+                            if (y == assignedZoneComponent.getMinBounds().y) {
                                 ai.movementTargets.remove(currentTarget);
                             }
                         }
                     } else
                     {
-                        if (y == minioncomp.assignedzone.getMinBounds().y) {
+                        if (y == assignedZoneComponent.getMinBounds().y) {
                             ai.movementTargets.remove(currentTarget);
                         }
                     }
@@ -541,10 +547,11 @@ public class SimpleMinionAISystem implements ComponentSystem,
     }
 
     private void getFirsBlockfromZone(MinionComponent minioncomp, SimpleMinionAIComponent ai) {
-        Zone zone = minioncomp.assignedzone;
-        for (int x = zone.getMinBounds().x; x <= zone.getMaxBounds().x; x++) {
-            for (int z = zone.getMinBounds().z; z <= zone.getMaxBounds().z; z++) {
-                for (int y = zone.getMaxBounds().y; y >= zone.getMinBounds().y; y--) {
+        EntityRef assignedZoneEntity = minioncomp.assignedZoneEntity;
+        ZoneComponent assignedZoneComponent = assignedZoneEntity.getComponent(ZoneComponent.class);
+        for (int x = assignedZoneComponent.getMinBounds().x; x <= assignedZoneComponent.getMaxBounds().x; x++) {
+            for (int z = assignedZoneComponent.getMinBounds().z; z <= assignedZoneComponent.getMaxBounds().z; z++) {
+                for (int y = assignedZoneComponent.getMaxBounds().y; y >= assignedZoneComponent.getMinBounds().y; y--) {
                     Block tmpblock = worldProvider.getBlock(x, y, z);
                     if (!tmpblock.isInvisible()) {
                         ai.movementTargets.add(new Vector3f(x, (y + 0.5f), z));
@@ -573,6 +580,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
         AnimationComponent animcomp = entity
                 .getComponent(AnimationComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
+        ZoneComponent assignedZoneComponent = minioncomp.assignedZoneEntity.getComponent(ZoneComponent.class);
 
         if (ai.movementTargets.size() == 0) {
             getFirsBlockfromZone(minioncomp, ai);
@@ -599,7 +607,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
             changeAnimation(entity, animcomp.terraformAnim, true);
             if (timer.getGameTimeInMs() - ai.lastAttacktime > 200) {
                 ai.lastAttacktime = timer.getGameTimeInMs();
-                for (int y = (int) (currentTarget.y - 0.5); y >= minioncomp.assignedzone.getMinBounds().y; y--) {
+                for (int y = (int) (currentTarget.y - 0.5); y >= assignedZoneComponent.getMinBounds().y; y--) {
                     Block currentBlock = worldProvider.getBlock(new Vector3i(currentTarget.x, y + 1, currentTarget.z));
                     Block plantedBlock = null;
                     if (null != minionFarmer.blockNameToPlantAboveFarmField) {
@@ -622,7 +630,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
                     if (ai.craftprogress > 20) {
                         worldProvider.setBlock(new Vector3i(currentTarget.x, y + 1, currentTarget.z), plantedBlock);
                         ai.craftprogress = 0;
-                        if (y == minioncomp.assignedzone.getMinBounds().y) {
+                        if (y == assignedZoneComponent.getMinBounds().y) {
                             ai.movementTargets.remove(currentTarget);
                         }
                     }
