@@ -26,9 +26,7 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 
 /**
- * Created with IntelliJ IDEA. User: Overdhose Date: 10/05/12 Time: 17:54
- * Minionsystem gives you some control over the minions. this is the home of the
- * minionbar.
+ * This tracking system idea needs to be completely redone so that it's based off Components.
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class ZoneTrackingSystem implements ComponentSystem {

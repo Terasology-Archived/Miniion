@@ -10,6 +10,7 @@
 	    "selectedSkin" = "Oreons:OreonSkinSelected"
 	},
 	"SimpleMinionAI" : {},
+	"NPCMovementInput" : {},
 	"MinionFarmer" : {
 		"farmFieldBlockName" : "miniion:OreonFarmDry",
 		"blockNameToPlantAboveFarmField" : "miniion:OreonPlant0"

@@ -45,6 +45,7 @@ import org.terasology.math.Vector3i;
 import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.MinionFarmerComponent;
+import org.terasology.miniion.components.NPCMovementInputComponent;
 import org.terasology.miniion.components.SimpleMinionAIComponent;
 import org.terasology.miniion.events.MinionMessageEvent;
 import org.terasology.miniion.minionenum.MinionMessagePriority;
@@ -119,12 +120,10 @@ public class SimpleMinionAISystem implements ComponentSystem,
     public void update(float delta) {
         for (EntityRef entity : entityManager.getEntitiesWith(
                 SimpleMinionAIComponent.class,
-                CharacterMovementComponent.class, LocationComponent.class,
+                NPCMovementInputComponent.class, LocationComponent.class,
                 MinionComponent.class, SkeletalMeshComponent.class,
                 AnimationComponent.class)) {
 
-            CharacterMovementComponent moveComp = entity
-                    .getComponent(CharacterMovementComponent.class);
             MinionComponent minioncomp = entity
                     .getComponent(MinionComponent.class);
             AnimationComponent animcomp = entity
@@ -195,10 +194,10 @@ public class SimpleMinionAISystem implements ComponentSystem,
     }
 
     private void executeStayAI(EntityRef entity) {
-        CharacterMovementComponent moveComp = entity
-                .getComponent(CharacterMovementComponent.class);
-        moveComp.setVelocity(new Vector3f(0, 0, 0));
-        entity.saveComponent(moveComp);
+        NPCMovementInputComponent movementInput = entity
+                .getComponent(NPCMovementInputComponent.class);
+        movementInput.directionToMove = new Vector3f(0, 0, 0);
+        entity.saveComponent(movementInput);
         AnimationComponent animcomp = entity
                 .getComponent(AnimationComponent.class);
         changeAnimation(entity, animcomp.idleAnim, false);
@@ -655,13 +654,13 @@ public class SimpleMinionAISystem implements ComponentSystem,
         SimpleMinionAIComponent ai = entity
                 .getComponent(SimpleMinionAIComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
-        CharacterMovementComponent characterMovement = entity.getComponent(CharacterMovementComponent.class);
+        NPCMovementInputComponent movementInput = entity.getComponent(NPCMovementInputComponent.class);
 
         // get targets, break if none
         List<Vector3f> targets = ai.movementTargets;
         if ((targets == null) || (targets.size() < 1)) {
-            characterMovement.setVelocity(new Vector3f(0, 0, 0));
-            entity.saveComponent(characterMovement);
+            movementInput.directionToMove = new Vector3f(0, 0, 0);
+            entity.saveComponent(movementInput);
             return;
         }
         Vector3f currentTarget = targets.get(0);
@@ -806,8 +805,8 @@ public class SimpleMinionAISystem implements ComponentSystem,
                 .getComponent(LocationComponent.class);
         SimpleMinionAIComponent ai = entity
                 .getComponent(SimpleMinionAIComponent.class);
-        CharacterMovementComponent moveComp = entity
-                .getComponent(CharacterMovementComponent.class);
+        NPCMovementInputComponent movementInput = entity
+                .getComponent(NPCMovementInputComponent.class);
         AnimationComponent animcomp = entity
                 .getComponent(AnimationComponent.class);
         SkeletalMeshComponent skeletalcomp = entity
@@ -833,9 +832,9 @@ public class SimpleMinionAISystem implements ComponentSystem,
                         changeAnimation(entity, animcomp.idleAnim, true);
                     }
                     location.setWorldPosition(currentTarget);
-                    moveComp.setVelocity(new Vector3f(0, 0, 0));
+                    movementInput.directionToMove = new Vector3f(0, 0, 0);
                     entity.saveComponent(location);
-                    entity.saveComponent(moveComp);
+                    entity.saveComponent(movementInput);
                     ai.lastPosition = location.getWorldPosition();
                 } else {
                     ai.lastPosition = location.getWorldPosition();
@@ -843,7 +842,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
             }
             changeAnimation(entity, animcomp.walkAnim, true);
             targetDirection.normalize();
-            moveComp.setVelocity(targetDirection);
+            movementInput.directionToMove = targetDirection;
 
             float yaw = (float) Math
                     .atan2(targetDirection.x, targetDirection.z);
@@ -857,10 +856,10 @@ public class SimpleMinionAISystem implements ComponentSystem,
             if (skeletalcomp.animation == animcomp.walkAnim) {
                 changeAnimation(entity, animcomp.idleAnim, true);
             }
-            moveComp.setVelocity(new Vector3f());
+            movementInput.directionToMove = new Vector3f(0,0,0);
         }
         entity.saveComponent(ai);
-        entity.saveComponent(moveComp);
+        entity.saveComponent(movementInput);
         entity.saveComponent(location);
     }
 
@@ -885,11 +884,13 @@ public class SimpleMinionAISystem implements ComponentSystem,
 
     @ReceiveEvent(components = {SimpleMinionAIComponent.class})
     public void onBump(HorizontalCollisionEvent event, EntityRef entity) {
-        CharacterMovementComponent moveComp = entity
+        NPCMovementInputComponent movementInput = entity
+                .getComponent(NPCMovementInputComponent.class);
+        CharacterMovementComponent chracterMovement = entity
                 .getComponent(CharacterMovementComponent.class);
-        if ((moveComp != null) && (moveComp.grounded)) {
-            moveComp.jump = true;
-            entity.saveComponent(moveComp);
+        if ((movementInput != null) && (chracterMovement.grounded)) {
+            movementInput.jumpingRequested = true;
+            entity.saveComponent(movementInput);
         }
     }
 }

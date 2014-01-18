@@ -15,9 +15,16 @@
  */
 package org.terasology.miniion.components;
 
+import javax.vecmath.Vector3f;
+
 import org.terasology.entitySystem.Component;
 
-public class MinionFarmerComponent implements Component {
-    public String farmFieldBlockName;
-    public String blockNameToPlantAboveFarmField;
+/**
+ * @author mkienenb
+ */
+public final class NPCMovementInputComponent implements Component {
+
+    public boolean runningRequested;
+    public boolean jumpingRequested;
+    public Vector3f directionToMove = new Vector3f(0,0,0);
 }

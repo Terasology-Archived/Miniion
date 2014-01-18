@@ -23,8 +23,7 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.logic.characters.CharacterComponent;
 import org.terasology.logic.characters.CharacterMoveInputEvent;
-import org.terasology.logic.characters.CharacterMovementComponent;
-import org.terasology.logic.players.LocalPlayer;
+import org.terasology.miniion.components.NPCMovementInputComponent;
 
 /**
  * This updates everything but LocalPlayer because LocalPlayerSystem is currently updating LocalPlayer.
@@ -33,8 +32,6 @@ import org.terasology.logic.players.LocalPlayer;
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class CharacterMovementSystem implements UpdateSubscriberSystem {
-    @In
-    private LocalPlayer localPlayer;
     @In
     private EntityManager entityManager;
 
@@ -50,21 +47,15 @@ public class CharacterMovementSystem implements UpdateSubscriberSystem {
 
     @Override
     public void update(float delta) {
-        EntityRef localPlayerEntity = localPlayer.getCharacterEntity();
-        for (EntityRef entity : entityManager.getEntitiesWith(CharacterMovementComponent.class)) {
-            if (entity.equals(localPlayerEntity)) {
-                // Skip because it's currently handled in LocalPlayerSystem, although it probably should not be.
-                continue;
-            }
-
-            CharacterMovementComponent characterMovementComponent = entity.getComponent(CharacterMovementComponent.class);
+        for (EntityRef entity : entityManager.getEntitiesWith(NPCMovementInputComponent.class)) {
+            NPCMovementInputComponent characterMovementComponent = entity.getComponent(NPCMovementInputComponent.class);
             CharacterComponent characterComp = entity.getComponent(CharacterComponent.class);
 
-            boolean isRunning = false; // not sure how to determine this yet
-            boolean jumpRequested = characterMovementComponent.jump;
-            entity.send(new CharacterMoveInputEvent(inputSequenceNumber++, characterComp.pitch, characterComp.yaw,
-                    characterMovementComponent.getVelocity(),
-                    isRunning, jumpRequested));
+            entity.send(new CharacterMoveInputEvent(inputSequenceNumber++,
+                    characterComp.pitch, characterComp.yaw,
+                    characterMovementComponent.directionToMove,
+                    characterMovementComponent.runningRequested,
+                    characterMovementComponent.jumpingRequested));
         }
     }
 
