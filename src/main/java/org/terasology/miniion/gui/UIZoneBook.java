@@ -27,6 +27,7 @@ import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.math.Region3i;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.components.ZoneComponent;
+import org.terasology.miniion.componentsystem.action.ZoneToolSystem;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.miniion.minionenum.ZoneType;
@@ -293,7 +294,8 @@ public class UIZoneBook extends UIWindow {
 
     private void saveMinion(UIDisplayElement element, int id) {
         lblError.setText("");
-        if (null == MinionSystem.getCurrentBlockSelectionRegion()) {
+        ZoneToolSystem zoneToolSystem = CoreRegistry.get(ZoneToolSystem.class);
+        if (null == zoneToolSystem.getCurrentlySelectedRegion()) {
             lblError.setText("Something went wrong. Please close the book and recreate the selection.");
         }
         if ((!cmbType.isVisible())) {
@@ -310,7 +312,7 @@ public class UIZoneBook extends UIWindow {
         if (cmbType.isVisible() && cmbType.getSelection() != null) {
             ZoneType zoneType = ZoneType.valueOf(cmbType.getSelection().getText());
             if (zoneType == ZoneType.OreonFarm) {
-                Region3i region = MinionSystem.getCurrentBlockSelectionRegion();
+                Region3i region = zoneToolSystem.getCurrentlySelectedRegion();
                 if (region.min().y != region.max().y) {
                     lblError.setText("A farm zone needs to be level. Please select a flat zone and try again");
                     return;
@@ -354,7 +356,7 @@ public class UIZoneBook extends UIWindow {
             return;
         }
 
-        Region3i newZoneRegion = MinionSystem.getCurrentBlockSelectionRegion();
+        Region3i newZoneRegion = zoneToolSystem.getCurrentlySelectedRegion();
         Vector3i min = newZoneRegion.min();
         Vector3i newSize = new Vector3i(zonedepth, zoneheight, zonewidth);
         newZoneRegion = Region3i.createFromMinAndSize(min, newSize);
@@ -375,7 +377,7 @@ public class UIZoneBook extends UIWindow {
         
         MinionSystem.addZone(newzone);
         lblzonetype.setText("");
-        MinionSystem.setCurrentBlockSelectionRegion(null);
+        zoneToolSystem.setCurrentlySelectedRegion(null);
         lastSelectedZone = newzone;
         showSelectedZone();
         this.close();
@@ -463,7 +465,8 @@ public class UIZoneBook extends UIWindow {
         initList();
         resetInput();
 
-        Region3i currentSelectedRegion = MinionSystem.getCurrentBlockSelectionRegion();
+        ZoneToolSystem zoneToolSystem = CoreRegistry.get(ZoneToolSystem.class);
+        Region3i currentSelectedRegion = zoneToolSystem.getCurrentlySelectedRegion();
         if (null != currentSelectedRegion) {
             EntityManager entityManager = CoreRegistry.get(EntityManager.class);
             // TODO: this should really be a count of active zones owned by this player

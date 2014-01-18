@@ -15,7 +15,6 @@
  */
 package org.terasology.miniion.componentsystem.controllers;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +36,6 @@ import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.manager.GUIManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
-import org.terasology.math.Region3i;
 import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.ZoneComponent;
@@ -49,11 +47,8 @@ import org.terasology.miniion.gui.UIScreenBookOreo;
 import org.terasology.miniion.gui.UIZoneBook;
 import org.terasology.miniion.utilities.MinionRecipe;
 import org.terasology.miniion.utilities.ModIcons;
-import org.terasology.rendering.assets.texture.Texture;
-import org.terasology.rendering.assets.texture.TextureUtil;
 import org.terasology.rendering.logic.AnimEndEvent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
-import org.terasology.world.selection.BlockSelectionComponent;
 
 /**
  * Created with IntelliJ IDEA. User: Overdhose Date: 10/05/12 Time: 17:54
@@ -78,7 +73,6 @@ public class MinionSystem implements ComponentSystem {
     private static EntityRef activeminion;
     // TODO : a better way to save / load zones, but it does the trick
     private static EntityRef zonelist = EntityRef.NULL;
-    private static EntityRef currentBlockSelectionEntity = EntityRef.NULL;
 
     private static List<MinionRecipe> recipeslist = new ArrayList<MinionRecipe>();
 
@@ -95,11 +89,6 @@ public class MinionSystem implements ComponentSystem {
         guiManager.registerWindow("zonebook", UIZoneBook.class);
         createZoneList();
         initRecipes();
-
-        BlockSelectionComponent blockSelectionComponent = new BlockSelectionComponent();
-        Color transparentGreen = new Color(0, 255, 0, 100);
-        blockSelectionComponent.texture = Assets.get(TextureUtil.getTextureUriForColor(transparentGreen), Texture.class);
-        currentBlockSelectionEntity = entityManager.create(blockSelectionComponent);
     }
 
     @ReceiveEvent
@@ -205,29 +194,6 @@ public class MinionSystem implements ComponentSystem {
      */
     public static EntityRef getActiveMinion() {
         return activeminion;
-    }
-
-    public static void setCurrentBlockSelectionRegion(Region3i currentBlockSelectionRegion) {
-        
-        BlockSelectionComponent blockSelectionComponent = currentBlockSelectionEntity.getComponent(BlockSelectionComponent.class);
-        blockSelectionComponent.currentSelection = currentBlockSelectionRegion;
-        if (null != currentBlockSelectionRegion) {
-            blockSelectionComponent.shouldRender = true;
-        } else {
-            blockSelectionComponent.shouldRender = false;
-        }
-
-        // TODO: it would be better if we didn't persist this entity and block selection component
-        // currentBlockSelectionEntity.saveComponent(blockSelectionComponent);
-    }
-
-    public static Region3i getCurrentBlockSelectionRegion() {
-        if (currentBlockSelectionEntity == EntityRef.NULL) {
-            return null;
-        } else {
-            BlockSelectionComponent selection = currentBlockSelectionEntity.getComponent(BlockSelectionComponent.class);
-            return selection.currentSelection;
-        }
     }
 
     /**
@@ -529,9 +495,6 @@ public class MinionSystem implements ComponentSystem {
                 }
             }
         }
-        
-        currentBlockSelectionEntity.destroy();
-        currentBlockSelectionEntity = EntityRef.NULL;
     }
 
     /**
