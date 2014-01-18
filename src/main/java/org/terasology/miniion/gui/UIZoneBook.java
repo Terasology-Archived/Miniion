@@ -15,13 +15,15 @@
  */
 package org.terasology.miniion.gui;
 
+import java.util.List;
+
 import javax.vecmath.Vector2f;
 
 import org.lwjgl.input.Keyboard;
 import org.terasology.asset.Assets;
 import org.terasology.engine.CoreRegistry;
+import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.math.Vector3i;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.miniion.gui.UIModButton.ButtonType;
 import org.terasology.miniion.minionenum.ZoneType;
@@ -38,8 +40,6 @@ import org.terasology.rendering.gui.widgets.UIListItem;
 import org.terasology.rendering.gui.widgets.UIText;
 import org.terasology.rendering.gui.widgets.UIWindow;
 import org.terasology.rendering.nui.Color;
-import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
 import org.terasology.world.selection.BlockSelectionComponent;
 
 public class UIZoneBook extends UIWindow {
@@ -59,128 +59,92 @@ public class UIZoneBook extends UIWindow {
 
     private EntityRef lastSelectedZone = EntityRef.NULL;
 
-    private ClickListener zonelistener = new ClickListener() {
+    private ClickListener zoneTypeSelectionListener = new ClickListener() {
         @Override
         public void click(UIDisplayElement element, int button) {
             UIListItem listitem = (UIListItem) element;
-            if (listitem.getValue().getClass().equals(ZoneType.class)) {
-                switch (((ZoneType) listitem.getValue())) {
-                    case Gather: {
-                        uizonelist.removeAll();
-                        for (EntityRef zone : MinionSystem.getGatherZoneList()) {
-                            ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-                            String zoneName = zoneComponent.Name;
-                            UIListItem newlistitem = new UIListItem(zoneName, zone);
-                            newlistitem.setTextColor(Color.toColorString(Color.BLACK));
-                            newlistitem.addClickListener(zonelistener);
-                            uizonelist.addItem(newlistitem);
-                        }
-                        uizonelistgroup.setVisible(false);
-                        uizonelist.setVisible(true);
-                        btnBack.setVisible(true);
-                        break;
-                    }
-                    case Terraform: {
-                        uizonelist.removeAll();
-                        for (EntityRef zone : MinionSystem.getTerraformZoneList()) {
-                            ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-                            String zoneName = zoneComponent.Name;
-                            UIListItem newlistitem = new UIListItem(zoneName, zone);
-                            newlistitem.setTextColor(Color.toColorString(Color.BLACK));
-                            newlistitem.addClickListener(zonelistener);
-                            uizonelist.addItem(newlistitem);
-                        }
-                        uizonelistgroup.setVisible(false);
-                        uizonelist.setVisible(true);
-                        btnBack.setVisible(true);
-                        break;
-                    }
-                    case Work: {
-                        uizonelist.removeAll();
-                        for (EntityRef zone : MinionSystem.getWorkZoneList()) {
-                            ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-                            String zoneName = zoneComponent.Name;
-                            UIListItem newlistitem = new UIListItem(zoneName, zone);
-                            newlistitem.setTextColor(Color.toColorString(Color.BLACK));
-                            newlistitem.addClickListener(zonelistener);
-                            uizonelist.addItem(newlistitem);
-                        }
-                        uizonelistgroup.setVisible(false);
-                        uizonelist.setVisible(true);
-                        btnBack.setVisible(true);
-                        break;
-                    }
-                    case Storage: {
-                        uizonelist.removeAll();
-                        for (EntityRef zone : MinionSystem.getStorageZoneList()) {
-                            ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-                            String zoneName = zoneComponent.Name;
-                            UIListItem newlistitem = new UIListItem(zoneName, zone);
-                            newlistitem.setTextColor(Color.toColorString(Color.BLACK));
-                            newlistitem.addClickListener(zonelistener);
-                            uizonelist.addItem(newlistitem);
-                        }
-                        uizonelistgroup.setVisible(false);
-                        uizonelist.setVisible(true);
-                        btnBack.setVisible(true);
-                        break;
-                    }
-                    case OreonFarm: {
-                        uizonelist.removeAll();
-                        for (EntityRef zone : MinionSystem.getOreonFarmZoneList()) {
-                            ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-                            String zoneName = zoneComponent.Name;
-                            UIListItem newlistitem = new UIListItem(zoneName, zone);
-                            newlistitem.setTextColor(Color.toColorString(Color.BLACK));
-                            newlistitem.addClickListener(zonelistener);
-                            uizonelist.addItem(newlistitem);
-                        }
-                        uizonelistgroup.setVisible(false);
-                        uizonelist.setVisible(true);
-                        btnBack.setVisible(true);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+            List<EntityRef> currentZoneList = null;
+            switch (((ZoneType) listitem.getValue())) {
+                case Gather: {
+                    currentZoneList = MinionSystem.getGatherZoneList();
+                    break;
+                }
+                case Terraform: {
+                    currentZoneList = MinionSystem.getTerraformZoneList();
+                    break;
+                }
+                case Work: {
+                    currentZoneList = MinionSystem.getWorkZoneList();
+                    break;
+                }
+                case Storage: {
+                    currentZoneList = MinionSystem.getStorageZoneList();
+                    break;
+                }
+                case OreonFarm: {
+                    currentZoneList = MinionSystem.getOreonFarmZoneList();
+                    break;
+                }
+                default: {
+                    break;
                 }
             }
-            else {
-                if (cmbType.isVisible()) {
-                    cmbType.setVisible(false);
+            
+            if (null != currentZoneList) {
+                uizonelist.removeAll();
+                for (EntityRef zone : currentZoneList) {
+                    ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+                    String zoneName = zoneComponent.Name;
+                    UIListItem newlistitem = new UIListItem(zoneName, zone);
+                    newlistitem.setTextColor(Color.toColorString(Color.BLACK));
+                    newlistitem.addClickListener(zoneSelectionlistener);
+                    uizonelist.addItem(newlistitem);
                 }
-                lblError.setText("");
-                hideSelectedZone();
-                EntityRef zone = (EntityRef) listitem.getValue();
-                ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-                txtzonename.setText(zoneComponent.Name);
-                txtheight.setText("" + zoneComponent.getZoneHeight());
-                txtwidth.setText("" + zoneComponent.getZoneWidth());
-                txtdepth.setText("" + zoneComponent.getZoneDepth());
-                switch (zoneComponent.zonetype) {
-                    case Gather: {
-                        lblzonetype.setText("Zonetype : Gather");
-                        break;
-                    }
-                    case Terraform: {
-                        lblzonetype.setText("Zonetype : Terraform");
-                        break;
-                    }
-                    case Work: {
-                        lblzonetype.setText("Zonetype : Work");
-                        break;
-                    }
-                    default: {
-                        lblzonetype.setText("label wasn't set");
-                        break;
-                    }
-                }
+                uizonelistgroup.setVisible(false);
+                uizonelist.setVisible(true);
+                btnBack.setVisible(true);
+            }
+        }
+    };
 
-                btnSave.setVisible(false);
-                btnDelete.setVisible(true);
-                lastSelectedZone = zone;
-                showSelectedZone();
+    private ClickListener zoneSelectionlistener = new ClickListener() {
+        @Override
+        public void click(UIDisplayElement element, int button) {
+            UIListItem listitem = (UIListItem) element;
+            if (cmbType.isVisible()) {
+                cmbType.setVisible(false);
             }
+            lblError.setText("");
+            hideSelectedZone();
+            EntityRef zone = (EntityRef) listitem.getValue();
+            ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+            txtzonename.setText(zoneComponent.Name);
+            txtheight.setText("" + zoneComponent.getZoneHeight());
+            txtwidth.setText("" + zoneComponent.getZoneWidth());
+            txtdepth.setText("" + zoneComponent.getZoneDepth());
+            switch (zoneComponent.zonetype) {
+                case Gather: {
+                    lblzonetype.setText("Zonetype : Gather");
+                    break;
+                }
+                case Terraform: {
+                    lblzonetype.setText("Zonetype : Terraform");
+                    break;
+                }
+                case Work: {
+                    lblzonetype.setText("Zonetype : Work");
+                    break;
+                }
+                default: {
+                    lblzonetype.setText("label wasn't set");
+                    break;
+                }
+            }
+
+            btnSave.setVisible(false);
+            btnDelete.setVisible(true);
+            lastSelectedZone = zone;
+            showSelectedZone();
         }
     };
 
@@ -304,7 +268,7 @@ public class UIZoneBook extends UIWindow {
         btnDelete.addClickListener(new ClickListener() {
             @Override
             public void click(UIDisplayElement element, int button) {
-                executeDelClick(element, button, (EntityRef) uizonelist.getSelection().getValue());
+                deleteZone(element, button, (EntityRef) uizonelist.getSelection().getValue());
             }
         });
         background.addDisplayElement(btnDelete);
@@ -339,8 +303,13 @@ public class UIZoneBook extends UIWindow {
             lblError.setText("Please select a zone type");
             return;
         }
+        if (cmbType.isVisible() && cmbType.getSelection() != null && (null == cmbType.getSelection().getText() || cmbType.getSelection().getText().isEmpty())) {
+            lblError.setText("Please select a zone type");
+            return;
+        }
         if (cmbType.isVisible() && cmbType.getSelection() != null) {
-            if (ZoneType.valueOf(cmbType.getSelection().getText()) == ZoneType.OreonFarm) {
+            ZoneType zoneType = ZoneType.valueOf(cmbType.getSelection().getText());
+            if (zoneType == ZoneType.OreonFarm) {
                 ZoneComponent zoneComponent = MinionSystem.getNewZone().getComponent(ZoneComponent.class);
                 if (zoneComponent.getMinBounds().y != zoneComponent.getMaxBounds().y) {
                     newzonefound = false;
@@ -349,53 +318,53 @@ public class UIZoneBook extends UIWindow {
                 }
             }
         }
-        if (txtzonename.getText().length() < 3) {
-            lblError.setText("Zone name needs to be longer then 2 characters!");
+        String newZoneName = txtzonename.getText().trim();
+        if (newZoneName.length() < 0) {
+            lblError.setText("Zone name must be specified");
             return;
         }
-        for (EntityRef zone : MinionSystem.getGatherZoneList()) {
+        
+        EntityManager entityManager = CoreRegistry.get(EntityManager.class);
+        for (EntityRef zone : entityManager.getEntitiesWith(ZoneComponent.class)) {
             ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-            if (zoneComponent.Name.matches(txtzonename.getText())) {
+            if (newZoneName.equalsIgnoreCase(zoneComponent.Name)) {
                 lblError.setText("Zone name already exists!");
                 return;
             }
         }
-        for (EntityRef zone : MinionSystem.getTerraformZoneList()) {
-            ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-            if (zoneComponent.Name.matches(txtzonename.getText())) {
-                lblError.setText("Zone name already exists!");
-                return;
-            }
-        }
-        for (EntityRef zone : MinionSystem.getWorkZoneList()) {
-            ZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-            if (zoneComponent.Name.matches(txtzonename.getText())) {
-                lblError.setText("Zone name already exists!");
-                return;
-            }
-        }
+
+        int zoneheight;
         try {
-            int tmp;
-            tmp = Integer.parseInt(txtheight.getText());
-            tmp = Integer.parseInt(txtwidth.getText());
-            tmp = Integer.parseInt(txtdepth.getText());
-            lblError.setText("value needs to be an number, check for trailing spaces!");
-        } catch (NumberFormatException e) {
+            zoneheight = Integer.parseInt(txtheight.getText().trim());
+        } catch (NumberFormatException e1) {
+            lblError.setText("zone height needs to be an number");
             return;
         }
+        int zonewidth;
+        try {
+            zonewidth = Integer.parseInt(txtwidth.getText());
+        } catch (NumberFormatException e1) {
+            lblError.setText("zone width needs to be an number");
+            return;
+        }
+        int zonedepth;
+        try {
+            zonedepth = Integer.parseInt(txtdepth.getText());
+        } catch (NumberFormatException e1) {
+            lblError.setText("zone depth needs to be an number");
+            return;
+        }
+
         EntityRef newzone = MinionSystem.getNewZone();
         ZoneComponent zoneComponent = newzone.getComponent(ZoneComponent.class);
 
-        zoneComponent.Name = txtzonename.getText();
-        int zoneheight = Integer.parseInt(txtheight.getText());
-        int zonewidth = Integer.parseInt(txtwidth.getText());
-        int zonedepth = Integer.parseInt(txtdepth.getText());
+        zoneComponent.Name = newZoneName;
         zoneComponent.resizeTo(zoneheight, zonedepth, zonewidth);
-        if (cmbType.isVisible()) {
-            zoneComponent.zonetype = ZoneType.valueOf(cmbType.getSelection().getText());
-        }
+        zoneComponent.zonetype = ZoneType.valueOf(cmbType.getSelection().getText());
         newzone.saveComponent(zoneComponent);
         BlockSelectionComponent blockSelection = zoneComponent.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+        blockSelection.shouldRender = false;
+        blockSelection.texture = null;
         zoneComponent.blockSelectionEntity.saveComponent(blockSelection);
         MinionSystem.addZone(newzone);
         newzonefound = false;
@@ -406,7 +375,7 @@ public class UIZoneBook extends UIWindow {
         this.close();
     }
 
-    private void executeDelClick(UIDisplayElement element, int id, EntityRef deletezone) {
+    private void deleteZone(UIDisplayElement element, int id, EntityRef deletezone) {
         ZoneComponent zoneComponent = deletezone.getComponent(ZoneComponent.class);
         switch (zoneComponent.zonetype) {
             case Gather: {
@@ -455,15 +424,11 @@ public class UIZoneBook extends UIWindow {
             zoneComponent.zonetype = ZoneType.Gather;
             newZone.saveComponent(zoneComponent);
 
-            Vector3i minbounds = zoneComponent.getMinBounds();
-            Vector3i maxbounds = zoneComponent.getMaxBounds();
-            if (MinionSystem.getGatherZoneList() == EntityRef.NULL) {
-                txtzonename.setText("Zone0");
-            } else {
-                txtzonename.setText("Zone"
-                                    + (MinionSystem.getGatherZoneList().size()
-                                    + MinionSystem.getTerraformZoneList().size()));
-            }
+            EntityManager entityManager = CoreRegistry.get(EntityManager.class);
+            // TODO: this should really be a count of active zones owned by this player
+            int zoneCount = entityManager.getCountOfEntitiesWith(ZoneComponent.class);
+            
+            txtzonename.setText("Zone" + String.valueOf(zoneCount));
             lblzonetype.setText("ZoneType :");
             cmbType.setVisible(true);
             txtwidth.setText(String.valueOf(zoneComponent.getZoneWidth()));
@@ -492,7 +457,7 @@ public class UIZoneBook extends UIWindow {
         for (ZoneType zonetype : ZoneType.values()) {
             UIListItem listitem = new UIListItem(zonetype.toString(), zonetype);
             listitem.setTextColor(Color.toColorString(Color.BLACK));
-            listitem.addClickListener(zonelistener);
+            listitem.addClickListener(zoneTypeSelectionListener);
             uizonelistgroup.addItem(listitem);
         }
     }
@@ -520,32 +485,6 @@ public class UIZoneBook extends UIWindow {
         newzonefound = false;
         btnSave.setVisible(false);
         btnDelete.setVisible(false);
-    }
-
-    private int getAbsoluteDiff(int val1, int val2) {
-        int width;
-        if (val1 == val2) {
-            width = 1;
-        } else if (val1 < 0) {
-            if (val2 < 0 && val2 < val1) {
-                width = Math.abs(val2) - Math.abs(val1);
-            } else if (val2 < 0 && val2 > val1) {
-                width = Math.abs(val1) - Math.abs(val2);
-            } else {
-                width = Math.abs(val1) + val2;
-            }
-            width++;
-        } else {
-            if (val2 > -1 && val2 < val1) {
-                width = val1 - val2;
-            } else if (val2 > -1 && val2 > val1) {
-                width = val2 - val1;
-            } else {
-                width = Math.abs(val2) + val1;
-            }
-            width++;
-        }
-        return width;
     }
 
     private void hideSelectedZone() {

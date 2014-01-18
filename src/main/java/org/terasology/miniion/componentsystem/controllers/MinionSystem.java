@@ -206,7 +206,8 @@ public class MinionSystem implements ComponentSystem {
             ZoneComponent newZoneComponent = newzone.getComponent(ZoneComponent.class);
             BlockSelectionComponent selection = newZoneComponent.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
             selection.shouldRender = false;
-            newZoneComponent.blockSelectionEntity.saveComponent(selection);
+            // TODO: we don't want to persist this zone's block selection yet as the zone isn't persisted
+            // newZoneComponent.blockSelectionEntity.saveComponent(selection);
         }
         newzone = zone;
 
@@ -214,8 +215,10 @@ public class MinionSystem implements ComponentSystem {
             ZoneComponent newZoneComponent = newzone.getComponent(ZoneComponent.class);
             BlockSelectionComponent selection = newZoneComponent.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
             selection.shouldRender = true;
-            selection.texture = Assets.get(TextureUtil.getTextureUriForColor(new Color(0, 255, 0, 100)), Texture.class);
-            newZoneComponent.blockSelectionEntity.saveComponent(selection);
+            Color transparentGreen = new Color(0, 255, 0, 100);
+            selection.texture = Assets.get(TextureUtil.getTextureUriForColor(transparentGreen), Texture.class);
+            // TODO: we don't want to persist this zone's block selection yet as the zone isn't persisted
+            // newZoneComponent.blockSelectionEntity.saveComponent(selection);
         }
     }
 
