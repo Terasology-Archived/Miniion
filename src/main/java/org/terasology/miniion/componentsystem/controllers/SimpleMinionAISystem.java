@@ -198,7 +198,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
     private void executeStayAI(EntityRef entity) {
         CharacterMovementComponent moveComp = entity
                 .getComponent(CharacterMovementComponent.class);
-        moveComp.setVelocity(new Vector3f(0,0,0));
+        moveComp.setVelocity(new Vector3f(0, 0, 0));
         entity.saveComponent(moveComp);
         AnimationComponent animcomp = entity
                 .getComponent(AnimationComponent.class);
@@ -447,11 +447,11 @@ public class SimpleMinionAISystem implements ComponentSystem,
         } else if (minioncomp.assignedzone.zonetype != ZoneType.Terraform && terraformFinalBlockType.isEmpty()) {
             changeAnimation(entity, animcomp.idleAnim, true);
             return;
-            
+
             // Not sure why we're checking for oreonfarm when we're in Terraform mode
-//        } else if (minioncomp.assignedzone.zonetype != ZoneType.OreonFarm) {
-//            changeAnimation(entity, animcomp.idleAnim, true);
-//            return;
+            //        } else if (minioncomp.assignedzone.zonetype != ZoneType.OreonFarm) {
+            //            changeAnimation(entity, animcomp.idleAnim, true);
+            //            return;
         }
 
         if (ai.movementTargets.size() == 0) {
@@ -503,8 +503,8 @@ public class SimpleMinionAISystem implements ComponentSystem,
                                 {
                                     newBlock = blockManager.getBlock(minioncomp.assignedrecipe.result);
                                 }
-                                
-                                worldProvider.setBlock(new Vector3i(currentTarget.x, y, currentTarget.z), newBlock );
+
+                                worldProvider.setBlock(new Vector3i(currentTarget.x, y, currentTarget.z), newBlock);
                                 ai.craftprogress = 0;
                                 if (y == minioncomp.assignedzone.getMinBounds().y) {
                                     ai.movementTargets.remove(currentTarget);
@@ -820,7 +820,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
                         changeAnimation(entity, animcomp.idleAnim, true);
                     }
                     location.setWorldPosition(currentTarget);
-                    moveComp.setVelocity(new Vector3f(0,0,0));
+                    moveComp.setVelocity(new Vector3f(0, 0, 0));
                     entity.saveComponent(location);
                     entity.saveComponent(moveComp);
                     ai.lastPosition = location.getWorldPosition();

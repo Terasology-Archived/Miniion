@@ -36,7 +36,6 @@ public abstract class Pathfinder {
 
     protected boolean pathSmoothing = false;
 
-
     public Pathfinder(WorldProvider provider) {
         this.world = provider;
     }
@@ -68,7 +67,6 @@ public abstract class Pathfinder {
         // @todo add more complicated check
         return isPassable(world.getBlock(vec));
     }
-
 
     protected boolean isWalkable(int x, int y, int z) {
         // @todo consider creature height

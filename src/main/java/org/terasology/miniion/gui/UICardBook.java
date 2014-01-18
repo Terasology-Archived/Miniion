@@ -53,259 +53,259 @@ import org.terasology.rendering.nui.Color;
  */
 public class UICardBook extends UIWindow {
 
-	EntityRef container = EntityRef.NULL;
-	EntityRef creature = EntityRef.NULL;
-	EntityManager entityManager;
+    EntityRef container = EntityRef.NULL;
+    EntityRef creature = EntityRef.NULL;
+    EntityManager entityManager;
 
-	private final UIInventoryGrid playerInventory;
-	private final UIInventoryGrid playerToolbar;
-	private final UIInventoryGrid containerInventory;
+    private final UIInventoryGrid playerInventory;
+    private final UIInventoryGrid playerToolbar;
+    private final UIInventoryGrid containerInventory;
 
-	private final UIImage leftGearWheel;
-	private final UIImage rightGearWheel;
-	private final UIImage background;
-	private final UILabel page1label;
-	private final UIComboBox minioncombo;
-	private final UIModButton buttoncreatecard;
+    private final UIImage leftGearWheel;
+    private final UIImage rightGearWheel;
+    private final UIImage background;
+    private final UILabel page1label;
+    private final UIComboBox minioncombo;
+    private final UIModButton buttoncreatecard;
 
-	public UICardBook() {
-		setId("cardbook");
-		entityManager = CoreRegistry.get(EntityManager.class);
-		setBackgroundColor(Color.toColorString(new Color(0, 0, 0, 200)));
-		setModal(true);
-		maximize();
-		// setCloseBinds(new String[] {"engine:useHeldItem"});
-		setCloseKeys(new int[] { Keyboard.KEY_ESCAPE });
+    public UICardBook() {
+        setId("cardbook");
+        entityManager = CoreRegistry.get(EntityManager.class);
+        setBackgroundColor(Color.toColorString(new Color(0, 0, 0, 200)));
+        setModal(true);
+        maximize();
+        // setCloseBinds(new String[] {"engine:useHeldItem"});
+        setCloseKeys(new int[]{Keyboard.KEY_ESCAPE});
 
-		addVisibilityListener(new VisibilityListener() {
-			@Override
-			public void changed(UIDisplayElement element, boolean visibility) {
-				if (!visibility) {
-					getGUIManager().getWindowById("hud")
-							.getElementById("leftGearWheel").setVisible(true);
-					getGUIManager().getWindowById("hud")
-							.getElementById("rightGearWheel").setVisible(true);
-				}
-			}
-		});
+        addVisibilityListener(new VisibilityListener() {
+            @Override
+            public void changed(UIDisplayElement element, boolean visibility) {
+                if (!visibility) {
+                    getGUIManager().getWindowById("hud")
+                            .getElementById("leftGearWheel").setVisible(true);
+                    getGUIManager().getWindowById("hud")
+                            .getElementById("rightGearWheel").setVisible(true);
+                }
+            }
+        });
 
-		background = new UIImage();
-		background.setTexture(Assets.getTexture("miniion:openbook"));
-		background.setHorizontalAlign(EHorizontalAlign.CENTER);
-		background.setVerticalAlign(EVerticalAlign.CENTER);
-		background.setSize(new Vector2f(500, 300));
-		background.setVisible(true);
-		addDisplayElement(background);
+        background = new UIImage();
+        background.setTexture(Assets.getTexture("miniion:openbook"));
+        background.setHorizontalAlign(EHorizontalAlign.CENTER);
+        background.setVerticalAlign(EVerticalAlign.CENTER);
+        background.setSize(new Vector2f(500, 300));
+        background.setVisible(true);
+        addDisplayElement(background);
 
-		page1label = new UILabel();
-		page1label.setPosition(new Vector2f(40, 20));
-		page1label.setSize(new Vector2f(190, 60));
-		page1label.setWrap(true);
-		page1label.setText("Insert an empty card into this page!");
-		page1label.setColor(Color.toColorString(Color.BLACK));
-		page1label.setVisible(true);
-		background.addDisplayElement(page1label);
+        page1label = new UILabel();
+        page1label.setPosition(new Vector2f(40, 20));
+        page1label.setSize(new Vector2f(190, 60));
+        page1label.setWrap(true);
+        page1label.setText("Insert an empty card into this page!");
+        page1label.setColor(Color.toColorString(Color.BLACK));
+        page1label.setVisible(true);
+        background.addDisplayElement(page1label);
 
-		minioncombo = new UIComboBox(new Vector2f(190, 20), new Vector2f(190,
-				120));
-		minioncombo.setPosition(new Vector2f(40, 120));
-		minioncombo.setVisible(false);
-		background.addDisplayElement(minioncombo);
+        minioncombo = new UIComboBox(new Vector2f(190, 20), new Vector2f(190,
+                120));
+        minioncombo.setPosition(new Vector2f(40, 120));
+        minioncombo.setVisible(false);
+        background.addDisplayElement(minioncombo);
 
-		buttoncreatecard = new UIModButton(new Vector2f(140, 20),
-				ButtonType.NORMAL);
-		buttoncreatecard.setPosition(new Vector2f(280, 60));
-		buttoncreatecard.setSize(new Vector2f(180, 180));
-		buttoncreatecard.setLabel("Create card");
-		buttoncreatecard.setVisible(false);
-		buttoncreatecard.addClickListener(new ClickListener() {
-			@Override
-			public void click(UIDisplayElement element, int button) {
-				executeCreate(element, button);
-			}
-		});
+        buttoncreatecard = new UIModButton(new Vector2f(140, 20),
+                ButtonType.NORMAL);
+        buttoncreatecard.setPosition(new Vector2f(280, 60));
+        buttoncreatecard.setSize(new Vector2f(180, 180));
+        buttoncreatecard.setLabel("Create card");
+        buttoncreatecard.setVisible(false);
+        buttoncreatecard.addClickListener(new ClickListener() {
+            @Override
+            public void click(UIDisplayElement element, int button) {
+                executeCreate(element, button);
+            }
+        });
 
-		background.addDisplayElement(buttoncreatecard);
+        background.addDisplayElement(buttoncreatecard);
 
-		playerToolbar = new UIInventoryGrid(10);
-		playerToolbar.setVisible(true);
-		playerToolbar.setHorizontalAlign(EHorizontalAlign.CENTER);
-		playerToolbar.setVerticalAlign(EVerticalAlign.BOTTOM);
-		playerToolbar.setCellMargin(new Vector2f(0f, 0f));
-		playerToolbar.setBorderImage("engine:inventory", new Vector2f(0f, 84f),
-				new Vector2f(169f, 83f), new Vector4f(4f, 4f, 4f, 4f));
+        playerToolbar = new UIInventoryGrid(10);
+        playerToolbar.setVisible(true);
+        playerToolbar.setHorizontalAlign(EHorizontalAlign.CENTER);
+        playerToolbar.setVerticalAlign(EVerticalAlign.BOTTOM);
+        playerToolbar.setCellMargin(new Vector2f(0f, 0f));
+        playerToolbar.setBorderImage("engine:inventory", new Vector2f(0f, 84f),
+                new Vector2f(169f, 83f), new Vector4f(4f, 4f, 4f, 4f));
 
-		playerInventory = new UIInventoryGrid(10);
-		playerInventory.setVisible(true);
-		playerInventory.setCellMargin(new Vector2f(0f, 0f));
-		playerInventory.setBorderImage("engine:inventory",
-				new Vector2f(0f, 84f), new Vector2f(169f, 61f), new Vector4f(
-						5f, 4f, 3f, 4f));
+        playerInventory = new UIInventoryGrid(10);
+        playerInventory.setVisible(true);
+        playerInventory.setCellMargin(new Vector2f(0f, 0f));
+        playerInventory.setBorderImage("engine:inventory",
+                new Vector2f(0f, 84f), new Vector2f(169f, 61f), new Vector4f(
+                        5f, 4f, 3f, 4f));
 
-		containerInventory = new UIInventoryGrid(8);
-		containerInventory.setVisible(true);
-		containerInventory.setPosition(new Vector2f(40, 60));
-		containerInventory.setCellMargin(new Vector2f(0f, 0f));
-		background.addDisplayElement(containerInventory);
-		// containerInventory.setBorderImage("engine:inventory", new
-		// Vector2f(0f, 84f), new Vector2f(169f, 61f), new Vector4f(5f, 4f, 3f,
-		// 4f));
+        containerInventory = new UIInventoryGrid(8);
+        containerInventory.setVisible(true);
+        containerInventory.setPosition(new Vector2f(40, 60));
+        containerInventory.setCellMargin(new Vector2f(0f, 0f));
+        background.addDisplayElement(containerInventory);
+        // containerInventory.setBorderImage("engine:inventory", new
+        // Vector2f(0f, 84f), new Vector2f(169f, 61f), new Vector4f(5f, 4f, 3f,
+        // 4f));
 
-		leftGearWheel = new UIImage(Assets.getTexture("engine:inventory"));
-		leftGearWheel.setSize(new Vector2f(36f, 36f));
-		leftGearWheel.setTextureOrigin(new Vector2f(121.0f, 168.0f));
-		leftGearWheel.setTextureSize(new Vector2f(27.0f, 27.0f));
-		leftGearWheel.setVisible(true);
+        leftGearWheel = new UIImage(Assets.getTexture("engine:inventory"));
+        leftGearWheel.setSize(new Vector2f(36f, 36f));
+        leftGearWheel.setTextureOrigin(new Vector2f(121.0f, 168.0f));
+        leftGearWheel.setTextureSize(new Vector2f(27.0f, 27.0f));
+        leftGearWheel.setVisible(true);
 
-		leftGearWheel.setHorizontalAlign(EHorizontalAlign.CENTER);
-		leftGearWheel.setVerticalAlign(EVerticalAlign.BOTTOM);
-		leftGearWheel.setPosition(new Vector2f(
-				leftGearWheel.getPosition().x - 240f, leftGearWheel
-						.getPosition().y - 4f));
+        leftGearWheel.setHorizontalAlign(EHorizontalAlign.CENTER);
+        leftGearWheel.setVerticalAlign(EVerticalAlign.BOTTOM);
+        leftGearWheel.setPosition(new Vector2f(
+                leftGearWheel.getPosition().x - 240f, leftGearWheel
+                        .getPosition().y - 4f));
 
-		rightGearWheel = new UIImage(Assets.getTexture("engine:inventory"));
-		rightGearWheel.setSize(new Vector2f(36f, 36f));
-		rightGearWheel.setTextureOrigin(new Vector2f(121.0f, 168.0f));
-		rightGearWheel.setTextureSize(new Vector2f(27.0f, 27.0f));
-		rightGearWheel.setVisible(true);
+        rightGearWheel = new UIImage(Assets.getTexture("engine:inventory"));
+        rightGearWheel.setSize(new Vector2f(36f, 36f));
+        rightGearWheel.setTextureOrigin(new Vector2f(121.0f, 168.0f));
+        rightGearWheel.setTextureSize(new Vector2f(27.0f, 27.0f));
+        rightGearWheel.setVisible(true);
 
-		rightGearWheel.setHorizontalAlign(EHorizontalAlign.CENTER);
-		rightGearWheel.setVerticalAlign(EVerticalAlign.BOTTOM);
-		rightGearWheel.setPosition(new Vector2f(
-				rightGearWheel.getPosition().x + 240f, rightGearWheel
-						.getPosition().y - 4f));
+        rightGearWheel.setHorizontalAlign(EHorizontalAlign.CENTER);
+        rightGearWheel.setVerticalAlign(EVerticalAlign.BOTTOM);
+        rightGearWheel.setPosition(new Vector2f(
+                rightGearWheel.getPosition().x + 240f, rightGearWheel
+                        .getPosition().y - 4f));
 
-		addDisplayElement(rightGearWheel);
-		addDisplayElement(leftGearWheel);
+        addDisplayElement(rightGearWheel);
+        addDisplayElement(leftGearWheel);
 
-		addDisplayElement(playerInventory);
-		addDisplayElement(playerToolbar);
-		// addDisplayElement(containerInventory);
+        addDisplayElement(playerInventory);
+        addDisplayElement(playerToolbar);
+        // addDisplayElement(containerInventory);
 
-		layout();
-	}
+        layout();
+    }
 
-	public void openContainer(EntityRef container, EntityRef creature) {
+    public void openContainer(EntityRef container, EntityRef creature) {
 
-		// empty and fill combo box, just in case
-		minioncombo.removeAll();
-		PrefabManager prefMan = CoreRegistry.get(PrefabManager.class);
-		for (Prefab prefab : prefMan.listPrefabs(MinionComponent.class)) {
-			UIListItem listitem = new UIListItem();
-			listitem.setTextColor(Color.toColorString(Color.BLACK));
-			String[] tempstring = prefab.getName().split(":");
-			if (tempstring.length == 2) {
-				listitem.setText(tempstring[1]);
-				minioncombo.addItem(listitem);
-			}
-		}
+        // empty and fill combo box, just in case
+        minioncombo.removeAll();
+        PrefabManager prefMan = CoreRegistry.get(PrefabManager.class);
+        for (Prefab prefab : prefMan.listPrefabs(MinionComponent.class)) {
+            UIListItem listitem = new UIListItem();
+            listitem.setTextColor(Color.toColorString(Color.BLACK));
+            String[] tempstring = prefab.getName().split(":");
+            if (tempstring.length == 2) {
+                listitem.setText(tempstring[1]);
+                minioncombo.addItem(listitem);
+            }
+        }
 
-		this.container = container;
-		this.creature = creature;
+        this.container = container;
+        this.creature = creature;
 
-                playerToolbar.linkToEntity(creature, 0, 9);
-                playerInventory.linkToEntity(creature, 10);
-                containerInventory.linkToEntity(container);
+        playerToolbar.linkToEntity(creature, 0, 9);
+        playerInventory.linkToEntity(creature, 10);
+        containerInventory.linkToEntity(container);
 
-                // Pretty sure that setConnected is automatic by this point.
-                
-//		playerToolbar.setConnected(container);
-//		playerInventory.setConnected(container);
-//		containerInventory.setConnected(creature);
-//		// TODO connect toolbar <-> inventory somehow to allow fast transfer.
+        // Pretty sure that setConnected is automatic by this point.
 
-		getGUIManager().getWindowById("hud").getElementById("leftGearWheel")
-				.setVisible(false);
-		getGUIManager().getWindowById("hud").getElementById("rightGearWheel")
-				.setVisible(false);
-		layout();
+        //		playerToolbar.setConnected(container);
+        //		playerInventory.setConnected(container);
+        //		containerInventory.setConnected(creature);
+        //		// TODO connect toolbar <-> inventory somehow to allow fast transfer.
 
-		Vector2i displaySize = getDisplaySize();
-		playerInventory.setPosition(new Vector2f(displaySize.x / 2
-				- playerInventory.getSize().x / 2, displaySize.y + 5f));
-		playerInventory.addAnimation(new AnimationMove(new Vector2f(
-		        displaySize.x / 2 - playerInventory.getSize().x / 2,
-		        displaySize.y - 192f), 20f));
-		playerInventory.getAnimation(AnimationMove.class).start();
-		leftGearWheel.addAnimation(new AnimationRotate(-120f, 10f));
-		leftGearWheel.getAnimation(AnimationRotate.class).start();
-		rightGearWheel.addAnimation(new AnimationRotate(120f, 10f));
-		rightGearWheel.getAnimation(AnimationRotate.class).start();
-	}
+        getGUIManager().getWindowById("hud").getElementById("leftGearWheel")
+                .setVisible(false);
+        getGUIManager().getWindowById("hud").getElementById("rightGearWheel")
+                .setVisible(false);
+        layout();
 
-	private void executeCreate(UIDisplayElement element, int button) {
-	    SlotBasedInventoryManager inventoryManager = CoreRegistry.get(SlotBasedInventoryManager.class);
+        Vector2i displaySize = getDisplaySize();
+        playerInventory.setPosition(new Vector2f(displaySize.x / 2
+                                                 - playerInventory.getSize().x / 2, displaySize.y + 5f));
+        playerInventory.addAnimation(new AnimationMove(new Vector2f(
+                displaySize.x / 2 - playerInventory.getSize().x / 2,
+                displaySize.y - 192f), 20f));
+        playerInventory.getAnimation(AnimationMove.class).start();
+        leftGearWheel.addAnimation(new AnimationRotate(-120f, 10f));
+        leftGearWheel.getAnimation(AnimationRotate.class).start();
+        rightGearWheel.addAnimation(new AnimationRotate(120f, 10f));
+        rightGearWheel.getAnimation(AnimationRotate.class).start();
+    }
 
-		PrefabManager prefMan = CoreRegistry.get(PrefabManager.class);
-		for (Prefab prefab : prefMan.listPrefabs(MinionComponent.class)) {
-			if (minioncombo.getSelection() != null
-					&& prefab.getName().contains(
-							minioncombo.getSelection().getText())) {
-				if (this.container != null) {
-					InventoryComponent invcomp = this.container
-							.getComponent(InventoryComponent.class);
-					if (invcomp != null) {
-					        // previously was invcomp.itemSlots.get(0)
-                                                EntityRef itemInSlot0Entity = inventoryManager.getItemInSlot(this.container, 0);
-						if ((itemInSlot0Entity != null) && (itemInSlot0Entity != EntityRef.NULL)) {
-							EntityRef itemstack = itemInSlot0Entity;
-							ItemComponent item = itemstack.getComponent(ItemComponent.class);
-							if(item.stackCount == 1){
-								itemstack.destroy();
-							}else{
-								item.stackCount--;
-							}
-							EntityRef filledcard = entityManager
-									.create("miniion:filledcard");
-							filledcard.getComponent(ItemComponent.class).name = minioncombo
-									.getSelection().getText() + " card";
-							filledcard
-									.getComponent(SpawnMinionActionComponent.class).prefab = prefab
-									.getName();
-							EntityRef player = CoreRegistry.get(
-									LocalPlayer.class).getCharacterEntity();
-                                                        inventoryManager.giveItem(player, filledcard);
-							// TODO: player should be listening for a ReceivedItemEvent rather than directly using inventory managerm
-						        // but that isn't happening yet.
-						        // player.send(new ReceivedItemEvent(filledcard));
-							buttoncreatecard.setVisible(false);
-							minioncombo.setVisible(false);
-						}
-					}
-				}
-			}
-		}
-	}
+    private void executeCreate(UIDisplayElement element, int button) {
+        SlotBasedInventoryManager inventoryManager = CoreRegistry.get(SlotBasedInventoryManager.class);
 
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-		super.update();
-	            SlotBasedInventoryManager inventoryManager = CoreRegistry.get(SlotBasedInventoryManager.class);
-		if (this.container != null) {
-			InventoryComponent invcomp = this.container
-					.getComponent(InventoryComponent.class);
-			if (invcomp != null) {
-                            // previously was invcomp.itemSlots.get(0)
-                            EntityRef itemInSlot0Entity = inventoryManager.getItemInSlot(this.container, 0);
-                            if ((itemInSlot0Entity != null) && (itemInSlot0Entity != EntityRef.NULL)) {
-					EntityRef itemstack = itemInSlot0Entity;
-					ItemComponent stackComp = itemstack
-							.getComponent(ItemComponent.class);
-					if (stackComp != null) {
-						if (stackComp.name.matches("empty card")) {
-							buttoncreatecard.setVisible(true);
-							minioncombo.setVisible(true);
-						} else {
-							buttoncreatecard.setVisible(false);
-							minioncombo.setVisible(false);
-						}
-					}
-				} else {
-					buttoncreatecard.setVisible(false);
-					minioncombo.setVisible(false);
-				}
-			}
-		}
-	}
+        PrefabManager prefMan = CoreRegistry.get(PrefabManager.class);
+        for (Prefab prefab : prefMan.listPrefabs(MinionComponent.class)) {
+            if (minioncombo.getSelection() != null
+                && prefab.getName().contains(
+                        minioncombo.getSelection().getText())) {
+                if (this.container != null) {
+                    InventoryComponent invcomp = this.container
+                            .getComponent(InventoryComponent.class);
+                    if (invcomp != null) {
+                        // previously was invcomp.itemSlots.get(0)
+                        EntityRef itemInSlot0Entity = inventoryManager.getItemInSlot(this.container, 0);
+                        if ((itemInSlot0Entity != null) && (itemInSlot0Entity != EntityRef.NULL)) {
+                            EntityRef itemstack = itemInSlot0Entity;
+                            ItemComponent item = itemstack.getComponent(ItemComponent.class);
+                            if (item.stackCount == 1) {
+                                itemstack.destroy();
+                            } else {
+                                item.stackCount--;
+                            }
+                            EntityRef filledcard = entityManager
+                                    .create("miniion:filledcard");
+                            filledcard.getComponent(ItemComponent.class).name = minioncombo
+                                    .getSelection().getText() + " card";
+                            filledcard
+                                    .getComponent(SpawnMinionActionComponent.class).prefab = prefab
+                                    .getName();
+                            EntityRef player = CoreRegistry.get(
+                                    LocalPlayer.class).getCharacterEntity();
+                            inventoryManager.giveItem(player, filledcard);
+                            // TODO: player should be listening for a ReceivedItemEvent rather than directly using inventory managerm
+                            // but that isn't happening yet.
+                            // player.send(new ReceivedItemEvent(filledcard));
+                            buttoncreatecard.setVisible(false);
+                            minioncombo.setVisible(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void update() {
+        // TODO Auto-generated method stub
+        super.update();
+        SlotBasedInventoryManager inventoryManager = CoreRegistry.get(SlotBasedInventoryManager.class);
+        if (this.container != null) {
+            InventoryComponent invcomp = this.container
+                    .getComponent(InventoryComponent.class);
+            if (invcomp != null) {
+                // previously was invcomp.itemSlots.get(0)
+                EntityRef itemInSlot0Entity = inventoryManager.getItemInSlot(this.container, 0);
+                if ((itemInSlot0Entity != null) && (itemInSlot0Entity != EntityRef.NULL)) {
+                    EntityRef itemstack = itemInSlot0Entity;
+                    ItemComponent stackComp = itemstack
+                            .getComponent(ItemComponent.class);
+                    if (stackComp != null) {
+                        if (stackComp.name.matches("empty card")) {
+                            buttoncreatecard.setVisible(true);
+                            minioncombo.setVisible(true);
+                        } else {
+                            buttoncreatecard.setVisible(false);
+                            minioncombo.setVisible(false);
+                        }
+                    }
+                } else {
+                    buttoncreatecard.setVisible(false);
+                    minioncombo.setVisible(false);
+                }
+            }
+        }
+    }
 }

@@ -32,23 +32,23 @@ public class SetSelectionAction implements ComponentSystem {
 
     private static final Logger logger = LoggerFactory.getLogger(SetSelectionAction.class);
 
-	@Override
-	public void initialise() {
-		// TODO Auto-generated method stub
+    @Override
+    public void initialise() {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void shutdown() {
-		// TODO Auto-generated method stub
+    @Override
+    public void shutdown() {
+        // TODO Auto-generated method stub
 
-        }
+    }
 
-        @ReceiveEvent
-        public void onSelection(ApplyBlockSelectionEvent event, EntityRef entity) {
-            // TODO: this should be done with a new zone event, not method calls
-            Region3i selectedRegion = event.getSelection();
-            Zone newzone = new Zone(selectedRegion);
-            MinionSystem.setNewZone(newzone);
-	}
+    @ReceiveEvent
+    public void onSelection(ApplyBlockSelectionEvent event, EntityRef entity) {
+        // TODO: this should be done with a new zone event, not method calls
+        Region3i selectedRegion = event.getSelection();
+        Zone newzone = new Zone(selectedRegion);
+        MinionSystem.setNewZone(newzone);
+    }
 }

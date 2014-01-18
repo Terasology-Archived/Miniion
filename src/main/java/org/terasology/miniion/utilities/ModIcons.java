@@ -18,21 +18,21 @@ package org.terasology.miniion.utilities;
 import org.terasology.rendering.icons.Icon;
 
 public final class ModIcons {
-	
-	private static final String MINIONICONS16 = "miniion:minionicon16";
 
-	public static void loadIcons() {
-		Icon.registerIcon("minionskull", MINIONICONS16, 0, 0);
-		Icon.registerIcon("minioncommand", MINIONICONS16, 0, 1);
-		Icon.registerIcon("emptycard", MINIONICONS16, 0, 2);
-		Icon.registerIcon("filledcard", MINIONICONS16, 0, 3);
-		Icon.registerIcon("cardbook", MINIONICONS16, 0, 4);
-		Icon.registerIcon("oreominionbook", MINIONICONS16, 0, 5);
-		Icon.registerIcon("zonebook", MINIONICONS16, 0, 6);
-		Icon.registerIcon("zonetool", MINIONICONS16, 0, 7);
-		
-		Icon.registerIcon("mulch", MINIONICONS16, 1, 0);
-		Icon.registerIcon("paper", MINIONICONS16, 1, 1);
-		Icon.registerIcon("bookcover", MINIONICONS16, 1, 2);
-	}
+    private static final String MINIONICONS16 = "miniion:minionicon16";
+
+    public static void loadIcons() {
+        Icon.registerIcon("minionskull", MINIONICONS16, 0, 0);
+        Icon.registerIcon("minioncommand", MINIONICONS16, 0, 1);
+        Icon.registerIcon("emptycard", MINIONICONS16, 0, 2);
+        Icon.registerIcon("filledcard", MINIONICONS16, 0, 3);
+        Icon.registerIcon("cardbook", MINIONICONS16, 0, 4);
+        Icon.registerIcon("oreominionbook", MINIONICONS16, 0, 5);
+        Icon.registerIcon("zonebook", MINIONICONS16, 0, 6);
+        Icon.registerIcon("zonetool", MINIONICONS16, 0, 7);
+
+        Icon.registerIcon("mulch", MINIONICONS16, 1, 0);
+        Icon.registerIcon("paper", MINIONICONS16, 1, 1);
+        Icon.registerIcon("bookcover", MINIONICONS16, 1, 2);
+    }
 }

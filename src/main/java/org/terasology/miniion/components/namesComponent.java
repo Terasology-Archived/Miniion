@@ -19,6 +19,6 @@ import org.terasology.entitySystem.Component;
 import java.util.List;
 
 public class namesComponent implements Component {
-	public List<String> namelist;
+    public List<String> namelist;
 
 }

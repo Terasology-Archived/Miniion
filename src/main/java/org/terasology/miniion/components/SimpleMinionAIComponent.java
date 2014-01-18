@@ -28,32 +28,32 @@ import org.terasology.entitySystem.Component;
  */
 public final class SimpleMinionAIComponent implements Component {
 
-	public long lastChangeOfDirectionAt = 0;
-	public Vector3f lastPosition = null;
-	public double previousdistanceToTarget = Double.NEGATIVE_INFINITY;
+    public long lastChangeOfDirectionAt = 0;
+    public Vector3f lastPosition = null;
+    public double previousdistanceToTarget = Double.NEGATIVE_INFINITY;
 
-	public long lastAttacktime = 0;
-	public long lastDistancecheck = 0;
-	public long lastPathtime = 0;
-	public long lastHungerCheck = 0;
-	public int patrolCounter = 0;
-	public int craftprogress = 0;
+    public long lastAttacktime = 0;
+    public long lastDistancecheck = 0;
+    public long lastPathtime = 0;
+    public long lastHungerCheck = 0;
+    public int patrolCounter = 0;
+    public int craftprogress = 0;
 
-	public Vector3f movementTarget = new Vector3f();
-	public Vector3f previousTarget = new Vector3f();
+    public Vector3f movementTarget = new Vector3f();
+    public Vector3f previousTarget = new Vector3f();
 
-	public List<Vector3f> movementTargets = new ArrayList<Vector3f>();
-	public List<Vector3f> gatherTargets = new ArrayList<Vector3f>();
-	public List<Vector3f> patrolTargets = new ArrayList<Vector3f>();
-	public List<Vector3f> pathTargets = new ArrayList<Vector3f>();
+    public List<Vector3f> movementTargets = new ArrayList<Vector3f>();
+    public List<Vector3f> gatherTargets = new ArrayList<Vector3f>();
+    public List<Vector3f> patrolTargets = new ArrayList<Vector3f>();
+    public List<Vector3f> pathTargets = new ArrayList<Vector3f>();
 
-	public boolean followingPlayer = true;
-	public boolean locked = false;
+    public boolean followingPlayer = true;
+    public boolean locked = false;
 
-	public void ClearCommands() {
-		movementTargets.removeAll(movementTargets);
-		gatherTargets.removeAll(gatherTargets);
-		patrolTargets.removeAll(patrolTargets);
-	}
+    public void ClearCommands() {
+        movementTargets.removeAll(movementTargets);
+        gatherTargets.removeAll(gatherTargets);
+        patrolTargets.removeAll(patrolTargets);
+    }
 
 }
