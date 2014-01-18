@@ -55,7 +55,12 @@ public class Zone {
 
         // TODO: should be replaced by a region
         public Zone(Region3i region) {
-            this(region.min(), region.max());
+            this.startposition = region.min();
+            this.endposition = region.max();
+            calcBounds(startposition);
+            if(endposition != null){
+                    calcBounds(endposition);
+            }
             
             if (null == blockSelectionEntity) {
                 EntityManager entityManager = CoreRegistry.get(EntityManager.class);
@@ -64,17 +69,6 @@ public class Zone {
             BlockSelectionComponent selection = blockSelectionEntity.getComponent(BlockSelectionComponent.class);
             selection.currentSelection = region;
             selection.shouldRender = false;
-        }
-
-        // TODO: should be replaced by a region
-        private Zone(Vector3i startposition, Vector3i endposition) {
-                this();
-                this.startposition = startposition;
-                this.endposition = endposition;
-                calcBounds(startposition);
-                if(endposition != null){
-                        calcBounds(endposition);
-                }
         }
 
         private void calcBounds(Vector3i gridPosition) {
