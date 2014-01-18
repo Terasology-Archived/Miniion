@@ -58,7 +58,6 @@ import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
-import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.items.BlockItemComponent;
 import org.terasology.world.block.items.BlockItemFactory;
 
@@ -320,7 +319,7 @@ public class SimpleMinionAISystem implements ComponentSystem,
             return;
         } else if (minioncomp.assignedzone.zonetype != ZoneType.Work) {
             if (minioncomp.assignedzone.zonetype == ZoneType.OreonFarm) {
-                if (minioncomp.assignedzone.isTerraformComplete()) {
+                if (isTerraformComplete(minioncomp.assignedzone, minionFarmer.farmFieldBlockName)) {
                     //farming
                     executeFarmAI(entity);
                 } else {
@@ -411,6 +410,25 @@ public class SimpleMinionAISystem implements ComponentSystem,
 
         entity.saveComponent(ai);
         setMovement(currentTarget, entity);
+    }
+
+    private boolean isTerraformComplete(Zone zone, String blockTypeName) {
+        return isZoneComposedOnlyOfBlockType(zone, blockTypeName);
+    }
+
+    private boolean isZoneComposedOnlyOfBlockType(Zone zone, String blockTypeName) {
+        for (int y = zone.getMaxBounds().y; y >= zone.getMinBounds().y; y--) {
+            for (int x = zone.getMinBounds().x; x <= zone.getMaxBounds().x; x++) {
+                for (int z = zone.getMinBounds().z; z <= zone.getMaxBounds().z; z++) {
+                    Block block = worldProvider.getBlock(x, y, z);
+                    if (!block.getURI().toString().toLowerCase().equals(blockTypeName.toLowerCase())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        return true;
     }
 
     /**
@@ -512,9 +530,6 @@ public class SimpleMinionAISystem implements ComponentSystem,
                         if (y == minioncomp.assignedzone.getMinBounds().y) {
                             ai.movementTargets.remove(currentTarget);
                         }
-                    }
-                    if (ai.movementTargets.size() == 0 && !terraformFinalBlockType.isEmpty()) {
-                        minioncomp.assignedzone.setTerraformComplete();
                     }
                 }
 

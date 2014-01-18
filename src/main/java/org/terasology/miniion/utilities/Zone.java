@@ -31,15 +31,12 @@ public class Zone {
 
     public EntityRef blockSelectionEntity = EntityRef.NULL;
 
-    private boolean terraformcomplete = false;
-
     public String Name;
     public ZoneType zonetype;
 
     public Zone() {
     }
 
-    // TODO: should be replaced by a region
     public Zone(Region3i region) {
         EntityManager entityManager = CoreRegistry.get(EntityManager.class);
         blockSelectionEntity = entityManager.create(new BlockSelectionComponent());
@@ -54,14 +51,6 @@ public class Zone {
 
     public Vector3i getMaxBounds() {
         return getBlockSelectionRegion().max();
-    }
-
-    public boolean isTerraformComplete() {
-        return terraformcomplete;
-    }
-
-    public void setTerraformComplete() {
-        terraformcomplete = true;
     }
 
     public boolean outofboundselection() {
