@@ -15,6 +15,7 @@
  */
 package org.terasology.miniion.componentsystem.controllers;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,8 +49,11 @@ import org.terasology.miniion.gui.UIZoneBook;
 import org.terasology.miniion.utilities.MinionRecipe;
 import org.terasology.miniion.utilities.ModIcons;
 import org.terasology.miniion.utilities.Zone;
+import org.terasology.rendering.assets.texture.Texture;
+import org.terasology.rendering.assets.texture.TextureUtil;
 import org.terasology.rendering.logic.AnimEndEvent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
+import org.terasology.world.selection.BlockSelectionComponent;
 
 /**
  * Created with IntelliJ IDEA. User: Overdhose Date: 10/05/12 Time: 17:54
@@ -200,16 +204,25 @@ public class MinionSystem implements ComponentSystem {
 		return activeminion;
 	}
 	
-	public static void startNewSelection(Vector3i startpos){
-	}
+    public static void setNewZone(Zone zone) {
+        if ((newzone != null) && (!newzone.equals(zone))) {
+            BlockSelectionComponent selection = newzone.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+            selection.shouldRender = false;
+            newzone.blockSelectionEntity.saveComponent(selection);
+        }
+        newzone = zone;
 
-	public static void setNewZone(Zone zone){
-		newzone = zone;
-	}
+        if (zone != null) {
+            BlockSelectionComponent selection = newzone.blockSelectionEntity.getComponent(BlockSelectionComponent.class);
+            selection.shouldRender = true;
+            selection.texture = Assets.get(TextureUtil.getTextureUriForColor(new Color(0, 255, 0, 100)), Texture.class);
+            newzone.blockSelectionEntity.saveComponent(selection);
+        }
+    }
 
-	public static Zone getNewZone(){
-		return newzone;
-	}
+    public static Zone getNewZone() {
+        return newzone;
+    }
 
 	/**
 	 * adds a new zone to the corresponding zone list

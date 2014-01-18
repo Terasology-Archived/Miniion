@@ -36,5 +36,6 @@
         "resultCount": 1
  
     },
-    "BlockSelection" : {}
+    "BlockSelection" : {},
+    "OnItemActivateSelection" : {}
 }
