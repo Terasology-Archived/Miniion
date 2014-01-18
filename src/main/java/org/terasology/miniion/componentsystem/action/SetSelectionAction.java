@@ -24,8 +24,8 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.selection.ApplyBlockSelectionEvent;
 import org.terasology.math.Region3i;
+import org.terasology.miniion.components.ZoneComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
-import org.terasology.miniion.utilities.ZoneComponent;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SetSelectionAction implements ComponentSystem {
