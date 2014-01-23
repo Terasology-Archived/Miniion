@@ -3,7 +3,7 @@ package org.terasology.miniion.utilities;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.terasology.classMetadata.MappedContainer;
+import org.terasology.reflection.MappedContainer;
 
 @MappedContainer
 public class MinionRecipe {
