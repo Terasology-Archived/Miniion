@@ -28,7 +28,10 @@ import org.terasology.logic.inventory.ItemComponent;
 import org.terasology.logic.manager.GUIManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.miniion.components.actions.OpenUiActionComponent;
+import org.terasology.miniion.gui.UIActiveMinion;
 import org.terasology.miniion.gui.UICardBook;
+import org.terasology.rendering.gui.widgets.UIWindow;
+import org.terasology.zone.gui.UIZoneBook;
 
 /**
  * @author Immortius
@@ -54,11 +57,24 @@ public class OpenUiAction implements ComponentSystem {
     public void onActivate(ActivateEvent event, EntityRef entity) {
         OpenUiActionComponent uiInfo = entity.getComponent(OpenUiActionComponent.class);
         if (uiInfo != null) {
+            UIWindow uiWindow = guiManager.getWindowById(uiInfo.uiwindowid);
+            if (null == uiWindow) {
+                if (uiInfo.uiwindowid.equals("cardbook")) {
+                    uiWindow = new UICardBook();
+                } else if (uiInfo.uiwindowid.equals("activeminiion")) {
+                    uiWindow = new UIActiveMinion();
+                } else if (uiInfo.uiwindowid.equals("zonebook")) {
+                    uiWindow = new UIZoneBook();
+                } else {
+                    throw new RuntimeException("Unsupported window class: '" + uiInfo.uiwindowid + "'");
+                }
+            }
+
+            uiWindow.open();
+
             if (uiInfo.uiwindowid.matches("cardbook")) {
-                UICardBook cardbookui = (UICardBook) guiManager.openWindow("cardbook");
+                UICardBook cardbookui = (UICardBook)uiWindow;
                 cardbookui.openContainer(entity, localPlayer.getCharacterEntity());
-            } else {
-                guiManager.openWindow(uiInfo.uiwindowid);
             }
         }
     }
