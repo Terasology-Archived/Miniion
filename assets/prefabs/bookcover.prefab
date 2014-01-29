@@ -16,7 +16,7 @@
 {
     "Item" : {
         "name" : "book cover",
-        "icon" : "bookcover",
+        "icon" : "miniion:minionicon16.bookcover",
         "usage" : "NONE",
         "consumedOnUse" : false,
         "stackId" : "miniion:bookcover",

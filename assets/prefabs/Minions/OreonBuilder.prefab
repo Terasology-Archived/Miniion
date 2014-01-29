@@ -2,7 +2,7 @@
 	"parent": "Oreons:OreonBuilder",
 	"name" : "OreonMinions:OreonBuilder",
 	"Minion" : {
-	    "icon" = "minionskull",
+	    "icon" = "miniion:minionicon16.minionskull",
 	    "Healthtotal" = 300,
 	    "Hungertotal" = 100,
 	    "Staminatotal" = 100,

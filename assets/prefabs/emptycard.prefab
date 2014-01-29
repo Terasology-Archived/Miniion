@@ -16,7 +16,7 @@
 {
     "Item" : {
         "name" : "empty card",
-        "icon" : "emptycard",
+        "icon" : "miniion:minionicon16.emptycard",
         "usage" : "NONE",
         "consumedOnUse" : false,
         "stackId" : "miniion:emptycard",

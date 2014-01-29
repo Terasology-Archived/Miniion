@@ -16,7 +16,7 @@
 {
     "Item" : {
         "name" : "card book",
-        "icon" : "cardbook",
+        "icon" : "miniion:minionicon16.cardbook",
         "usage" : "ON_USER",
         "consumedOnUse" : false,
         "renderWithIcon" : false

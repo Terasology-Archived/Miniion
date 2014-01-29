@@ -16,7 +16,7 @@
 {
     "Item" : {
         "name" : "zoning book",
-        "icon" : "zonebook",
+        "icon" : "miniion:minionicon16.zonebook",
         "usage" : "ON_USER",
         "consumedOnUse" : false,
         "renderWithIcon" : false
