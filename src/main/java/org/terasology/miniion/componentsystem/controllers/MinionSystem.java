@@ -21,14 +21,12 @@ import java.util.List;
 import java.util.Random;
 
 import org.terasology.asset.Assets;
-import org.terasology.engine.CoreRegistry;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.entitySystem.systems.ComponentSystem;
-import org.terasology.entitySystem.systems.In;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.inventory.InventoryComponent;
@@ -43,12 +41,10 @@ import org.terasology.miniion.gui.UIActiveMinion;
 import org.terasology.miniion.gui.UICardBook;
 import org.terasology.miniion.gui.UIScreenBookOreo;
 import org.terasology.miniion.utilities.MinionRecipe;
-import org.terasology.miniion.utilities.ModIcons;
+import org.terasology.registry.CoreRegistry;
+import org.terasology.registry.In;
 import org.terasology.rendering.logic.AnimEndEvent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
-import org.terasology.zone.ZoneComponent;
-import org.terasology.zone.ZoneListComponent;
-import org.terasology.zone.gui.UIZoneBook;
 
 /**
  * Created with IntelliJ IDEA. User: Overdhose Date: 10/05/12 Time: 17:54
@@ -76,7 +72,6 @@ public class MinionSystem implements ComponentSystem {
 
     @Override
     public void initialise() {
-        ModIcons.loadIcons();
         // experimental popup menu for the minion command tool
         guiManager.registerWindow("activeminiion", UIActiveMinion.class);
         // ui to create summonable cards
