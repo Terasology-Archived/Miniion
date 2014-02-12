@@ -2,7 +2,8 @@
 	"parent": "Oreons:OreonGuard",
 	"name" : "OreonMinions:OreonGuard",
 	"Minion" : {
-		"icon" = "miniion:minionicon16.minionskull",
+	    "icon" = "miniion:icons32.oreonguard",
+	    "filledCardIcon" = "miniion:minionicon16.guardcard",
 		"Healthtotal" = 800,
 		"Hungertotal" = 100,
 		"Staminatotal" = 100,

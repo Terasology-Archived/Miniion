@@ -116,4 +116,28 @@ public class UIMessageQueue extends UIDisplayContainer implements
     @Override
     public void shutdown() {
     }
+
+    @Override
+    public void preBegin() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void postBegin() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void preSave() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void postSave() {
+        // TODO Auto-generated method stub
+        
+    }
 }

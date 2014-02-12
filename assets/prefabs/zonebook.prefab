@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 {
+    "DisplayName" : {
+        "name" : "Zoning book"
+    },
     "Item" : {
-        "name" : "zoning book",
         "icon" : "miniion:minionicon16.zonebook",
         "usage" : "ON_USER",
         "consumedOnUse" : false,

@@ -20,17 +20,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.terasology.asset.Assets;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.prefab.PrefabManager;
+import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.ComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.inventory.InventoryComponent;
 import org.terasology.logic.inventory.InventoryManager;
+import org.terasology.logic.inventory.action.GiveItemAction;
 import org.terasology.logic.manager.GUIManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
@@ -52,8 +56,10 @@ import org.terasology.rendering.logic.SkeletalMeshComponent;
  * minionbar.
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
-public class MinionSystem implements ComponentSystem {
+public class MinionSystem extends BaseComponentSystem {
 
+    private static final Logger logger = LoggerFactory.getLogger(MinionSystem.class);
+    
     @In
     private LocalPlayer localPlayer;
     @In
@@ -83,13 +89,24 @@ public class MinionSystem implements ComponentSystem {
 
     @ReceiveEvent
     public void onPlayerSpawn(OnPlayerSpawnedEvent event, EntityRef player, InventoryComponent inventory) {
-        inventoryManager.giveItem(player, entityManager.create("miniion:minioncommand"));
-        inventoryManager.giveItem(player, entityManager.create("miniion:cardbook"));
-        inventoryManager.giveItem(player, entityManager.create("miniion:emptycard"));
-        inventoryManager.giveItem(player, entityManager.create("miniion:emptycard"));
-        inventoryManager.giveItem(player, entityManager.create("miniion:emptycard"));
-        inventoryManager.giveItem(player, entityManager.create("Miniion:zonetool"));
-        inventoryManager.giveItem(player, entityManager.create("Miniion:zonebook"));
+        createAndGiveItemToPlayerIfPossible("miniion:minioncommand", player);
+        createAndGiveItemToPlayerIfPossible("miniion:cardbook", player);
+        createAndGiveItemToPlayerIfPossible("miniion:emptycard", player);
+        createAndGiveItemToPlayerIfPossible("miniion:emptycard", player);
+        createAndGiveItemToPlayerIfPossible("miniion:emptycard", player);
+        createAndGiveItemToPlayerIfPossible("Miniion:zonebook", player);
+        createAndGiveItemToPlayerIfPossible("Miniion:zonetool", player);
+    }
+
+    private void createAndGiveItemToPlayerIfPossible(String uri, EntityRef player) {
+        EntityRef item = entityManager.create(uri);
+        GiveItemAction action = new GiveItemAction(EntityRef.NULL, item);
+        player.send(action);
+        if (!action.isConsumed()) {
+            logger.warn(uri + " could not be created and given to player.");
+            item.destroy();
+        }
+            
     }
 
     /**
@@ -381,6 +398,30 @@ public class MinionSystem implements ComponentSystem {
                 }
             }
         }
+    }
+
+    @Override
+    public void preBegin() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void postBegin() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void preSave() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void postSave() {
+        // TODO Auto-generated method stub
+        
     }
 
     /**

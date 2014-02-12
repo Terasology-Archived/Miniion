@@ -86,4 +86,28 @@ public class SpawnMinionAction implements ComponentSystem {
         // if this gets here, we didn't actually create a minion
         event.consume();
     }
+
+    @Override
+    public void preBegin() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void postBegin() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void preSave() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void postSave() {
+        // TODO Auto-generated method stub
+        
+    }
 }

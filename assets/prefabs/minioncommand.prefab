@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 {
+    "DisplayName" : {
+        "name" : "Minion Command"
+    },
     "Item" : {
-        "name" : "Minion Command",
         "icon" : "miniion:minionicon16.minioncommand",
         "usage" : "ON_USER",
         "consumedOnUse" : false,

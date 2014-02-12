@@ -19,15 +19,19 @@ import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
 import org.lwjgl.input.Keyboard;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.terasology.asset.Assets;
-import org.terasology.engine.CoreRegistry;
+import org.terasology.registry.CoreRegistry;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.prefab.PrefabManager;
+import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.inventory.InventoryComponent;
+import org.terasology.logic.inventory.InventoryUtils;
 import org.terasology.logic.inventory.ItemComponent;
-import org.terasology.logic.inventory.SlotBasedInventoryManager;
+import org.terasology.logic.inventory.action.GiveItemAction;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.Vector2i;
 import org.terasology.miniion.components.MinionComponent;
@@ -54,6 +58,8 @@ import org.terasology.rendering.nui.Color;
  */
 public class UICardBook extends UIWindow {
 
+    private static final Logger logger = LoggerFactory.getLogger(UICardBook.class);
+    
     EntityRef container = EntityRef.NULL;
     EntityRef creature = EntityRef.NULL;
     EntityManager entityManager;
@@ -215,10 +221,9 @@ public class UICardBook extends UIWindow {
         //		containerInventory.setConnected(creature);
         //		// TODO connect toolbar <-> inventory somehow to allow fast transfer.
 
-        getGUIManager().getWindowById("hud").getElementById("leftGearWheel")
-                .setVisible(false);
-        getGUIManager().getWindowById("hud").getElementById("rightGearWheel")
-                .setVisible(false);
+        // TODO: not sure what these are used for, and they no longer exist
+//        getGUIManager().getWindowById("hud").getElementById("leftGearWheel").setVisible(false);
+//        getGUIManager().getWindowById("hud").getElementById("rightGearWheel").setVisible(false);
         layout();
 
         Vector2i displaySize = getDisplaySize();
@@ -235,8 +240,6 @@ public class UICardBook extends UIWindow {
     }
 
     private void executeCreate(UIDisplayElement element, int button) {
-        SlotBasedInventoryManager inventoryManager = CoreRegistry.get(SlotBasedInventoryManager.class);
-
         PrefabManager prefMan = CoreRegistry.get(PrefabManager.class);
         for (Prefab prefab : prefMan.listPrefabs(MinionComponent.class)) {
             if (minioncombo.getSelection() != null
@@ -247,7 +250,7 @@ public class UICardBook extends UIWindow {
                             .getComponent(InventoryComponent.class);
                     if (invcomp != null) {
                         // previously was invcomp.itemSlots.get(0)
-                        EntityRef itemInSlot0Entity = inventoryManager.getItemInSlot(this.container, 0);
+                        EntityRef itemInSlot0Entity = InventoryUtils.getItemAt(this.container, 0);
                         if ((itemInSlot0Entity != null) && (itemInSlot0Entity != EntityRef.NULL)) {
                             EntityRef itemstack = itemInSlot0Entity;
                             ItemComponent item = itemstack.getComponent(ItemComponent.class);
@@ -256,16 +259,24 @@ public class UICardBook extends UIWindow {
                             } else {
                                 item.stackCount--;
                             }
-                            EntityRef filledcard = entityManager
-                                    .create("miniion:filledcard");
-                            filledcard.getComponent(ItemComponent.class).name = minioncombo
-                                    .getSelection().getText() + " card";
+                            EntityRef filledcard = entityManager.create("miniion:filledcard");
+                            String cardName = minioncombo.getSelection().getText() + " card";
+                            filledcard.getComponent(DisplayNameComponent.class).name = cardName;
                             filledcard
                                     .getComponent(SpawnMinionActionComponent.class).prefab = prefab
                                     .getName();
                             EntityRef player = CoreRegistry.get(
                                     LocalPlayer.class).getCharacterEntity();
-                            inventoryManager.giveItem(player, filledcard);
+                            
+                            // TODO: at some point we should use the real cardbook as the instigator -- not sure how we fetch that currently
+                            EntityRef cardBook = EntityRef.NULL;
+                            GiveItemAction action = new GiveItemAction(cardBook, filledcard);
+                            player.send(action);
+                            if (!action.isConsumed()) {
+                                logger.warn("filledcard could not be given to player. Destroyed.");
+                                filledcard.destroy();
+                            }
+
                             // TODO: player should be listening for a ReceivedItemEvent rather than directly using inventory managerm
                             // but that isn't happening yet.
                             // player.send(new ReceivedItemEvent(filledcard));
@@ -282,19 +293,18 @@ public class UICardBook extends UIWindow {
     public void update() {
         // TODO Auto-generated method stub
         super.update();
-        SlotBasedInventoryManager inventoryManager = CoreRegistry.get(SlotBasedInventoryManager.class);
         if (this.container != null) {
             InventoryComponent invcomp = this.container
                     .getComponent(InventoryComponent.class);
             if (invcomp != null) {
                 // previously was invcomp.itemSlots.get(0)
-                EntityRef itemInSlot0Entity = inventoryManager.getItemInSlot(this.container, 0);
+                EntityRef itemInSlot0Entity = InventoryUtils.getItemAt(this.container, 0);
                 if ((itemInSlot0Entity != null) && (itemInSlot0Entity != EntityRef.NULL)) {
                     EntityRef itemstack = itemInSlot0Entity;
-                    ItemComponent stackComp = itemstack
-                            .getComponent(ItemComponent.class);
-                    if (stackComp != null) {
-                        if (stackComp.name.matches("empty card")) {
+                    DisplayNameComponent displayNameComponent = itemstack
+                            .getComponent(DisplayNameComponent.class);
+                    if (displayNameComponent != null) {
+                        if (displayNameComponent.name.matches("empty card")) {
                             buttoncreatecard.setVisible(true);
                             minioncombo.setVisible(true);
                         } else {

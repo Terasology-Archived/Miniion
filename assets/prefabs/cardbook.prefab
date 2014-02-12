@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 {
+    "DisplayName" : {
+        "name" : "card book"
+    },
     "Item" : {
         "name" : "card book",
         "icon" : "miniion:minionicon16.cardbook",

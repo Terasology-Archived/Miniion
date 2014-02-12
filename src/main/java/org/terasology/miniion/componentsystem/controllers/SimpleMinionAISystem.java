@@ -37,8 +37,6 @@ import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.health.EngineDamageTypes;
 import org.terasology.logic.inventory.InventoryComponent;
 import org.terasology.logic.inventory.ItemComponent;
-import org.terasology.logic.inventory.SlotBasedInventoryManager;
-import org.terasology.logic.inventory.events.ReceivedItemEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.Vector3i;
@@ -75,8 +73,8 @@ public class SimpleMinionAISystem implements ComponentSystem,
     @In
     private BlockManager blockManager;
 
-    @In
-    private SlotBasedInventoryManager inventoryManager;
+//    @In
+//    private SlotBasedInventoryManager inventoryManager;
 
     @In
     private EntityManager entityManager;
@@ -334,84 +332,87 @@ public class SimpleMinionAISystem implements ComponentSystem,
             return;
         }
 
-        Vector3f currentTarget = assignedZoneComponent.getStartPosition().toVector3f();
-        currentTarget.y += 0.5;
-
-        Vector3f dist = new Vector3f(worldPos);
-        dist.sub(currentTarget);
-        double distanceToTarget = dist.lengthSquared();
-
-        if (distanceToTarget < 4) {
-
-            // gather the block
-            if (timer.getGameTimeInMs() - ai.lastAttacktime > 1000) {
-                ai.lastAttacktime = timer.getGameTimeInMs();
-                //increase craft progress
-                boolean hasResources = false;
-                if (minioncomp.assignedrecipe != null) {
-                    InventoryComponent invcomp = entity.getComponent(InventoryComponent.class);
-                    for (String simpleuri : minioncomp.assignedrecipe.craftRes) {
-                        hasResources = false;
-                        // TODO: replace this with inventory iterator once the engine supports it
-                        int numSlots = inventoryManager.getNumSlots(entity);
-                        for (int slotIndex = 0; slotIndex < numSlots; slotIndex++) {
-                            EntityRef itemInSlotEntity = inventoryManager.getItemInSlot(entity, slotIndex);
-                            if ((itemInSlotEntity != null) && (EntityRef.NULL != itemInSlotEntity)) {
-                                BlockItemComponent blockItem = itemInSlotEntity.getComponent(BlockItemComponent.class);
-                                if (blockItem != null) {
-                                    if (blockItem.blockFamily.getURI().getFamilyName().matches(simpleuri)) {
-                                        hasResources = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        if (!hasResources) {
-                            break;
-                        }
-                    }
-                    if (hasResources) {
-                        // switch animation
-                        changeAnimation(entity, animcomp.workAnim, false);
-                        ai.craftprogress++;
-                        if (ai.craftprogress >= minioncomp.assignedrecipe.craftsteps) {
-                            for (String simpleuri : minioncomp.assignedrecipe.craftRes) {
-                                // TODO: replace this with inventory iterator once the engine supports it
-                                int numSlots = inventoryManager.getNumSlots(entity);
-                                for (int slotIndex = 0; slotIndex < numSlots; slotIndex++) {
-                                    EntityRef itemInSlotEntity = inventoryManager.getItemInSlot(entity, slotIndex);
-                                    if ((itemInSlotEntity != null) && (EntityRef.NULL != itemInSlotEntity)) {
-                                        BlockItemComponent blockItem = itemInSlotEntity.getComponent(BlockItemComponent.class);
-                                        ItemComponent item = itemInSlotEntity.getComponent(ItemComponent.class);
-                                        if (blockItem != null) {
-                                            if (blockItem.blockFamily.getURI().getFamilyName().matches(simpleuri)) {
-                                                if (item.stackCount >= minioncomp.assignedrecipe.quantity)
-                                                {
-                                                    item.stackCount -= minioncomp.assignedrecipe.quantity;
-                                                    if (item.stackCount == 0) {
-                                                        itemInSlotEntity.destroy();
-                                                    }
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            Block recipeBlock = null;
-                            EntityRef result = EntityRef.NULL;
-                            BlockItemFactory blockFactory = new BlockItemFactory(entityManager);
-                            result = blockFactory.newInstance(blockManager.getBlockFamily(minioncomp.assignedrecipe.result));
-                            entity.send(new ReceivedItemEvent(result));
-                            ai.craftprogress = 0;
-                        }
-                    }
-                }
-            }
-        }
-
-        entity.saveComponent(ai);
-        setMovement(currentTarget, entity);
+        // TODO: crafting doesn't work
+        // TODO: inventory management has to be updated to new system
+        
+//        Vector3f currentTarget = assignedZoneComponent.getStartPosition().toVector3f();
+//        currentTarget.y += 0.5;
+//
+//        Vector3f dist = new Vector3f(worldPos);
+//        dist.sub(currentTarget);
+//        double distanceToTarget = dist.lengthSquared();
+//
+//        if (distanceToTarget < 4) {
+//
+//            // gather the block
+//            if (timer.getGameTimeInMs() - ai.lastAttacktime > 1000) {
+//                ai.lastAttacktime = timer.getGameTimeInMs();
+//                //increase craft progress
+//                boolean hasResources = false;
+//                if (minioncomp.assignedrecipe != null) {
+//                    InventoryComponent invcomp = entity.getComponent(InventoryComponent.class);
+//                    for (String simpleuri : minioncomp.assignedrecipe.craftRes) {
+//                        hasResources = false;
+//                        // TODO: replace this with inventory iterator once the engine supports it
+//                        int numSlots = inventoryManager.getNumSlots(entity);
+//                        for (int slotIndex = 0; slotIndex < numSlots; slotIndex++) {
+//                            EntityRef itemInSlotEntity = inventoryManager.getItemInSlot(entity, slotIndex);
+//                            if ((itemInSlotEntity != null) && (EntityRef.NULL != itemInSlotEntity)) {
+//                                BlockItemComponent blockItem = itemInSlotEntity.getComponent(BlockItemComponent.class);
+//                                if (blockItem != null) {
+//                                    if (blockItem.blockFamily.getURI().getFamilyName().matches(simpleuri)) {
+//                                        hasResources = true;
+//                                        break;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        if (!hasResources) {
+//                            break;
+//                        }
+//                    }
+//                    if (hasResources) {
+//                        // switch animation
+//                        changeAnimation(entity, animcomp.workAnim, false);
+//                        ai.craftprogress++;
+//                        if (ai.craftprogress >= minioncomp.assignedrecipe.craftsteps) {
+//                            for (String simpleuri : minioncomp.assignedrecipe.craftRes) {
+//                                // TODO: replace this with inventory iterator once the engine supports it
+//                                int numSlots = inventoryManager.getNumSlots(entity);
+//                                for (int slotIndex = 0; slotIndex < numSlots; slotIndex++) {
+//                                    EntityRef itemInSlotEntity = inventoryManager.getItemInSlot(entity, slotIndex);
+//                                    if ((itemInSlotEntity != null) && (EntityRef.NULL != itemInSlotEntity)) {
+//                                        BlockItemComponent blockItem = itemInSlotEntity.getComponent(BlockItemComponent.class);
+//                                        ItemComponent item = itemInSlotEntity.getComponent(ItemComponent.class);
+//                                        if (blockItem != null) {
+//                                            if (blockItem.blockFamily.getURI().getFamilyName().matches(simpleuri)) {
+//                                                if (item.stackCount >= minioncomp.assignedrecipe.quantity)
+//                                                {
+//                                                    item.stackCount -= minioncomp.assignedrecipe.quantity;
+//                                                    if (item.stackCount == 0) {
+//                                                        itemInSlotEntity.destroy();
+//                                                    }
+//                                                    break;
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                            Block recipeBlock = null;
+//                            EntityRef result = EntityRef.NULL;
+//                            BlockItemFactory blockFactory = new BlockItemFactory(entityManager);
+//                            result = blockFactory.newInstance(blockManager.getBlockFamily(minioncomp.assignedrecipe.result));
+//                            entity.send(new ReceivedItemEvent(result));
+//                            ai.craftprogress = 0;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        entity.saveComponent(ai);
+//        setMovement(currentTarget, entity);
     }
 
     private boolean isTerraformComplete(EntityRef zone, String blockTypeName) {
@@ -892,5 +893,29 @@ public class SimpleMinionAISystem implements ComponentSystem,
             movementInput.jumpingRequested = true;
             entity.saveComponent(movementInput);
         }
+    }
+
+    @Override
+    public void preBegin() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void postBegin() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void preSave() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void postSave() {
+        // TODO Auto-generated method stub
+        
     }
 }

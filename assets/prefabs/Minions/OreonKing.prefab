@@ -2,7 +2,7 @@
 	"parent": "Oreons:OreonKing",
 	"name" : "OreonMinions:OreonKing",
 	"Minion" : {
-		"icon" = "miniion:minionicon16.minionskull",
+	    "filledCardIcon" = "miniion:minionicon16.kingcard",
 		"Healthtotal" = 800,
 		"Hungertotal" = 100,
 		"Staminatotal" = 100,

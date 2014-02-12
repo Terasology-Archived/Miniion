@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 {
+    "DisplayName" : {
+        "name" : "filled card"
+    },
     "Item" : {
-        "name" : "filled card",
         "icon" : "miniion:minionicon16.filledcard",
         "usage" : "ON_BLOCK",
         "consumedOnUse" : true,

@@ -29,6 +29,9 @@ public final class MinionComponent implements Component {
 
     // simple uri defining an icon
     public String icon;
+    // simple uri defining an icon for the filled card in inventory
+    public String filledCardIcon;
+    
     // personal name for the minion, not set in prefab!
     public String name = "unknown";
     // minion type, eg : oreoBuilder, needs to be defined in prefab
