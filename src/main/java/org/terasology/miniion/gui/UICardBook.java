@@ -1,11 +1,11 @@
 /*
- * Copyright 2012 Benjamin Glatzel <benjamin.glatzel@me.com>
+ * Copyright 2014 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -192,7 +192,7 @@ public class UICardBook extends UIWindow {
         layout();
     }
 
-    public void openContainer(EntityRef container, EntityRef creature) {
+    public void openContainer(EntityRef passedContainer, EntityRef passedCreature) {
 
         // empty and fill combo box, just in case
         minioncombo.removeAll();
@@ -207,8 +207,8 @@ public class UICardBook extends UIWindow {
             }
         }
 
-        this.container = container;
-        this.creature = creature;
+        container = passedContainer;
+        creature = passedCreature;
 
         playerToolbar.linkToEntity(creature, 0, 9);
         playerInventory.linkToEntity(creature, 10);
@@ -216,10 +216,7 @@ public class UICardBook extends UIWindow {
 
         // Pretty sure that setConnected is automatic by this point.
 
-        //		playerToolbar.setConnected(container);
-        //		playerInventory.setConnected(container);
-        //		containerInventory.setConnected(creature);
-        //		// TODO connect toolbar <-> inventory somehow to allow fast transfer.
+        // TODO connect toolbar <-> inventory somehow to allow fast transfer.
 
         // TODO: not sure what these are used for, and they no longer exist
 //        getGUIManager().getWindowById("hud").getElementById("leftGearWheel").setVisible(false);
@@ -242,12 +239,9 @@ public class UICardBook extends UIWindow {
     private void executeCreate(UIDisplayElement element, int button) {
         PrefabManager prefMan = CoreRegistry.get(PrefabManager.class);
         for (Prefab prefab : prefMan.listPrefabs(MinionComponent.class)) {
-            if (minioncombo.getSelection() != null
-                && prefab.getName().contains(
-                        minioncombo.getSelection().getText())) {
+            if (minioncombo.getSelection() != null && prefab.getName().contains(minioncombo.getSelection().getText())) {
                 if (this.container != null) {
-                    InventoryComponent invcomp = this.container
-                            .getComponent(InventoryComponent.class);
+                    InventoryComponent invcomp = this.container.getComponent(InventoryComponent.class);
                     if (invcomp != null) {
                         // previously was invcomp.itemSlots.get(0)
                         EntityRef itemInSlot0Entity = InventoryUtils.getItemAt(this.container, 0);
@@ -291,7 +285,6 @@ public class UICardBook extends UIWindow {
 
     @Override
     public void update() {
-        // TODO Auto-generated method stub
         super.update();
         if (this.container != null) {
             InventoryComponent invcomp = this.container
