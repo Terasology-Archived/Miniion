@@ -6,6 +6,10 @@
     "description" : "A prototype of summonable, commandable minions",
     "dependencies" : [
 		{
+            "id" : "Zones",
+            "minVersion" : "0.1.0"
+        },
+		{
             "id" : "Core",
             "minVersion" : "0.1.0"
         },

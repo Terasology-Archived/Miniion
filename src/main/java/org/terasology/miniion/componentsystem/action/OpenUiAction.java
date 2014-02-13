@@ -16,11 +16,10 @@
 
 package org.terasology.miniion.componentsystem.action;
 
-import org.terasology.engine.CoreRegistry;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.ComponentSystem;
-import org.terasology.entitySystem.systems.In;
+import org.terasology.registry.In;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.common.ActivateEvent;
@@ -31,7 +30,6 @@ import org.terasology.miniion.components.actions.OpenUiActionComponent;
 import org.terasology.miniion.gui.UIActiveMinion;
 import org.terasology.miniion.gui.UICardBook;
 import org.terasology.rendering.gui.widgets.UIWindow;
-import org.terasology.zone.gui.UIZoneBook;
 
 /**
  * @author Immortius
@@ -63,8 +61,6 @@ public class OpenUiAction implements ComponentSystem {
                     uiWindow = new UICardBook();
                 } else if (uiInfo.uiwindowid.equals("activeminiion")) {
                     uiWindow = new UIActiveMinion();
-                } else if (uiInfo.uiwindowid.equals("zonebook")) {
-                    uiWindow = new UIZoneBook();
                 } else {
                     throw new RuntimeException("Unsupported window class: '" + uiInfo.uiwindowid + "'");
                 }
