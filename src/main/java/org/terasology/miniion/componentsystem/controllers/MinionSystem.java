@@ -29,21 +29,16 @@ import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.ComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.inventory.InventoryComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.action.GiveItemAction;
-import org.terasology.logic.manager.GUIManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
 import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.namesComponent;
-import org.terasology.miniion.gui.UIActiveMinion;
-import org.terasology.miniion.gui.UICardBook;
-import org.terasology.miniion.gui.UIScreenBookOreo;
 import org.terasology.miniion.utilities.MinionRecipe;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
@@ -65,8 +60,6 @@ public class MinionSystem extends BaseComponentSystem {
     @In
     private EntityManager entityManager;
     @In
-    private GUIManager guiManager;
-    @In
     private InventoryManager inventoryManager;
 
     //private static final int PRIORITY_LOCAL_PLAYER_OVERRIDE = 160;
@@ -78,24 +71,24 @@ public class MinionSystem extends BaseComponentSystem {
 
     @Override
     public void initialise() {
-        // experimental popup menu for the minion command tool
-        guiManager.registerWindow("activeminiion", UIActiveMinion.class);
-        // ui to create summonable cards
-        guiManager.registerWindow("cardbook", UICardBook.class);
-        // ui to manage summoned minions, selecting one sets it active!
-        guiManager.registerWindow("oreobook", UIScreenBookOreo.class);
-        initRecipes();
+//        // experimental popup menu for the minion command tool
+//        guiManager.registerWindow("activeminiion", UIActiveMinion.class);
+//        // ui to create summonable cards
+//        guiManager.registerWindow("cardbook", UICardBook.class);
+//        // ui to manage summoned minions, selecting one sets it active!
+//        guiManager.registerWindow("oreobook", UIScreenBookOreo.class);
+//        initRecipes();
     }
 
     @ReceiveEvent
     public void onPlayerSpawn(OnPlayerSpawnedEvent event, EntityRef player, InventoryComponent inventory) {
-        createAndGiveItemToPlayerIfPossible("miniion:minioncommand", player);
-        createAndGiveItemToPlayerIfPossible("miniion:cardbook", player);
-        createAndGiveItemToPlayerIfPossible("miniion:emptycard", player);
-        createAndGiveItemToPlayerIfPossible("miniion:emptycard", player);
-        createAndGiveItemToPlayerIfPossible("miniion:emptycard", player);
-        createAndGiveItemToPlayerIfPossible("Miniion:zonebook", player);
-        createAndGiveItemToPlayerIfPossible("Miniion:zonetool", player);
+//        createAndGiveItemToPlayerIfPossible("miniion:minioncommand", player);
+//        createAndGiveItemToPlayerIfPossible("miniion:cardbook", player);
+//        createAndGiveItemToPlayerIfPossible("miniion:emptycard", player);
+//        createAndGiveItemToPlayerIfPossible("miniion:emptycard", player);
+//        createAndGiveItemToPlayerIfPossible("miniion:emptycard", player);
+//        createAndGiveItemToPlayerIfPossible("Miniion:zonebook", player);
+//        createAndGiveItemToPlayerIfPossible("Miniion:zonetool", player);
     }
 
     private void createAndGiveItemToPlayerIfPossible(String uri, EntityRef player) {

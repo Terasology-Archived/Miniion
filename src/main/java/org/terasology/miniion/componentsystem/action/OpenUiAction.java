@@ -19,26 +19,19 @@ package org.terasology.miniion.componentsystem.action;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.ComponentSystem;
-import org.terasology.registry.In;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.inventory.ItemComponent;
-import org.terasology.logic.manager.GUIManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.miniion.components.actions.OpenUiActionComponent;
-import org.terasology.miniion.gui.UIActiveMinion;
-import org.terasology.miniion.gui.UICardBook;
-import org.terasology.rendering.gui.widgets.UIWindow;
+import org.terasology.registry.In;
 
 /**
  * @author Immortius
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class OpenUiAction implements ComponentSystem {
-
-    @In
-    private GUIManager guiManager;
 
     @In
     private LocalPlayer localPlayer;
@@ -55,23 +48,23 @@ public class OpenUiAction implements ComponentSystem {
     public void onActivate(ActivateEvent event, EntityRef entity) {
         OpenUiActionComponent uiInfo = entity.getComponent(OpenUiActionComponent.class);
         if (uiInfo != null) {
-            UIWindow uiWindow = guiManager.getWindowById(uiInfo.uiwindowid);
-            if (null == uiWindow) {
-                if (uiInfo.uiwindowid.equals("cardbook")) {
-                    uiWindow = new UICardBook();
-                } else if (uiInfo.uiwindowid.equals("activeminiion")) {
-                    uiWindow = new UIActiveMinion();
-                } else {
-                    throw new RuntimeException("Unsupported window class: '" + uiInfo.uiwindowid + "'");
-                }
-            }
-
-            uiWindow.open();
-
-            if (uiInfo.uiwindowid.matches("cardbook")) {
-                UICardBook cardbookui = (UICardBook)uiWindow;
-                cardbookui.openContainer(entity, localPlayer.getCharacterEntity());
-            }
+//            UIWindow uiWindow = guiManager.getWindowById(uiInfo.uiwindowid);
+//            if (null == uiWindow) {
+//                if (uiInfo.uiwindowid.equals("cardbook")) {
+//                    uiWindow = new UICardBook();
+//                } else if (uiInfo.uiwindowid.equals("activeminiion")) {
+//                    uiWindow = new UIActiveMinion();
+//                } else {
+//                    throw new RuntimeException("Unsupported window class: '" + uiInfo.uiwindowid + "'");
+//                }
+//            }
+//
+//            uiWindow.open();
+//
+//            if (uiInfo.uiwindowid.matches("cardbook")) {
+//                UICardBook cardbookui = (UICardBook)uiWindow;
+//                cardbookui.openContainer(entity, localPlayer.getCharacterEntity());
+//            }
         }
     }
 

@@ -54,8 +54,10 @@ public final class MinionComponent implements Component {
     public int Stamina;
     public int Staminatotal;
 
+    // TODO: this should be a separate component assigned to the entity rather than an entity w/component assigned to this component
     //determines an action point for the minion
-    public EntityRef assignedZoneEntity = EntityRef.NULL;
+    public EntityRef assignedTaskEntity = EntityRef.NULL;
+    
     //the recipe to craft when working
     public MinionRecipe assignedrecipe;
 
