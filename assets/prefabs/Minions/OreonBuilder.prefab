@@ -1,6 +1,9 @@
 {
 	"parent": "Oreons:OreonBuilder",
 	"name" : "OreonMinions:OreonBuilder",
+    "DisplayName" : {
+        "name" : "Oreon Builder"
+    },
 	"Minion" : {
 	    "icon" = "miniion:icons32.oreonbuilder",
 	    "filledCardIcon" = "miniion:minionicon16.buildercard",

@@ -1,6 +1,9 @@
 {
 	"parent": "Oreons:OreonKing",
 	"name" : "OreonMinions:OreonKing",
+    "DisplayName" : {
+        "name" : "Oreon King"
+    },
     "Item" : {
 	    "icon" = "miniion:minionicon16.kingcard",
         "usage" : "NONE",

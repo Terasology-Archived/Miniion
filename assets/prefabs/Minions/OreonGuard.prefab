@@ -1,6 +1,9 @@
 {
 	"parent": "Oreons:OreonGuard",
 	"name" : "OreonMinions:OreonGuard",
+    "DisplayName" : {
+        "name" : "Oreon Guard"
+    },
 	"Minion" : {
 	    "icon" = "miniion:icons32.oreonguard",
 	    "filledCardIcon" = "miniion:minionicon16.guardcard",

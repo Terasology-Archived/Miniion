@@ -74,26 +74,4 @@ public class SummonMinionMenuSystem extends BaseComponentSystem {
             }
         }                
     }
-
-    public void populateSummonMenus(ColumnLayout summonTabColumnLayout) {
-        PrefabManager prefMan = CoreRegistry.get(PrefabManager.class);
-        
-        for (final Prefab prefab : prefMan.listPrefabs(MinionComponent.class)) {
-            
-            String[] tempstring = prefab.getName().split(":");
-            if (tempstring.length == 2) {
-                String minionName = tempstring[1];
-                UIButton selectMinionMenu = new UIButton(minionName, minionName);
-                selectMinionMenu.subscribe(new ActivateEventListener() {
-                    @Override
-                    public void onActivated(UIWidget widget) {
-                      SummonMinionMenuSystem summonMinionMenuSystem = CoreRegistry.get(SummonMinionMenuSystem.class);
-                      summonMinionMenuSystem.createMinion(prefab);
-                    }
-                });
-
-                summonTabColumnLayout.addWidget(selectMinionMenu);
-            }
-        }
-    }
 }
