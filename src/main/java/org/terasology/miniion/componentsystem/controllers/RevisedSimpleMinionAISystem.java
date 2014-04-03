@@ -78,8 +78,8 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
     @In
     private BlockManager blockManager;
 
-//    @In
-//    private SlotBasedInventoryManager inventoryManager;
+    //    @In
+    //    private SlotBasedInventoryManager inventoryManager;
 
     @In
     private EntityManager entityManager;
@@ -122,7 +122,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
     @Override
     public void update(float delta) {
         assignTasksToIdleMinions();
-        
+
         for (EntityRef entity : entityManager.getEntitiesWith(
                 SimpleMinionAIComponent.class,
                 NPCMovementInputComponent.class, LocationComponent.class,
@@ -155,7 +155,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
                 changeAnimation(entity, animcomp.idleAnim, false);
                 return;
             }
-            
+
             switch (assignedTaskComponent.assignedTaskType) {
                 case Follow: {
                     executeFollowAI(entity);
@@ -254,68 +254,69 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
     }
 
     private void executeGatherAI(EntityRef entity) {
-//        MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
-//        LocationComponent location = entity
-//                .getComponent(LocationComponent.class);
-//        SimpleMinionAIComponent ai = entity
-//                .getComponent(SimpleMinionAIComponent.class);
-//        AnimationComponent animcomp = entity
-//                .getComponent(AnimationComponent.class);
-//        Vector3f worldPos = new Vector3f(location.getWorldPosition());
-//        FarmZoneComponent assignedZoneComponent = minioncomp.assignedZoneEntity.getComponent(ZoneComponent.class);
-//
-//        if ((ai.gatherTargets.size() == 0) && (minioncomp.assignedZoneEntity != EntityRef.NULL) && (assignedZoneComponent.zonetype == ZoneType.Gather)) {
-//            getTargetsfromZone(minioncomp, ai);
-//        }
-//
-//        if ((ai.gatherTargets == null) || (ai.gatherTargets.size() < 1)) {
-//            return;
-//        }
-//        Vector3f currentTarget = ai.gatherTargets.get(0);
-//        if (currentTarget == null) {
-//            ai.gatherTargets.remove(currentTarget);
-//            changeAnimation(entity, animcomp.idleAnim, true);
-//            entity.saveComponent(ai);
-//            return;
-//        }
-//        Vector3f dist = new Vector3f(worldPos);
-//        dist.sub(currentTarget);
-//        double distanceToTarget = dist.lengthSquared();
-//
-//        if (distanceToTarget < 4) {
-//            // switch animation
-//            changeAnimation(entity, animcomp.workAnim, false);
-//            // gather the block
-//            if (timer.getGameTimeInMs() - ai.lastAttacktime > 500) {
-//                ai.lastAttacktime = timer.getGameTimeInMs();
-//                boolean attacked = attack(entity, currentTarget);
-//                if (!attacked) {
-//                    changeAnimation(entity, animcomp.idleAnim, true);
-//                    ai.gatherTargets.remove(currentTarget);
-//                }
-//            }
-//        }
-//
-//        entity.saveComponent(ai);
-//        setMovement(currentTarget, entity);
+        //        MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
+        //        LocationComponent location = entity
+        //                .getComponent(LocationComponent.class);
+        //        SimpleMinionAIComponent ai = entity
+        //                .getComponent(SimpleMinionAIComponent.class);
+        //        AnimationComponent animcomp = entity
+        //                .getComponent(AnimationComponent.class);
+        //        Vector3f worldPos = new Vector3f(location.getWorldPosition());
+        //        FarmZoneComponent assignedZoneComponent = minioncomp.assignedZoneEntity.getComponent(ZoneComponent.class);
+        //
+        //        if ((ai.gatherTargets.size() == 0) && (minioncomp.assignedZoneEntity != EntityRef.NULL) && (assignedZoneComponent.zonetype == ZoneType.Gather)) {
+        //            getTargetsfromZone(minioncomp, ai);
+        //        }
+        //
+        //        if ((ai.gatherTargets == null) || (ai.gatherTargets.size() < 1)) {
+        //            return;
+        //        }
+        //        Vector3f currentTarget = ai.gatherTargets.get(0);
+        //        if (currentTarget == null) {
+        //            ai.gatherTargets.remove(currentTarget);
+        //            changeAnimation(entity, animcomp.idleAnim, true);
+        //            entity.saveComponent(ai);
+        //            return;
+        //        }
+        //        Vector3f dist = new Vector3f(worldPos);
+        //        dist.sub(currentTarget);
+        //        double distanceToTarget = dist.lengthSquared();
+        //
+        //        if (distanceToTarget < 4) {
+        //            // switch animation
+        //            changeAnimation(entity, animcomp.workAnim, false);
+        //            // gather the block
+        //            if (timer.getGameTimeInMs() - ai.lastAttacktime > 500) {
+        //                ai.lastAttacktime = timer.getGameTimeInMs();
+        //                boolean attacked = attack(entity, currentTarget);
+        //                if (!attacked) {
+        //                    changeAnimation(entity, animcomp.idleAnim, true);
+        //                    ai.gatherTargets.remove(currentTarget);
+        //                }
+        //            }
+        //        }
+        //
+        //        entity.saveComponent(ai);
+        //        setMovement(currentTarget, entity);
     }
-//
-//    private void getTargetsfromZone(MinionComponent minioncomp,
-//                                    SimpleMinionAIComponent ai) {
-//        EntityRef zone = minioncomp.assignedTaskEntity;
-//        FarmZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
-//        // first loop at highest blocks (y)
-//        for (int y = zoneComponent.getMaxBounds().y; y >= zoneComponent.getMinBounds().y; y--) {
-//            for (int x = zoneComponent.getMinBounds().x; x <= zoneComponent.getMaxBounds().x; x++) {
-//                for (int z = zoneComponent.getMinBounds().z; z <= zoneComponent.getMaxBounds().z; z++) {
-//                    Block tmpblock = worldProvider.getBlock(x, y, z);
-//                    if (!tmpblock.isInvisible()) {
-//                        ai.gatherTargets.add(new Vector3f(x, y + 0.5f, z));
-//                    }
-//                }
-//            }
-//        }
-//    }
+
+    //
+    //    private void getTargetsfromZone(MinionComponent minioncomp,
+    //                                    SimpleMinionAIComponent ai) {
+    //        EntityRef zone = minioncomp.assignedTaskEntity;
+    //        FarmZoneComponent zoneComponent = zone.getComponent(ZoneComponent.class);
+    //        // first loop at highest blocks (y)
+    //        for (int y = zoneComponent.getMaxBounds().y; y >= zoneComponent.getMinBounds().y; y--) {
+    //            for (int x = zoneComponent.getMinBounds().x; x <= zoneComponent.getMaxBounds().x; x++) {
+    //                for (int z = zoneComponent.getMinBounds().z; z <= zoneComponent.getMaxBounds().z; z++) {
+    //                    Block tmpblock = worldProvider.getBlock(x, y, z);
+    //                    if (!tmpblock.isInvisible()) {
+    //                        ai.gatherTargets.add(new Vector3f(x, y + 0.5f, z));
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
 
     private void executeWorkAI(EntityRef entity) {
         MinionFarmerComponent minionFarmer = entity.getComponent(MinionFarmerComponent.class);
@@ -347,7 +348,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
                 }
             }
         }
-        
+
         return true;
     }
 
@@ -767,7 +768,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
             if (skeletalcomp.animation == animcomp.walkAnim) {
                 changeAnimation(entity, animcomp.idleAnim, true);
             }
-            movementInput.directionToMove = new Vector3f(0,0,0);
+            movementInput.directionToMove = new Vector3f(0, 0, 0);
         }
         entity.saveComponent(ai);
         entity.saveComponent(movementInput);
@@ -808,25 +809,25 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
     @Override
     public void preBegin() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void postBegin() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void preSave() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void postSave() {
         // TODO Auto-generated method stub
-        
+
     }
 
     // Simplistic task assignment
@@ -879,7 +880,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
         assignableTaskComponent.area = selection;
         assignableTaskComponent.creationGameTime = timer.getGameTimeInMs();
         assignableTaskComponent.assignedTaskType = taskType;
-        
+
         // Not sure if there's a better way to do it, but this seems the most appropriate?
         EntityRef assignedTaskEntity = entityManager.create(assignableTaskComponent);
     }
