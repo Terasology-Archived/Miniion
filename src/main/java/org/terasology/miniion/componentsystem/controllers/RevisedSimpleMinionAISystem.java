@@ -16,8 +16,8 @@
 package org.terasology.miniion.componentsystem.controllers;
 
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
@@ -38,22 +38,18 @@ import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.characters.events.HorizontalCollisionEvent;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.health.EngineDamageTypes;
-import org.terasology.logic.inventory.InventoryComponent;
-import org.terasology.logic.inventory.action.GiveItemAction;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
 import org.terasology.math.Region3i;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.components.AnimationComponent;
-import org.terasology.miniion.components.AssignedTaskComponent;
+import org.terasology.miniion.components.AssignableTaskComponent;
 import org.terasology.miniion.components.AssignedTaskType;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.MinionFarmerComponent;
 import org.terasology.miniion.components.NPCMovementInputComponent;
 import org.terasology.miniion.components.SimpleMinionAIComponent;
 import org.terasology.miniion.events.MinionMessageEvent;
-import org.terasology.miniion.minionenum.MinionBehaviour;
 import org.terasology.miniion.minionenum.MinionMessagePriority;
 import org.terasology.miniion.pathfinder.AStarPathing;
 import org.terasology.miniion.utilities.MinionMessage;
@@ -95,10 +91,6 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
     private Time timer;
 
     private AStarPathing aStarPathing;
-
-    // TODO: this needs to be on an entity
-    private Deque<EntityRef> unassignedTaskList = new LinkedList<EntityRef>();
-    
 
     @Override
     public void initialise() {
@@ -143,6 +135,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
                     .getComponent(AnimationComponent.class);
             SimpleMinionAIComponent ai = entity
                     .getComponent(SimpleMinionAIComponent.class);
+            AssignableTaskComponent assignedTaskComponent = entity.getComponent(AssignableTaskComponent.class);
 
             //hunger system, increase the delay by increasing > 10000
             if (timer.getGameTimeInMs() - ai.lastHungerCheck > 10000) {
@@ -157,7 +150,13 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
                 }
             }
 
-            switch (minioncomp.minionBehaviour) {
+            if (null == assignedTaskComponent) {
+                // TODO:  minion is doing nothing
+                changeAnimation(entity, animcomp.idleAnim, false);
+                return;
+            }
+            
+            switch (assignedTaskComponent.assignedTaskType) {
                 case Follow: {
                     executeFollowAI(entity);
                     break;
@@ -166,6 +165,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
                     executeGatherAI(entity);
                     break;
                 }
+                case Plant:
                 case Work: {
                     executeWorkAI(entity);
                     break;
@@ -318,16 +318,10 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
 //    }
 
     private void executeWorkAI(EntityRef entity) {
-        MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
         MinionFarmerComponent minionFarmer = entity.getComponent(MinionFarmerComponent.class);
-        AnimationComponent animcomp = entity.getComponent(AnimationComponent.class);
-        AssignedTaskComponent assignedTaskComponent = minioncomp.assignedTaskEntity.getComponent(AssignedTaskComponent.class);
+        AssignableTaskComponent assignedTaskComponent = entity.getComponent(AssignableTaskComponent.class);
 
-        if (minioncomp.assignedTaskEntity == EntityRef.NULL) {
-            changeAnimation(entity, animcomp.idleAnim, true);
-            minioncomp.minionBehaviour = MinionBehaviour.Stay;
-            return;
-        } else if (assignedTaskComponent.assignedTaskType != AssignedTaskType.Plant) {
+        if (assignedTaskComponent.assignedTaskType == AssignedTaskType.Plant) {
             if (isTerraformComplete(assignedTaskComponent.area, minionFarmer.farmFieldBlockName)) {
                 //farming
                 executeFarmAI(entity);
@@ -374,7 +368,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
         AnimationComponent animcomp = entity
                 .getComponent(AnimationComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
-        AssignedTaskComponent assignedTaskComponent = minioncomp.assignedTaskEntity.getComponent(AssignedTaskComponent.class);
+        AssignableTaskComponent assignedTaskComponent = entity.getComponent(AssignableTaskComponent.class);
 
         if (assignedTaskComponent.assignedTaskType != AssignedTaskType.Plant && terraformFinalBlockType.isEmpty()) {
             changeAnimation(entity, animcomp.idleAnim, true);
@@ -389,7 +383,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
 
         if (ai.movementTargets.size() == 0) {
             // this might load more ai.movementTargets
-            getFirsBlockfromZone(minioncomp, ai);
+            getFirstBlockfromZone(entity, ai);
         }
 
         Vector3f currentTarget = null;
@@ -465,8 +459,8 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
         setMovement(currentTarget, entity);
     }
 
-    private void getFirsBlockfromZone(MinionComponent minioncomp, SimpleMinionAIComponent ai) {
-        AssignedTaskComponent assignedTaskComponent = minioncomp.assignedTaskEntity.getComponent(AssignedTaskComponent.class);
+    private void getFirstBlockfromZone(EntityRef minionEntity, SimpleMinionAIComponent ai) {
+        AssignableTaskComponent assignedTaskComponent = minionEntity.getComponent(AssignableTaskComponent.class);
         for (int x = assignedTaskComponent.area.min().x; x <= assignedTaskComponent.area.max().x; x++) {
             for (int z = assignedTaskComponent.area.min().z; z <= assignedTaskComponent.area.max().z; z++) {
                 for (int y = assignedTaskComponent.area.max().y; y >= assignedTaskComponent.area.min().y; y--) {
@@ -489,20 +483,15 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
      *                              can override the default recipe for farming. 
      */
     private void executeFarmAI(EntityRef entity) {
-        MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
         MinionFarmerComponent minionFarmer = entity.getComponent(MinionFarmerComponent.class);
-        LocationComponent location = entity
-                .getComponent(LocationComponent.class);
-        SimpleMinionAIComponent ai = entity
-                .getComponent(SimpleMinionAIComponent.class);
-        AnimationComponent animcomp = entity
-                .getComponent(AnimationComponent.class);
+        AssignableTaskComponent assignedTaskComponent = entity.getComponent(AssignableTaskComponent.class);
+        LocationComponent location = entity.getComponent(LocationComponent.class);
+        SimpleMinionAIComponent ai = entity.getComponent(SimpleMinionAIComponent.class);
+        AnimationComponent animcomp = entity.getComponent(AnimationComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
-        
-        AssignedTaskComponent assignedTaskComponent = minioncomp.assignedTaskEntity.getComponent(AssignedTaskComponent.class);
 
         if (ai.movementTargets.size() == 0) {
-            getFirsBlockfromZone(minioncomp, ai);
+            getFirstBlockfromZone(entity, ai);
         }
 
         Vector3f currentTarget = null;
@@ -513,8 +502,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
         if (currentTarget == null) {
             ai.movementTargets.remove(currentTarget);
             changeAnimation(entity, animcomp.idleAnim, true);
-            minioncomp.minionBehaviour = MinionBehaviour.Stay;
-            minioncomp.assignedTaskEntity = EntityRef.NULL;
+            entity.removeComponent(AssignableTaskComponent.class);
             entity.saveComponent(ai);
             return;
         }
@@ -562,9 +550,8 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
         if (ai.movementTargets.size() == 0) {
             ai.movementTargets.remove(currentTarget);
             changeAnimation(entity, animcomp.idleAnim, true);
+            entity.removeComponent(AssignableTaskComponent.class);
             entity.saveComponent(ai);
-            minioncomp.minionBehaviour = MinionBehaviour.Stay;
-            minioncomp.assignedTaskEntity = EntityRef.NULL;
             return;
         }
 
@@ -844,33 +831,57 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
 
     // Simplistic task assignment
     private void assignTasksToIdleMinions() {
-        if (unassignedTaskList.isEmpty()) {
+        List<EntityRef> assignableTaskComponentEntityList = new ArrayList<EntityRef>();
+        Iterable<EntityRef> assignableTaskIterable = entityManager.getEntitiesWith(AssignableTaskComponent.class);
+        for (EntityRef assignableTaskComponentEntity : assignableTaskIterable) {
+            AssignableTaskComponent assignableTaskComponent = assignableTaskComponentEntity.getComponent(AssignableTaskComponent.class);
+            MinionComponent minionComponent = assignableTaskComponentEntity.getComponent(MinionComponent.class);
+            if (null == minionComponent) {
+                assignableTaskComponentEntityList.add(assignableTaskComponentEntity);
+            }
+        }
+
+        if (assignableTaskComponentEntityList.isEmpty()) {
             return;
         }
 
-        Iterable<EntityRef> entityIterable = entityManager.getEntitiesWith(MinionComponent.class);
-        for (EntityRef entityRef : entityIterable) {
-            MinionComponent minionComponent = entityRef.getComponent(MinionComponent.class);
-            if (MinionBehaviour.Stay == minionComponent.minionBehaviour) {
-                if ((null == minionComponent.assignedTaskEntity) || (EntityRef.NULL == minionComponent.assignedTaskEntity)) {
-                    minionComponent.assignedTaskEntity = unassignedTaskList.removeFirst();
-                    minionComponent.minionBehaviour = MinionBehaviour.Work;
-                    
-                    if (unassignedTaskList.isEmpty()) {
-                        return;
-                    }
+        Collections.sort(assignableTaskComponentEntityList, new Comparator<EntityRef>() {
+            @Override
+            public int compare(EntityRef e1, EntityRef e2) {
+                AssignableTaskComponent atc1 = e1.getComponent(AssignableTaskComponent.class);
+                AssignableTaskComponent atc2 = e2.getComponent(AssignableTaskComponent.class);
+                long create1 = atc1.creationGameTime;
+                long create2 = atc2.creationGameTime;
+                return (create1 == create2) ? 0 : ((create1 < create2) ? -1 : 1);
+            }
+        });
+
+        Iterable<EntityRef> minionEntityIterable = entityManager.getEntitiesWith(MinionComponent.class);
+        for (EntityRef minionEntity : minionEntityIterable) {
+            AssignableTaskComponent assignedTaskComponent = minionEntity.getComponent(AssignableTaskComponent.class);
+            if (null == assignedTaskComponent) {
+                EntityRef assignableTaskComponentEntity = assignableTaskComponentEntityList.remove(0);
+                AssignableTaskComponent assignableTaskComponent = assignableTaskComponentEntity.getComponent(AssignableTaskComponent.class);
+                minionEntity.addComponent(assignableTaskComponent);
+                // This assumes that any assignableTaskComponent on an entity without a MinionComponent is just a placeholder
+                // so we can just destroy it at this point
+                assignableTaskComponentEntity.destroy();
+
+                if (assignableTaskComponentEntityList.isEmpty()) {
+                    return;
                 }
             }
         }
     }
 
-    public void createAssignedTask(AssignedTaskType plant, Region3i selection) {
-        AssignedTaskComponent assignedTaskComponent = new AssignedTaskComponent();
-        assignedTaskComponent.area = selection;
+    public void createAssignedTask(AssignedTaskType taskType, Region3i selection) {
+        AssignableTaskComponent assignableTaskComponent = new AssignableTaskComponent();
+        assignableTaskComponent.area = selection;
+        assignableTaskComponent.creationGameTime = timer.getGameTimeInMs();
+        assignableTaskComponent.assignedTaskType = taskType;
         
-        EntityRef assignedTaskEntity = entityManager.create(assignedTaskComponent);
-        
-        unassignedTaskList.addLast(assignedTaskEntity);
+        // Not sure if there's a better way to do it, but this seems the most appropriate?
+        EntityRef assignedTaskEntity = entityManager.create(assignableTaskComponent);
     }
 
 }

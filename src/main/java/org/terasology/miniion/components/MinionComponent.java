@@ -16,8 +16,6 @@
 package org.terasology.miniion.components;
 
 import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.miniion.minionenum.MinionBehaviour;
 import org.terasology.miniion.utilities.MinionRecipe;
 
 /**
@@ -41,9 +39,6 @@ public final class MinionComponent implements Component {
     // skin to shown when minion is not selected, eg : Oreons:OreonSkin, needs to be defined in prefab
     public String unselectedSkin = null;
 
-    // used by minionsystem, init at stay normally
-    public MinionBehaviour minionBehaviour = MinionBehaviour.Stay;
-
     public boolean dying = false;
 
     //stats
@@ -54,10 +49,6 @@ public final class MinionComponent implements Component {
     public int Stamina;
     public int Staminatotal;
 
-    // TODO: this should be a separate component assigned to the entity rather than an entity w/component assigned to this component
-    //determines an action point for the minion
-    public EntityRef assignedTaskEntity = EntityRef.NULL;
-    
     //the recipe to craft when working
     public MinionRecipe assignedrecipe;
 
