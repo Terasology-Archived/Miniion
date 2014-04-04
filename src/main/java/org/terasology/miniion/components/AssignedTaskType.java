@@ -18,7 +18,8 @@ package org.terasology.miniion.components;
 public enum AssignedTaskType {
     None,
     Plant,
-
+    Dig,
+    
     Stay,
     Follow,
     Attack,
