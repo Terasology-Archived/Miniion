@@ -378,15 +378,24 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
         AnimationComponent animcomp = entity.getComponent(AnimationComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
 
-        if (ai.movementTargets.size() == 0) {
+//        if (ai.movementTargets.size() == 0) {
             // this might load more ai.movementTargets
             getDiggableBlocksfromZone(entity, assignedTaskComponent, ai);
-        }
+//        }
 
-        // TODO: need to pick closest reachable target rather than first one
         Vector3f currentTarget = null;
+
+        double closestTargetDistance = Double.MAX_VALUE;
         if (ai.movementTargets.size() != 0) {
-            currentTarget = ai.movementTargets.get(0);
+            for (Vector3f targetLocation : ai.movementTargets) {
+                Vector3f dist = new Vector3f(worldPos);
+                dist.sub(targetLocation);
+                double distanceToTarget = dist.lengthSquared();
+                if (distanceToTarget < closestTargetDistance) {
+                    currentTarget = targetLocation;
+                    closestTargetDistance = distanceToTarget;
+                }
+            }
         }
 
         if (currentTarget == null) {
@@ -394,9 +403,8 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
             return;
         }
 
-        Vector3f dist = new Vector3f(worldPos);
-        dist.sub(currentTarget);
-        double distanceToTarget = dist.lengthSquared();
+        double distanceToTarget = closestTargetDistance;
+
 
         int damageAmount = 1;
         
@@ -463,8 +471,18 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
         }
 
         Vector3f currentTarget = null;
+
+        double closestTargetDistance = Double.MAX_VALUE;
         if (ai.movementTargets.size() != 0) {
-            currentTarget = ai.movementTargets.get(0);
+            for (Vector3f targetLocation : ai.movementTargets) {
+                Vector3f dist = new Vector3f(worldPos);
+                dist.sub(currentTarget);
+                double distanceToTarget = dist.lengthSquared();
+                if (distanceToTarget < closestTargetDistance) {
+                    currentTarget = targetLocation;
+                    closestTargetDistance = distanceToTarget;
+                }
+            }
         }
 
         if (currentTarget == null) {
@@ -472,9 +490,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
             return;
         }
 
-        Vector3f dist = new Vector3f(worldPos);
-        dist.sub(currentTarget);
-        double distanceToTarget = dist.lengthSquared();
+        double distanceToTarget = closestTargetDistance;
 
         if (distanceToTarget < 4) {
             // terraform
