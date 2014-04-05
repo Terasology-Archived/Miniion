@@ -31,13 +31,11 @@ import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.entity.lifecycleEvents.OnAddedComponent;
 import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.ComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.logic.characters.CharacterMovementComponent;
-import org.terasology.logic.characters.events.AttackRequest;
 import org.terasology.logic.characters.events.HorizontalCollisionEvent;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.health.EngineDamageTypes;
@@ -476,7 +474,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
         if (ai.movementTargets.size() != 0) {
             for (Vector3f targetLocation : ai.movementTargets) {
                 Vector3f dist = new Vector3f(worldPos);
-                dist.sub(currentTarget);
+                dist.sub(targetLocation);
                 double distanceToTarget = dist.lengthSquared();
                 if (distanceToTarget < closestTargetDistance) {
                     currentTarget = targetLocation;
