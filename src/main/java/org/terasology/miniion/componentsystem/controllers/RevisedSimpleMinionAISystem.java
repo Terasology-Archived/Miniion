@@ -15,9 +15,6 @@
  */
 package org.terasology.miniion.componentsystem.controllers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
@@ -25,12 +22,12 @@ import javax.vecmath.Vector3f;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.asset.Assets;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.entity.lifecycleEvents.OnAddedComponent;
 import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.ComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
@@ -44,24 +41,21 @@ import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.Region3i;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.components.AnimationComponent;
-import org.terasology.miniion.components.AssignableTaskComponent;
+import org.terasology.miniion.components.AssignedTaskComponent;
 import org.terasology.miniion.components.AssignedTaskType;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.MinionFarmerComponent;
 import org.terasology.miniion.components.NPCMovementInputComponent;
 import org.terasology.miniion.components.SimpleMinionAIComponent;
+import org.terasology.miniion.components.TaskStatusType;
 import org.terasology.miniion.events.MinionMessageEvent;
 import org.terasology.miniion.minionenum.MinionMessagePriority;
 import org.terasology.miniion.pathfinder.AStarPathing;
 import org.terasology.miniion.utilities.MinionMessage;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
-import org.terasology.registry.Share;
 import org.terasology.rendering.assets.animation.MeshAnimation;
-import org.terasology.rendering.assets.texture.Texture;
-import org.terasology.rendering.assets.texture.TextureUtil;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
-import org.terasology.rendering.nui.Color;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
@@ -72,13 +66,13 @@ import org.terasology.world.selection.BlockSelectionComponent;
  * Created with IntelliJ IDEA. User: Overdhose Date: 7/05/12 Time: 18:25 first
  * evolution of the minion AI, could probably use a lot of improvements
  */
-@Share(RevisedSimpleMinionAISystem.class)
 @RegisterSystem(RegisterMode.AUTHORITY)
-public class RevisedSimpleMinionAISystem implements ComponentSystem,
-        UpdateSubscriberSystem {
+public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements UpdateSubscriberSystem {
     private static final Logger logger = LoggerFactory.getLogger(RevisedSimpleMinionAISystem.class);
     private static final String DEFAULT_TERRAFORM_FINAL_BLOCK_TYPE_NAME = "CakeLie:ChocolateBlock";
     private static final String DEFAULT_CROP_BLOCK_NAME = "core:plant";
+    
+    private static final int MINIMUM_WORK_DISTANCE = 4;
 
     @In
     private BlockManager blockManager;
@@ -86,6 +80,9 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
     //    @In
     //    private SlotBasedInventoryManager inventoryManager;
 
+    @In 
+    private TaskManagementSystem taskManager;
+    
     @In
     private EntityManager entityManager;
     @In
@@ -140,7 +137,7 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
                     .getComponent(AnimationComponent.class);
             SimpleMinionAIComponent ai = entity
                     .getComponent(SimpleMinionAIComponent.class);
-            AssignableTaskComponent assignedTaskComponent = entity.getComponent(AssignableTaskComponent.class);
+            AssignedTaskComponent assignedTaskComponent = entity.getComponent(AssignedTaskComponent.class);
 
             //hunger system, increase the delay by increasing > 10000
             if (timer.getGameTimeInMs() - ai.lastHungerCheck > 10000) {
@@ -327,11 +324,11 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
     //        }
     //    }
 
-    private void executeWorkAI(EntityRef entity, AssignableTaskComponent assignedTaskComponent) {
+    private void executeWorkAI(EntityRef entity, AssignedTaskComponent assignedTaskComponent) {
         MinionFarmerComponent minionFarmer = entity.getComponent(MinionFarmerComponent.class);
 
         if (assignedTaskComponent.assignedTaskType == AssignedTaskType.Plant) {
-            if (isTerraformComplete(assignedTaskComponent.area, minionFarmer.farmFieldBlockName)) {
+            if (isTerraformComplete(assignedTaskComponent.targetLocation, minionFarmer.farmFieldBlockName)) {
                 //farming
                 executeFarmAI(entity, assignedTaskComponent);
             } else {
@@ -341,97 +338,156 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
         }
     }
 
-    private boolean isTerraformComplete(Region3i area, String blockTypeName) {
-        return isAreaComposedOnlyOfBlockType(area, blockTypeName);
+    private boolean isTerraformComplete(Vector3i targetLocation, String blockTypeName) {
+        Block block = worldProvider.getBlock(targetLocation);
+        if (!block.getURI().toString().toLowerCase().equals(blockTypeName.toLowerCase())) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
-    private boolean isAreaComposedOnlyOfBlockType(Region3i area, String blockTypeName) {
-        for (int y = area.max().y; y >= area.min().y; y--) {
-            for (int x = area.min().x; x <= area.max().x; x++) {
-                for (int z = area.min().z; z <= area.max().z; z++) {
-                    Block block = worldProvider.getBlock(x, y, z);
-                    if (!block.getURI().toString().toLowerCase().equals(blockTypeName.toLowerCase())) {
-                        return false;
-                    }
-                }
+//    private boolean isAreaComposedOnlyOfBlockType(Region3i area, String blockTypeName) {
+//        for (int y = area.max().y; y >= area.min().y; y--) {
+//            for (int x = area.min().x; x <= area.max().x; x++) {
+//                for (int z = area.min().z; z <= area.max().z; z++) {
+//                    Block block = worldProvider.getBlock(x, y, z);
+//                    if (!block.getURI().toString().toLowerCase().equals(blockTypeName.toLowerCase())) {
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return true;
+//    }
+
+    private Vector3i[] getCardinalNeighborLocations(Vector3i targetLocation) {
+        return new Vector3i[] {
+                new Vector3i(targetLocation.x-1, targetLocation.y, targetLocation.z),
+                new Vector3i(targetLocation.x+1, targetLocation.y, targetLocation.z),
+                new Vector3i(targetLocation.x, targetLocation.y-1, targetLocation.z),
+                new Vector3i(targetLocation.x, targetLocation.y+1, targetLocation.z),
+                new Vector3i(targetLocation.x, targetLocation.y, targetLocation.z-1),
+                new Vector3i(targetLocation.x, targetLocation.y, targetLocation.z+1)
+        };
+    }
+
+    private boolean isReachable(EntityRef minionEntity, Vector3i targetLocation) {
+        // TODO: This method is going to require a lot more work
+        // TODO: All of these need to be done with a pathfinding algorithm, but here's a temporary placeholder
+
+        boolean reachable = true;
+
+        
+        // Not reachable if surrounded by dirt and we can't burrow/ghost
+
+        boolean surrounded = true;
+        Vector3i[] cardinalNeighborLocations = getCardinalNeighborLocations(targetLocation);
+        for (Vector3i neighborLocation : cardinalNeighborLocations) {
+            Block tmpblock = worldProvider.getBlock(targetLocation);
+            if (tmpblock.isPenetrable()) {
+                surrounded = false;
+            }
+        }
+        if (surrounded) {
+            reachable = false;
+        }
+
+        
+        // Not reachable if up in the air and we can't fly, jump down to it, or climb up to it
+        LocationComponent location = minionEntity.getComponent(LocationComponent.class);
+        Vector3f entityLocation = location.getLocalPosition();
+        
+        Vector3f currentTarget = new Vector3f(targetLocation.x, 0, targetLocation.z);
+        Vector3f dist = new Vector3f(entityLocation.x, 0, entityLocation.z);
+        dist.sub(currentTarget);
+        double horizontalDistanceToTarget = dist.lengthSquared();
+        if (horizontalDistanceToTarget < MINIMUM_WORK_DISTANCE) {
+            if (Math.abs(entityLocation.y - targetLocation.y) > MINIMUM_WORK_DISTANCE) {
+                reachable = false;
             }
         }
 
-        return true;
+        // Consider it unreachable if we're not making progress moving toward it after a period of time?
+
+        return reachable;
     }
 
-    /**
-     * Terraforms a zone into a set recipe, by default chocolate.
-     * @param entity 
-     *                              the minion that is terraforming
-     * @param assignedTaskComponent 
-     * @param terraformFinalBlockType
-     *                              set to empty string by default for normal terraforming, 
-     *                              can override the default recipe for farming. 
-     */
-    private void executeDigAI(EntityRef entity, AssignableTaskComponent assignedTaskComponent) {
-        MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
-        LocationComponent location = entity.getComponent(LocationComponent.class);
-        SimpleMinionAIComponent ai = entity.getComponent(SimpleMinionAIComponent.class);
-        AnimationComponent animcomp = entity.getComponent(AnimationComponent.class);
+    private boolean isDiggable(Vector3i targetLocation) {
+        Block tmpblock = worldProvider.getBlock(targetLocation);
+        if (!tmpblock.isInvisible()) {
+            if (!(BlockManager.getAir().equals(tmpblock))) {
+                if (tmpblock.isDestructible()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void executeDigAI(EntityRef minionEntity, AssignedTaskComponent assignedTaskComponent) {
+        MinionComponent minioncomp = minionEntity.getComponent(MinionComponent.class);
+        LocationComponent location = minionEntity.getComponent(LocationComponent.class);
+        SimpleMinionAIComponent ai = minionEntity.getComponent(SimpleMinionAIComponent.class);
+        AnimationComponent animcomp = minionEntity.getComponent(AnimationComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
 
-//        if (ai.movementTargets.size() == 0) {
-            // this might load more ai.movementTargets
-            getDiggableBlocksfromZone(entity, assignedTaskComponent, ai);
-//        }
-
-        Vector3f currentTarget = null;
-
-        double closestTargetDistance = Double.MAX_VALUE;
-        if (ai.movementTargets.size() != 0) {
-            for (Vector3f targetLocation : ai.movementTargets) {
-                Vector3f dist = new Vector3f(worldPos);
-                dist.sub(targetLocation);
-                double distanceToTarget = dist.lengthSquared();
-                if (distanceToTarget < closestTargetDistance) {
-                    currentTarget = targetLocation;
-                    closestTargetDistance = distanceToTarget;
-                }
-            }
+        if (!isDiggable(assignedTaskComponent.targetLocation)) {
+            assignedTaskComponent.taskStatusType = TaskStatusType.COMPLETED;
+            endTask(minionEntity, ai, animcomp);
         }
 
-        if (currentTarget == null) {
-            endTask(entity, ai, animcomp);
-            return;
+        if (!isReachable(minionEntity, assignedTaskComponent.targetLocation)) {
+            assignedTaskComponent.taskStatusType = TaskStatusType.UNREACHABLE;
+            endTask(minionEntity, ai, animcomp);
         }
 
-        double distanceToTarget = closestTargetDistance;
+        Vector3f currentTarget = assignedTaskComponent.targetLocation.toVector3f();
 
+        Vector3f dist = new Vector3f(worldPos);
+        dist.sub(currentTarget);
+        double distanceToTarget = dist.lengthSquared();
 
         int damageAmount = 1;
         
-        if (distanceToTarget < 4) {
-            changeAnimation(entity, animcomp.workAnim, true);
+        if (distanceToTarget < MINIMUM_WORK_DISTANCE) {
+            changeAnimation(minionEntity, animcomp.workAnim, true);
             if (timer.getGameTimeInMs() - ai.lastAttacktime > 200) {
                 ai.lastAttacktime = timer.getGameTimeInMs();
-                for (int y = (int) (currentTarget.y - 0.5); y >= assignedTaskComponent.area.min().y; y--) {
-                    Block tmpblock = worldProvider.getBlock((int) currentTarget.x, y, (int) currentTarget.z);
-                    if (!tmpblock.isInvisible() && tmpblock.isDestructible() && !tmpblock.equals(BlockManager.getAir())) {
-                        EntityRef blockEntity = blockEntityRegistry.getEntityAt(new Vector3i((int) currentTarget.x, y, (int) currentTarget.z));
-                        DoDamageEvent doDamageEvent = new DoDamageEvent(damageAmount, EngineDamageTypes.PHYSICAL.get(), entity);
-                        blockEntity.send(doDamageEvent);
-                        Block newTmpblock = worldProvider.getBlock((int) currentTarget.x, y, (int) currentTarget.z);
-                        if (!newTmpblock.equals(tmpblock)) {
-                            ai.movementTargets.remove(currentTarget);
-                        }
-                        break;
-                    } else {
-                        ai.movementTargets.remove(currentTarget);
+                Block tmpblock = worldProvider.getBlock(assignedTaskComponent.targetLocation);
+                if (!tmpblock.isInvisible() && tmpblock.isDestructible() && !tmpblock.equals(BlockManager.getAir())) {
+                    EntityRef blockEntity = blockEntityRegistry.getEntityAt(assignedTaskComponent.targetLocation);
+                    DoDamageEvent doDamageEvent = new DoDamageEvent(damageAmount, EngineDamageTypes.PHYSICAL.get(), minionEntity);
+                    blockEntity.send(doDamageEvent);
+                    Block newTmpblock = worldProvider.getBlock(assignedTaskComponent.targetLocation);
+                    if (!newTmpblock.equals(tmpblock)) {
+                        assignedTaskComponent.taskStatusType = TaskStatusType.COMPLETED;
+                        endTask(minionEntity, ai, animcomp);
                     }
+                } else {
+                    assignedTaskComponent.taskStatusType = TaskStatusType.IMPOSSIBLE;
+                    endTask(minionEntity, ai, animcomp);
                 }
 
             }
+        } else {
+            setMovement(currentTarget, minionEntity);
         }
-
-        entity.saveComponent(ai);
-        setMovement(currentTarget, entity);
     }
+
+    private boolean isTerraformable(Vector3i targetLocation) {
+        Block tmpblock = worldProvider.getBlock(targetLocation);
+        if (!tmpblock.isInvisible()) {
+            if (!(BlockManager.getAir().equals(tmpblock))) {
+                if (tmpblock.isDestructible()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Terraforms a zone into a set recipe, by default chocolate.
@@ -442,142 +498,91 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
      *                              set to empty string by default for normal terraforming, 
      *                              can override the default recipe for farming. 
      */
-    private void executeTerraformAI(EntityRef entity, AssignableTaskComponent assignedTaskComponent, String terraformFinalBlockType) {
-        MinionComponent minioncomp = entity.getComponent(MinionComponent.class);
-        LocationComponent location = entity
-                .getComponent(LocationComponent.class);
-        SimpleMinionAIComponent ai = entity
-                .getComponent(SimpleMinionAIComponent.class);
-        AnimationComponent animcomp = entity
-                .getComponent(AnimationComponent.class);
+    private void executeTerraformAI(EntityRef minionEntity, AssignedTaskComponent assignedTaskComponent, String terraformFinalBlockType) {
+        MinionComponent minioncomp = minionEntity.getComponent(MinionComponent.class);
+        LocationComponent location = minionEntity.getComponent(LocationComponent.class);
+        SimpleMinionAIComponent ai = minionEntity.getComponent(SimpleMinionAIComponent.class);
+        AnimationComponent animcomp = minionEntity.getComponent(AnimationComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
 
-        if (assignedTaskComponent.assignedTaskType != AssignedTaskType.Plant && terraformFinalBlockType.isEmpty()) {
-            changeAnimation(entity, animcomp.idleAnim, true);
-            return;
-
-            // Not sure why we're checking for OreonFarm when we're in Terraform mode
-            // Maybe because we only want to terraform when we're building a farm?
-            //        } else if (minioncomp.assignedZoneComponent.zonetype != ZoneType.OreonFarm) {
-            //            changeAnimation(entity, animcomp.idleAnim, true);
-            //            return;
+        if (!isTerraformable(assignedTaskComponent.targetLocation)) {
+            assignedTaskComponent.taskStatusType = TaskStatusType.COMPLETED;
+            endTask(minionEntity, ai, animcomp);
         }
 
-        if (ai.movementTargets.size() == 0) {
-            // this might load more ai.movementTargets
-            getFirstBlockfromZone(entity, assignedTaskComponent, ai);
+        if (!isReachable(minionEntity, assignedTaskComponent.targetLocation)) {
+            assignedTaskComponent.taskStatusType = TaskStatusType.UNREACHABLE;
+            endTask(minionEntity, ai, animcomp);
         }
 
-        Vector3f currentTarget = null;
+        Vector3f currentTarget = assignedTaskComponent.targetLocation.toVector3f();
 
-        double closestTargetDistance = Double.MAX_VALUE;
-        if (ai.movementTargets.size() != 0) {
-            for (Vector3f targetLocation : ai.movementTargets) {
-                Vector3f dist = new Vector3f(worldPos);
-                dist.sub(targetLocation);
-                double distanceToTarget = dist.lengthSquared();
-                if (distanceToTarget < closestTargetDistance) {
-                    currentTarget = targetLocation;
-                    closestTargetDistance = distanceToTarget;
-                }
-            }
-        }
+        Vector3f dist = new Vector3f(worldPos);
+        dist.sub(currentTarget);
+        double distanceToTarget = dist.lengthSquared();
 
-        if (currentTarget == null) {
-            endTask(entity, ai, animcomp);
-            return;
-        }
 
-        double distanceToTarget = closestTargetDistance;
-
-        if (distanceToTarget < 4) {
+        if (distanceToTarget < MINIMUM_WORK_DISTANCE) {
             // terraform
-            changeAnimation(entity, animcomp.terraformAnim, true);
+            changeAnimation(minionEntity, animcomp.terraformAnim, true);
             if (timer.getGameTimeInMs() - ai.lastAttacktime > 200) {
                 ai.lastAttacktime = timer.getGameTimeInMs();
-                for (int y = (int) (currentTarget.y - 0.5); y >= assignedTaskComponent.area.min().y; y--) {
-                    Block tmpblock = worldProvider.getBlock((int) currentTarget.x, y, (int) currentTarget.z);
-                    if (!tmpblock.isInvisible()) {
-                        String moduleName = tmpblock.getBlockFamily().getURI().getModuleName();
-                        // TODO: why do we care about what kinds of blocks we terraform?
-                        if ((moduleName.equals("engine")) || (moduleName.equals("core"))) {
-                            ai.craftprogress++;
-                            if (ai.craftprogress > 20) {
-                                Block newBlock;
-                                if ((null != terraformFinalBlockType) && !terraformFinalBlockType.isEmpty()) {
-                                    newBlock = blockManager.getBlock(terraformFinalBlockType);
-                                    if (!newBlock.getURI().toString().toLowerCase().equals(terraformFinalBlockType.toLowerCase())) {
-                                        // Not sure what we should do if block read fails, but we don't want air as default
-                                        newBlock = blockManager.getBlock(DEFAULT_TERRAFORM_FINAL_BLOCK_TYPE_NAME);
-                                    }
 
-                                } else if (minioncomp.assignedrecipe == null) {
-                                    // TODO: we should read this block asset name from the prefab
-                                    newBlock = blockManager.getBlock(DEFAULT_TERRAFORM_FINAL_BLOCK_TYPE_NAME);
-                                } else
-                                {
-                                    newBlock = blockManager.getBlock(minioncomp.assignedrecipe.result);
-                                }
-
-                                worldProvider.setBlock(new Vector3i(currentTarget.x, y, currentTarget.z), newBlock);
-                                ai.craftprogress = 0;
-                                if (y == assignedTaskComponent.area.min().y) {
-                                    ai.movementTargets.remove(currentTarget);
-                                }
-                            }
-                            break;
-                        } else
-                        {
-                            if (y == assignedTaskComponent.area.min().y) {
-                                ai.movementTargets.remove(currentTarget);
-                            }
+                Block tmpblock = worldProvider.getBlock(assignedTaskComponent.targetLocation);
+                if (!tmpblock.isInvisible() && tmpblock.isDestructible() && !tmpblock.equals(BlockManager.getAir())) {
+                    String moduleName = tmpblock.getBlockFamily().getURI().getModuleName();
+                    // TODO: why do we care about what kinds of blocks we terraform?
+                    if ((moduleName.equals("engine")) || (moduleName.equals("core"))) {
+                        ai.craftprogress++;
+                        if (ai.craftprogress > 20) {
+                            Block newBlock = getBlockForTerraformBlockType(terraformFinalBlockType);
+                            worldProvider.setBlock(assignedTaskComponent.targetLocation, newBlock);
+                            ai.craftprogress = 0;
+                            assignedTaskComponent.taskStatusType = TaskStatusType.COMPLETED;
+                            endTask(minionEntity, ai, animcomp);
                         }
-                    } else
-                    {
-                        if (y == assignedTaskComponent.area.min().y) {
-                            ai.movementTargets.remove(currentTarget);
-                        }
+                    } else {
+                        assignedTaskComponent.taskStatusType = TaskStatusType.IMPOSSIBLE;
+                        endTask(minionEntity, ai, animcomp);
                     }
-                }
-
-            }
-        }
-
-        entity.saveComponent(ai);
-        setMovement(currentTarget, entity);
-    }
-
-    private void getDiggableBlocksfromZone(EntityRef minionEntity, AssignableTaskComponent assignedTaskComponent, SimpleMinionAIComponent ai) {
-        ai.movementTargets.clear();
-        for (int x = assignedTaskComponent.area.min().x; x <= assignedTaskComponent.area.max().x; x++) {
-            for (int z = assignedTaskComponent.area.min().z; z <= assignedTaskComponent.area.max().z; z++) {
-                for (int y = assignedTaskComponent.area.max().y; y >= assignedTaskComponent.area.min().y; y--) {
-                    Block tmpblock = worldProvider.getBlock(x, y, z);
-                    if (!tmpblock.isInvisible()) {
-                        if (!(BlockManager.getAir().equals(tmpblock))) {
-                            if (tmpblock.isDestructible()) {
-                                ai.movementTargets.add(new Vector3f(x, (y + 0.5f), z));
-                                break;
-                            }
-                        }
-                    }
+                } else {
+                    assignedTaskComponent.taskStatusType = TaskStatusType.IMPOSSIBLE;
+                    endTask(minionEntity, ai, animcomp);
                 }
             }
+        } else {
+            setMovement(currentTarget, minionEntity);
         }
     }
 
-    private void getFirstBlockfromZone(EntityRef minionEntity, AssignableTaskComponent assignedTaskComponent, SimpleMinionAIComponent ai) {
-        for (int x = assignedTaskComponent.area.min().x; x <= assignedTaskComponent.area.max().x; x++) {
-            for (int z = assignedTaskComponent.area.min().z; z <= assignedTaskComponent.area.max().z; z++) {
-                for (int y = assignedTaskComponent.area.max().y; y >= assignedTaskComponent.area.min().y; y--) {
-                    Block tmpblock = worldProvider.getBlock(x, y, z);
-                    if (!tmpblock.isInvisible()) {
-                        ai.movementTargets.add(new Vector3f(x, (y + 0.5f), z));
-                        break;
-                    }
-                }
+    private Block getBlockForTerraformBlockType(String terraformFinalBlockType) {
+        Block newBlock;
+        if ((null != terraformFinalBlockType) && !terraformFinalBlockType.isEmpty()) {
+            newBlock = blockManager.getBlock(terraformFinalBlockType);
+            if (!newBlock.getURI().toString().toLowerCase().equals(terraformFinalBlockType.toLowerCase())) {
+                // Not sure what we should do if block read fails, but we don't want air as default
+                newBlock = blockManager.getBlock(DEFAULT_TERRAFORM_FINAL_BLOCK_TYPE_NAME);
             }
+        } else {
+            newBlock = blockManager.getBlock(DEFAULT_TERRAFORM_FINAL_BLOCK_TYPE_NAME);
         }
+        return newBlock;
+    }
+
+    private boolean isFarmable(MinionFarmerComponent minionFarmer, Vector3i targetLocation) {
+        Block farmFieldBlock = getBlockForTerraformBlockType(minionFarmer.farmFieldBlockName);
+
+        Block cropBlock = worldProvider.getBlock(targetLocation.x, targetLocation.y + 1, targetLocation.z);
+        // TODO: are there other acceptable values other than air here?
+        if (!BlockManager.getAir().equals(cropBlock)) {
+            return false;
+        }
+
+        Block groundBlock = worldProvider.getBlock(targetLocation);
+        if (groundBlock.getURI().toString().toLowerCase().equals(farmFieldBlock.getURI().toString().toLowerCase())) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -589,84 +594,65 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
      *                              set to empty string by default for normal terraforming, 
      *                              can override the default recipe for farming. 
      */
-    private void executeFarmAI(EntityRef entity, AssignableTaskComponent assignedTaskComponent) {
-        MinionFarmerComponent minionFarmer = entity.getComponent(MinionFarmerComponent.class);
-        LocationComponent location = entity.getComponent(LocationComponent.class);
-        SimpleMinionAIComponent ai = entity.getComponent(SimpleMinionAIComponent.class);
-        AnimationComponent animcomp = entity.getComponent(AnimationComponent.class);
+    private void executeFarmAI(EntityRef minionEntity, AssignedTaskComponent assignedTaskComponent) {
+        MinionFarmerComponent minionFarmer = minionEntity.getComponent(MinionFarmerComponent.class);
+        LocationComponent location = minionEntity.getComponent(LocationComponent.class);
+        SimpleMinionAIComponent ai = minionEntity.getComponent(SimpleMinionAIComponent.class);
+        AnimationComponent animcomp = minionEntity.getComponent(AnimationComponent.class);
         Vector3f worldPos = new Vector3f(location.getWorldPosition());
 
-        if (ai.movementTargets.size() == 0) {
-            getFirstBlockfromZone(entity, assignedTaskComponent, ai);
+        if (!isFarmable(minionFarmer, assignedTaskComponent.targetLocation)) {
+            assignedTaskComponent.taskStatusType = TaskStatusType.COMPLETED;
+            endTask(minionEntity, ai, animcomp);
         }
 
-        Vector3f currentTarget = null;
-        if (ai.movementTargets.size() != 0) {
-            currentTarget = ai.movementTargets.get(0);
+        if (!isReachable(minionEntity, assignedTaskComponent.targetLocation)) {
+            assignedTaskComponent.taskStatusType = TaskStatusType.UNREACHABLE;
+            endTask(minionEntity, ai, animcomp);
         }
 
-        if (currentTarget == null) {
-            ai.movementTargets.remove(currentTarget);
-            changeAnimation(entity, animcomp.idleAnim, true);
-            entity.removeComponent(AssignableTaskComponent.class);
-            NPCMovementInputComponent movementInput = entity.getComponent(NPCMovementInputComponent.class);
-            movementInput.directionToMove = new Vector3f(0, 0, 0);
-            entity.saveComponent(ai);
-            return;
-        }
+        Vector3f currentTarget = assignedTaskComponent.targetLocation.toVector3f();
 
         Vector3f dist = new Vector3f(worldPos);
         dist.sub(currentTarget);
         double distanceToTarget = dist.lengthSquared();
 
-        if (distanceToTarget < 4) {
-            // terraform
-            changeAnimation(entity, animcomp.terraformAnim, true);
+
+        if (distanceToTarget < MINIMUM_WORK_DISTANCE) {
+            // farm
+            changeAnimation(minionEntity, animcomp.terraformAnim, true);
             if (timer.getGameTimeInMs() - ai.lastAttacktime > 200) {
                 ai.lastAttacktime = timer.getGameTimeInMs();
-                for (int y = (int) (currentTarget.y - 0.5); y >= assignedTaskComponent.area.min().y; y--) {
-                    Block currentBlock = worldProvider.getBlock(new Vector3i(currentTarget.x, y + 1, currentTarget.z));
-                    Block plantedBlock = null;
-                    if (null != minionFarmer.blockNameToPlantAboveFarmField) {
-                        plantedBlock = blockManager.getBlock(minionFarmer.blockNameToPlantAboveFarmField);
-                        if (!plantedBlock.getURI().toString().toLowerCase().equals(minionFarmer.blockNameToPlantAboveFarmField.toLowerCase())) {
-                            // We didn't get what we asked for and probably got air instead
-                            plantedBlock = null;
-                        }
-                    }
-                    if (null == plantedBlock) {
-                        // Not sure what we should do if block read fails, but we don't want air as default
-                        plantedBlock = blockManager.getBlock(DEFAULT_CROP_BLOCK_NAME);
-                    }
-
-                    if (plantedBlock.getPrefab().equals(currentBlock.getPrefab())) {
-                        ai.movementTargets.remove(currentTarget);
-                        continue;
-                    }
-                    ai.craftprogress++;
-                    if (ai.craftprogress > 20) {
-                        worldProvider.setBlock(new Vector3i(currentTarget.x, y + 1, currentTarget.z), plantedBlock);
-                        ai.craftprogress = 0;
-                        if (y == assignedTaskComponent.area.min().y) {
-                            ai.movementTargets.remove(currentTarget);
-                        }
+                Block currentBlock = worldProvider.getBlock(new Vector3i(currentTarget.x, currentTarget.y + 1, currentTarget.z));
+                Block plantedBlock = null;
+                if (null != minionFarmer.blockNameToPlantAboveFarmField) {
+                    plantedBlock = blockManager.getBlock(minionFarmer.blockNameToPlantAboveFarmField);
+                    if (!plantedBlock.getURI().toString().toLowerCase().equals(minionFarmer.blockNameToPlantAboveFarmField.toLowerCase())) {
+                        // We didn't get what we asked for and probably got air instead
+                        plantedBlock = null;
                     }
                 }
+                if (null == plantedBlock) {
+                    // Not sure what we should do if block read fails, but we don't want air as default
+                    plantedBlock = blockManager.getBlock(DEFAULT_CROP_BLOCK_NAME);
+                }
+
+                if (plantedBlock.getPrefab().equals(currentBlock.getPrefab())) {
+                    assignedTaskComponent.taskStatusType = TaskStatusType.COMPLETED;
+                    endTask(minionEntity, ai, animcomp);
+                }
+                ai.craftprogress++;
+                if (ai.craftprogress > 20) {
+                    worldProvider.setBlock(new Vector3i(currentTarget.x, currentTarget.y + 1, currentTarget.z), plantedBlock);
+                    ai.craftprogress = 0;
+                    assignedTaskComponent.taskStatusType = TaskStatusType.COMPLETED;
+                    endTask(minionEntity, ai, animcomp);
+                }
             }
+        } else {
+            setMovement(currentTarget, minionEntity);
         }
 
-        if (ai.movementTargets.size() == 0) {
-            ai.movementTargets.remove(currentTarget);
-            changeAnimation(entity, animcomp.idleAnim, true);
-            entity.removeComponent(AssignableTaskComponent.class);
-            NPCMovementInputComponent movementInput = entity.getComponent(NPCMovementInputComponent.class);
-            movementInput.directionToMove = new Vector3f(0, 0, 0);
-            entity.saveComponent(ai);
-            return;
-        }
-
-        entity.saveComponent(ai);
-        setMovement(currentTarget, entity);
     }
 
     private void executeMoveAI(EntityRef entity) {
@@ -915,117 +901,27 @@ public class RevisedSimpleMinionAISystem implements ComponentSystem,
         }
     }
 
-    @Override
-    public void preBegin() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void postBegin() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void preSave() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void postSave() {
-        // TODO Auto-generated method stub
-
-    }
-
     private void endTask(EntityRef entity, SimpleMinionAIComponent ai, AnimationComponent animcomp) {
+        AssignedTaskComponent assignedTaskComponent = entity.getComponent(AssignedTaskComponent.class);
+        if (null != assignedTaskComponent) {
+            taskManager.finishedTask(entity, assignedTaskComponent);
+        }
         entity.removeComponent(BlockSelectionComponent.class);
-        entity.removeComponent(AssignableTaskComponent.class);
+        entity.removeComponent(AssignedTaskComponent.class);
         changeAnimation(entity, animcomp.idleAnim, true);
         NPCMovementInputComponent movementInput = entity.getComponent(NPCMovementInputComponent.class);
         movementInput.directionToMove = new Vector3f(0, 0, 0);
         entity.saveComponent(ai);
     }
 
-    // Simplistic task assignment
     private void assignTasksToIdleMinions() {
-        List<EntityRef> assignableTaskComponentEntityList = new ArrayList<EntityRef>();
-        Iterable<EntityRef> assignableTaskIterable = entityManager.getEntitiesWith(AssignableTaskComponent.class);
-        for (EntityRef assignableTaskComponentEntity : assignableTaskIterable) {
-            AssignableTaskComponent assignableTaskComponent = assignableTaskComponentEntity.getComponent(AssignableTaskComponent.class);
-            MinionComponent minionComponent = assignableTaskComponentEntity.getComponent(MinionComponent.class);
-            if (null == minionComponent) {
-                assignableTaskComponentEntityList.add(assignableTaskComponentEntity);
-            }
-        }
-
-        if (assignableTaskComponentEntityList.isEmpty()) {
-            return;
-        }
-
-        Collections.sort(assignableTaskComponentEntityList, new Comparator<EntityRef>() {
-            @Override
-            public int compare(EntityRef e1, EntityRef e2) {
-                AssignableTaskComponent atc1 = e1.getComponent(AssignableTaskComponent.class);
-                AssignableTaskComponent atc2 = e2.getComponent(AssignableTaskComponent.class);
-                long create1 = atc1.creationGameTime;
-                long create2 = atc2.creationGameTime;
-                return (create1 == create2) ? 0 : ((create1 < create2) ? -1 : 1);
-            }
-        });
-
         Iterable<EntityRef> minionEntityIterable = entityManager.getEntitiesWith(MinionComponent.class);
         for (EntityRef minionEntity : minionEntityIterable) {
-            AssignableTaskComponent assignedTaskComponent = minionEntity.getComponent(AssignableTaskComponent.class);
+            AssignedTaskComponent assignedTaskComponent = minionEntity.getComponent(AssignedTaskComponent.class);
             if (null == assignedTaskComponent) {
-                EntityRef assignableTaskComponentEntity = assignableTaskComponentEntityList.remove(0);
-                BlockSelectionComponent blockSelectionComponent = assignableTaskComponentEntity.getComponent(BlockSelectionComponent.class);
-                AssignableTaskComponent assignableTaskComponent = assignableTaskComponentEntity.getComponent(AssignableTaskComponent.class);
-                minionEntity.addComponent(blockSelectionComponent);
-                minionEntity.addComponent(assignableTaskComponent);
-                // This assumes that any assignableTaskComponent on an entity without a MinionComponent is just a placeholder
-                // so we can just destroy it at this point
-                assignableTaskComponentEntity.destroy();
-
-                if (assignableTaskComponentEntityList.isEmpty()) {
-                    return;
-                }
+                // TODO: send event
+                taskManager.assignTask(minionEntity);
             }
         }
     }
-
-    public void createAssignedTask(AssignedTaskType taskType, Region3i selection) {
-        Texture taskSelectionTexture;
-        Color taskColor;
-        switch (taskType) {
-            case Plant:
-                taskColor = Color.GREEN.alterAlpha(100);
-                taskSelectionTexture = Assets.get(TextureUtil.getTextureUriForColor(taskColor), Texture.class);
-                break;
-            case Dig:
-                taskColor = Color.BLUE.alterAlpha(100);
-                taskSelectionTexture = Assets.get(TextureUtil.getTextureUriForColor(taskColor), Texture.class);
-                break;
-            default:
-                taskColor = Color.RED.alterAlpha(100);
-                taskSelectionTexture = Assets.get(TextureUtil.getTextureUriForColor(taskColor), Texture.class);
-                break;
-        }
-        
-        AssignableTaskComponent assignableTaskComponent = new AssignableTaskComponent();
-        assignableTaskComponent.area = selection;
-        assignableTaskComponent.creationGameTime = timer.getGameTimeInMs();
-        assignableTaskComponent.assignedTaskType = taskType;
-
-        BlockSelectionComponent blockSelectionComponent = new BlockSelectionComponent();
-        blockSelectionComponent.currentSelection= selection;
-        blockSelectionComponent.shouldRender = true;
-        blockSelectionComponent.startPosition = selection.min();
-        blockSelectionComponent.texture = taskSelectionTexture;
-
-        // Not sure if there's a better way to do it, but this seems the most appropriate?
-        EntityRef assignedTaskEntity = entityManager.create(assignableTaskComponent, blockSelectionComponent);
-    }
-
 }

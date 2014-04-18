@@ -16,14 +16,14 @@
 package org.terasology.miniion.components;
 
 import org.terasology.entitySystem.Component;
-import org.terasology.math.Region3i;
+import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.math.Vector3i;
 
-public final class AssignableTaskComponent implements Component {
+public final class AssignedTaskComponent implements Component {
     public AssignedTaskType assignedTaskType;
-    public Region3i area;
-    public long creationGameTime;
+    public TaskStatusType taskStatusType;
+    public Vector3i targetLocation;
     
-    public TaskStatusType[] subtaskStatusData;
-    public Vector3i nextSubtaskCoordinatesToAssign;
+    public EntityRef assignableTaskEntity;
+    public Vector3i subtaskCoordinates;
 }
