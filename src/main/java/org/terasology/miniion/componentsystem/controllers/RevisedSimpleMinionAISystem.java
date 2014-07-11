@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Benjamin Glatzel <benjamin.glatzel@me.com>
+ * Copyright 2014 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.entity.lifecycleEvents.OnAddedComponent;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.ComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
@@ -38,7 +37,6 @@ import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.health.EngineDamageTypes;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.Region3i;
 import org.terasology.math.Vector3i;
 import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.AssignedTaskComponent;
@@ -364,12 +362,12 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
 
     private Vector3i[] getCardinalNeighborLocations(Vector3i targetLocation) {
         return new Vector3i[] {
-                new Vector3i(targetLocation.x-1, targetLocation.y, targetLocation.z),
-                new Vector3i(targetLocation.x+1, targetLocation.y, targetLocation.z),
-                new Vector3i(targetLocation.x, targetLocation.y-1, targetLocation.z),
-                new Vector3i(targetLocation.x, targetLocation.y+1, targetLocation.z),
-                new Vector3i(targetLocation.x, targetLocation.y, targetLocation.z-1),
-                new Vector3i(targetLocation.x, targetLocation.y, targetLocation.z+1)
+                new Vector3i(targetLocation.x - 1, targetLocation.y, targetLocation.z),
+                new Vector3i(targetLocation.x + 1, targetLocation.y, targetLocation.z),
+                new Vector3i(targetLocation.x, targetLocation.y - 1, targetLocation.z),
+                new Vector3i(targetLocation.x, targetLocation.y + 1, targetLocation.z),
+                new Vector3i(targetLocation.x, targetLocation.y, targetLocation.z - 1),
+                new Vector3i(targetLocation.x, targetLocation.y, targetLocation.z + 1)
         };
     }
 
@@ -491,12 +489,9 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
 
     /**
      * Terraforms a zone into a set recipe, by default chocolate.
-     * @param entity 
-     *                              the minion that is terraforming
-     * @param assignedTaskComponent 
-     * @param terraformFinalBlockType
-     *                              set to empty string by default for normal terraforming, 
-     *                              can override the default recipe for farming. 
+     * @param minionEntity the minion that is terraforming
+     * @param assignedTaskComponent set to empty string by default for normal terraforming
+     * @param terraformFinalBlockType can override the default recipe for farming
      */
     private void executeTerraformAI(EntityRef minionEntity, AssignedTaskComponent assignedTaskComponent, String terraformFinalBlockType) {
         MinionComponent minioncomp = minionEntity.getComponent(MinionComponent.class);
@@ -530,7 +525,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
 
                 Block tmpblock = worldProvider.getBlock(assignedTaskComponent.targetLocation);
                 if (!tmpblock.isInvisible() && tmpblock.isDestructible() && !tmpblock.equals(BlockManager.getAir())) {
-                    String moduleName = tmpblock.getBlockFamily().getURI().getModuleName();
+                    String moduleName = tmpblock.getBlockFamily().getURI().getModuleName().toString();
                     // TODO: why do we care about what kinds of blocks we terraform?
                     if ((moduleName.equals("engine")) || (moduleName.equals("core"))) {
                         ai.craftprogress++;
@@ -587,12 +582,8 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
 
     /**
      * plants crops
-     * @param entity 
-     *                              the minion that is terraforming
-     * @param assignedTaskComponent 
-     * @param fixedrecipeuri
-     *                              set to empty string by default for normal terraforming, 
-     *                              can override the default recipe for farming. 
+     * @param minionEntity the minion that is terraforming
+     * @param assignedTaskComponent set to empty string by default for normal terraforming,
      */
     private void executeFarmAI(EntityRef minionEntity, AssignedTaskComponent assignedTaskComponent) {
         MinionFarmerComponent minionFarmer = minionEntity.getComponent(MinionFarmerComponent.class);
@@ -723,8 +714,9 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
 
         if (distanceToTarget < 0.1d) {
             patrolCounter++;
-            if (!(patrolCounter < targets.size()))
+            if (!(patrolCounter < targets.size())) {
                 patrolCounter = 0;
+            }
             ai.patrolCounter = patrolCounter;
             entity.saveComponent(ai);
             return;
