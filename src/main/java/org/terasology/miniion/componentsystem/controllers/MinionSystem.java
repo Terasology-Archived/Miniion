@@ -232,9 +232,11 @@ public class MinionSystem extends BaseComponentSystem {
         showactiveminion = show;
     }
 
-    /**
+    /* TODO: Re-enable if fixed sometime (the use of minion.getId() is invalid and should not be used).
+     * The code using this in UIActiveMinion.java is itself commented out pending fixes or eventual module retirement
+     *
      * order the minions by id and return the next one, or the first if none were active!
-     */
+     *
     public static void getNextMinion(boolean deleteactive) {
         EntityManager entman = CoreRegistry.get(EntityManager.class);
         List<Integer> sortedlist = new ArrayList<Integer>();
@@ -267,9 +269,9 @@ public class MinionSystem extends BaseComponentSystem {
         }
     }
 
-    /**
+    /*
      * order the minions by id and return the previous one, or the first if none were active!
-     */
+
     public static void getPreviousMinion(boolean deleteactive) {
         EntityManager entman = CoreRegistry.get(EntityManager.class);
         List<Integer> sortedlist = new ArrayList<Integer>();
@@ -301,7 +303,7 @@ public class MinionSystem extends BaseComponentSystem {
             }
         }
     }
-
+*/
     private void initRecipes() {
         MinionRecipe recipe = new MinionRecipe();
 
