@@ -58,8 +58,6 @@ import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.selection.BlockSelectionComponent;
 
-import javax.vecmath.AxisAngle4f;
-
 /**
  * Created with IntelliJ IDEA. User: Overdhose Date: 7/05/12 Time: 18:25 first
  * evolution of the minion AI, could probably use a lot of improvements
@@ -69,7 +67,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
     private static final Logger logger = LoggerFactory.getLogger(RevisedSimpleMinionAISystem.class);
     private static final String DEFAULT_TERRAFORM_FINAL_BLOCK_TYPE_NAME = "CakeLie:ChocolateBlock";
     private static final String DEFAULT_CROP_BLOCK_NAME = "core:plant";
-    
+
     private static final int MINIMUM_WORK_DISTANCE = 4;
 
     @In
@@ -78,9 +76,9 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
     //    @In
     //    private SlotBasedInventoryManager inventoryManager;
 
-    @In 
+    @In
     private TaskManagementSystem taskManager;
-    
+
     @In
     private EntityManager entityManager;
     @In
@@ -377,7 +375,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
 
         boolean reachable = true;
 
-        
+
         // Not reachable if surrounded by dirt and we can't burrow/ghost
 
         boolean surrounded = true;
@@ -392,11 +390,11 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
             reachable = false;
         }
 
-        
+
         // Not reachable if up in the air and we can't fly, jump down to it, or climb up to it
         LocationComponent location = minionEntity.getComponent(LocationComponent.class);
         Vector3f entityLocation = location.getLocalPosition();
-        
+
         Vector3f currentTarget = new Vector3f(targetLocation.x, 0, targetLocation.z);
         Vector3f dist = new Vector3f(entityLocation.x, 0, entityLocation.z);
         dist.sub(currentTarget);
@@ -448,7 +446,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
         double distanceToTarget = dist.lengthSquared();
 
         int damageAmount = 1;
-        
+
         if (distanceToTarget < MINIMUM_WORK_DISTANCE) {
             changeAnimation(minionEntity, animcomp.workAnim, true);
             if (timer.getGameTimeInMs() - ai.lastAttacktime > 200) {
@@ -845,9 +843,8 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
 
             float yaw = (float) Math
                     .atan2(targetDirection.x, targetDirection.z);
-            AxisAngle4f axisAngle = new AxisAngle4f(0, 1, 0, yaw);
-            // TODO: Commented out to fix compile - TeraMath replaced Vecmath and AxisAngle4f is actually missing
-            //location.getLocalRotation().set(axisAngle);
+            Vector3f axis = new Vector3f(0, 1, 0);
+            location.getLocalRotation().set(axis, yaw);
         } else if (distanceToTarget > 1) {
             // the minion arrived at right x and z but is standing below / above
             // it => teleport
