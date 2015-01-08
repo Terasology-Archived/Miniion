@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 MovingBlocks
+ * Copyright 2015 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 package org.terasology.miniion.componentsystem.controllers;
 
 import java.util.List;
-
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Vector3f;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +35,7 @@ import org.terasology.logic.health.EngineDamageTypes;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.Vector3i;
+import org.terasology.math.geom.Vector3f;
 import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.AssignedTaskComponent;
 import org.terasology.miniion.components.AssignedTaskType;
@@ -59,6 +57,8 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.selection.BlockSelectionComponent;
+
+import javax.vecmath.AxisAngle4f;
 
 /**
  * Created with IntelliJ IDEA. User: Overdhose Date: 7/05/12 Time: 18:25 first
@@ -846,7 +846,8 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
             float yaw = (float) Math
                     .atan2(targetDirection.x, targetDirection.z);
             AxisAngle4f axisAngle = new AxisAngle4f(0, 1, 0, yaw);
-            location.getLocalRotation().set(axisAngle);
+            // TODO: Commented out to fix compile - TeraMath replaced Vecmath and AxisAngle4f is actually missing
+            //location.getLocalRotation().set(axisAngle);
         } else if (distanceToTarget > 1) {
             // the minion arrived at right x and z but is standing below / above
             // it => teleport

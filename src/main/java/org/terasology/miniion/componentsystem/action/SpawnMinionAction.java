@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Benjamin Glatzel <benjamin.glatzel@me.com>
+ * Copyright 2015 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.terasology.miniion.componentsystem.action;
-
-import javax.vecmath.Vector3f;
-
-//import com.bulletphysics.collision.shapes.BoxShape;
-//import com.bulletphysics.linearmath.QuaternionUtil;
 
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -33,8 +27,8 @@ import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.engine.CoreRegistry;
+import org.terasology.math.geom.Vector3f;
 import org.terasology.miniion.components.MinionComponent;
-//import org.terasology.math.Side;
 import org.terasology.miniion.components.actions.SpawnMinionActionComponent;
 import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 

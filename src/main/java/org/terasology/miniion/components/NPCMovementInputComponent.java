@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 MovingBlocks
+ * Copyright 2015 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
  */
 package org.terasology.miniion.components;
 
-import javax.vecmath.Vector3f;
-
 import org.terasology.entitySystem.Component;
+import org.terasology.math.geom.Vector3f;
 
 /**
  * @author mkienenb
@@ -26,5 +25,5 @@ public final class NPCMovementInputComponent implements Component {
 
     public boolean runningRequested;
     public boolean jumpingRequested;
-    public Vector3f directionToMove = new Vector3f(0,0,0);
+    public Vector3f directionToMove = new Vector3f(0, 0, 0);
 }
