@@ -17,13 +17,13 @@ package org.terasology.miniion.componentsystem.controllers;
 
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.systems.In;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.logic.characters.CharacterComponent;
 import org.terasology.logic.characters.CharacterMoveInputEvent;
 import org.terasology.miniion.components.NPCMovementInputComponent;
+import org.terasology.registry.In;
 
 /**
  * This updates everything but LocalPlayer because LocalPlayerSystem is currently updating LocalPlayer.
