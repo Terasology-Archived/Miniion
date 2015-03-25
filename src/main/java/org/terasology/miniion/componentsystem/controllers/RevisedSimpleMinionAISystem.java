@@ -34,7 +34,7 @@ import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.health.EngineDamageTypes;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.Vector3i;
+import org.terasology.math.geom.Vector3i;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.miniion.components.AnimationComponent;
 import org.terasology.miniion.components.AssignedTaskComponent;
