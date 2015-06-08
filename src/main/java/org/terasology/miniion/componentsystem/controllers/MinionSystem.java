@@ -173,7 +173,7 @@ public class MinionSystem extends BaseComponentSystem {
             if (skelcomp != null) {
                 MinionComponent minionComponent = activeminion.getComponent(MinionComponent.class);
                 if (null != minionComponent.unselectedSkin) {
-                    skelcomp.material = Assets.getMaterial(minionComponent.unselectedSkin);
+                    skelcomp.material = Assets.getMaterial(minionComponent.unselectedSkin).get();
                 }
             }
         }
@@ -181,7 +181,7 @@ public class MinionSystem extends BaseComponentSystem {
         if (skelcomp != null) {
             MinionComponent minionComponent = minion.getComponent(MinionComponent.class);
             if (null != minionComponent.selectedSkin) {
-                skelcomp.material = Assets.getMaterial(minionComponent.selectedSkin);
+                skelcomp.material = Assets.getMaterial(minionComponent.selectedSkin).get();
             }
         }
         activeminion = minion;
@@ -389,7 +389,7 @@ public class MinionSystem extends BaseComponentSystem {
             if (skelcomp != null) {
                 MinionComponent minionComponent = activeminion.getComponent(MinionComponent.class);
                 if (null != minionComponent.unselectedSkin) {
-                    skelcomp.material = Assets.getMaterial(minionComponent.unselectedSkin);
+                    skelcomp.material = Assets.getMaterial(minionComponent.unselectedSkin).get();
                 }
             }
         }

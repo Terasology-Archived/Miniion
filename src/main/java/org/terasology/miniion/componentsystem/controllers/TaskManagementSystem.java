@@ -87,15 +87,15 @@ public class TaskManagementSystem extends BaseComponentSystem {
         switch (taskType) {
             case Plant:
                 taskColor = Color.GREEN.alterAlpha(100);
-                taskSelectionTexture = Assets.get(TextureUtil.getTextureUriForColor(taskColor), Texture.class);
+                taskSelectionTexture = Assets.get(TextureUtil.getTextureUriForColor(taskColor), Texture.class).get();
                 break;
             case Dig:
                 taskColor = Color.BLUE.alterAlpha(100);
-                taskSelectionTexture = Assets.get(TextureUtil.getTextureUriForColor(taskColor), Texture.class);
+                taskSelectionTexture = Assets.get(TextureUtil.getTextureUriForColor(taskColor), Texture.class).get();
                 break;
             default:
                 taskColor = Color.RED.alterAlpha(100);
-                taskSelectionTexture = Assets.get(TextureUtil.getTextureUriForColor(taskColor), Texture.class);
+                taskSelectionTexture = Assets.get(TextureUtil.getTextureUriForColor(taskColor), Texture.class).get();
                 break;
         }
         

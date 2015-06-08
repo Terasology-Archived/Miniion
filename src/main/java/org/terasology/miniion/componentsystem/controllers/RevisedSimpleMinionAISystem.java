@@ -413,7 +413,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
     private boolean isDiggable(Vector3i targetLocation) {
         Block tmpblock = worldProvider.getBlock(targetLocation);
         if (!tmpblock.isInvisible()) {
-            if (!(BlockManager.getAir().equals(tmpblock))) {
+            if (!(blockManager.getBlock(BlockManager.AIR_ID).equals(tmpblock))) {
                 if (tmpblock.isDestructible()) {
                     return true;
                 }
@@ -452,7 +452,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
             if (timer.getGameTimeInMs() - ai.lastAttacktime > 200) {
                 ai.lastAttacktime = timer.getGameTimeInMs();
                 Block tmpblock = worldProvider.getBlock(assignedTaskComponent.targetLocation);
-                if (!tmpblock.isInvisible() && tmpblock.isDestructible() && !tmpblock.equals(BlockManager.getAir())) {
+                if (!tmpblock.isInvisible() && tmpblock.isDestructible() && !tmpblock.equals(blockManager.getBlock(BlockManager.AIR_ID))) {
                     EntityRef blockEntity = blockEntityRegistry.getEntityAt(assignedTaskComponent.targetLocation);
                     DoDamageEvent doDamageEvent = new DoDamageEvent(damageAmount, EngineDamageTypes.PHYSICAL.get(), minionEntity);
                     blockEntity.send(doDamageEvent);
@@ -475,7 +475,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
     private boolean isTerraformable(Vector3i targetLocation) {
         Block tmpblock = worldProvider.getBlock(targetLocation);
         if (!tmpblock.isInvisible()) {
-            if (!(BlockManager.getAir().equals(tmpblock))) {
+            if (!(blockManager.getBlock(BlockManager.AIR_ID).equals(tmpblock))) {
                 if (tmpblock.isDestructible()) {
                     return true;
                 }
@@ -522,7 +522,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
                 ai.lastAttacktime = timer.getGameTimeInMs();
 
                 Block tmpblock = worldProvider.getBlock(assignedTaskComponent.targetLocation);
-                if (!tmpblock.isInvisible() && tmpblock.isDestructible() && !tmpblock.equals(BlockManager.getAir())) {
+                if (!tmpblock.isInvisible() && tmpblock.isDestructible() && !tmpblock.equals(blockManager.getBlock(BlockManager.AIR_ID))) {
                     String moduleName = tmpblock.getBlockFamily().getURI().getModuleName().toString();
                     // TODO: why do we care about what kinds of blocks we terraform?
                     if ((moduleName.equals("engine")) || (moduleName.equals("core"))) {
@@ -567,7 +567,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
 
         Block cropBlock = worldProvider.getBlock(targetLocation.x, targetLocation.y + 1, targetLocation.z);
         // TODO: are there other acceptable values other than air here?
-        if (!BlockManager.getAir().equals(cropBlock)) {
+        if (!blockManager.getBlock(BlockManager.AIR_ID).equals(cropBlock)) {
             return false;
         }
 
