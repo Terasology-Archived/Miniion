@@ -1,13 +1,13 @@
 {
     "id" : "Miniion",
-    "version" : "0.2.0",
+    "version" : "0.2.1-SNAPSHOT",
     "author" : "Overdhose",
     "displayName" : "Miniions",
     "description" : "A prototype of summonable, commandable minions",
     "dependencies" : [
 		{
             "id" : "Core",
-            "minVersion" : "0.53.1"
+            "minVersion" : "0.54.0"
         },
 		{
             "id" : "Oreons",
