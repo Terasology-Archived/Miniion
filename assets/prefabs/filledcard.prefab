@@ -18,7 +18,7 @@
         "name" : "filled card"
     },
     "Item" : {
-        "icon" : "miniion:minionicon16.filledcard",
+        "icon" : "miniion:minionicon16#filledcard",
         "usage" : "ON_BLOCK",
         "consumedOnUse" : true,
         "renderWithIcon" : false

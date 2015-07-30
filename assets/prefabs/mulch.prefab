@@ -16,7 +16,7 @@
 {
     "Item" : {
         "name" : "wood mulch",
-        "icon" : "miniion:minionicon16.mulch",
+        "icon" : "miniion:minionicon16#mulch",
         "usage" : "NONE",
         "consumedOnUse" : false,
         "stackId" : "miniion:mulch",

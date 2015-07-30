@@ -16,7 +16,7 @@
 {
     "Item" : {
         "name" : "paper",
-        "icon" : "miniion:minionicon16.paper",
+        "icon" : "miniion:minionicon16#paper",
         "usage" : "NONE",
         "consumedOnUse" : false,
         "stackId" : "miniion:paper",

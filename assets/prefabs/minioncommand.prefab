@@ -18,7 +18,7 @@
         "name" : "Minion Command"
     },
     "Item" : {
-        "icon" : "miniion:minionicon16.minioncommand",
+        "icon" : "miniion:minionicon16#minioncommand",
         "usage" : "ON_USER",
         "consumedOnUse" : false,
         "renderWithIcon" : false
