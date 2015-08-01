@@ -23,7 +23,7 @@ public final class AssignedTaskComponent implements Component {
     public AssignedTaskType assignedTaskType;
     public TaskStatusType taskStatusType;
     public Vector3i targetLocation;
-    
+
     public EntityRef assignableTaskEntity;
     public Vector3i subtaskCoordinates;
 }

@@ -80,7 +80,7 @@ public class TaskManagementSystem extends BaseComponentSystem {
         int index = getIndexForTaskStatusTypeData(assignableTaskComponent, x, y, z);
         assignableTaskComponent.subtaskStatusData[index] = newTaskStatusType;
     }
-    
+
     public void createAssignedTask(AssignedTaskType taskType, Region3i selection) {
         Texture taskSelectionTexture;
         Color taskColor;
@@ -98,12 +98,12 @@ public class TaskManagementSystem extends BaseComponentSystem {
                 taskSelectionTexture = Assets.get(TextureUtil.getTextureUriForColor(taskColor), Texture.class).get();
                 break;
         }
-        
+
         AssignableTaskComponent assignableTaskComponent = new AssignableTaskComponent();
         assignableTaskComponent.area = selection;
         assignableTaskComponent.creationGameTime = timer.getGameTimeInMs();
         assignableTaskComponent.assignedTaskType = taskType;
-        
+
         // track subtasks
         Vector3i areaMin = assignableTaskComponent.area.min();
         Vector3i areaSize = assignableTaskComponent.area.size();
@@ -118,7 +118,7 @@ public class TaskManagementSystem extends BaseComponentSystem {
         assignableTaskComponent.nextSubtaskCoordinatesToAssign = new Vector3i(areaMin);
 
         BlockSelectionComponent blockSelectionComponent = new BlockSelectionComponent();
-        blockSelectionComponent.currentSelection= selection;
+        blockSelectionComponent.currentSelection = selection;
         blockSelectionComponent.shouldRender = true;
         blockSelectionComponent.startPosition = selection.min();
         blockSelectionComponent.texture = taskSelectionTexture;

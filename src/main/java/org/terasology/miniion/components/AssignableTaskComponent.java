@@ -23,7 +23,7 @@ public final class AssignableTaskComponent implements Component {
     public AssignedTaskType assignedTaskType;
     public Region3i area;
     public long creationGameTime;
-    
+
     public TaskStatusType[] subtaskStatusData;
     public Vector3i nextSubtaskCoordinatesToAssign;
 }
