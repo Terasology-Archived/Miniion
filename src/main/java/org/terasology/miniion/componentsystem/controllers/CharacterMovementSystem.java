@@ -55,7 +55,7 @@ public class CharacterMovementSystem implements UpdateSubscriberSystem {
                     characterComp.pitch, characterComp.yaw,
                     characterMovementComponent.directionToMove,
                     characterMovementComponent.runningRequested,
-                    characterMovementComponent.jumpingRequested));
+                    characterMovementComponent.jumpingRequested, (long) delta));
         }
     }
 
