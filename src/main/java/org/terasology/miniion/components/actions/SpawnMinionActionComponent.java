@@ -20,7 +20,6 @@ import org.terasology.logic.actions.ActionTarget;
 import org.terasology.entitySystem.Component;
 
 /**
- * @author Immortius
  */
 public class SpawnMinionActionComponent implements Component {
     public String prefab;

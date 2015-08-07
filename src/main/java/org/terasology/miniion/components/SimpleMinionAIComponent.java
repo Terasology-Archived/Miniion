@@ -22,7 +22,6 @@ import org.terasology.entitySystem.Component;
 import org.terasology.math.geom.Vector3f;
 
 /**
- * @author Overdhose copied from SimpleAIComponent, only movementtarget is
  *         really used
  */
 public final class SimpleMinionAIComponent implements Component {

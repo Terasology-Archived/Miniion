@@ -33,7 +33,6 @@ import org.terasology.miniion.componentsystem.controllers.MinionSystem;
 import org.terasology.registry.CoreRegistry;
 
 /**
- * @author Immortius
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SpawnMinionAction implements ComponentSystem {

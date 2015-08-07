@@ -28,7 +28,6 @@ import org.terasology.registry.In;
 /**
  * This updates everything but LocalPlayer because LocalPlayerSystem is currently updating LocalPlayer.
  * 
- * @author <mkienenb@gmail.com>
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class CharacterMovementSystem implements UpdateSubscriberSystem {

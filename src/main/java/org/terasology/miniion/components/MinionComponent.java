@@ -21,7 +21,6 @@ import org.terasology.miniion.utilities.MinionRecipe;
 /**
  * Allows an entity to store items
  * 
- * @author Immortius <immortius@gmail.com>
  */
 public final class MinionComponent implements Component {
 
