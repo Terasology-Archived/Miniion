@@ -28,7 +28,6 @@ import org.terasology.miniion.components.actions.OpenUiActionComponent;
 import org.terasology.registry.In;
 
 /**
- * @author Immortius
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class OpenUiAction implements ComponentSystem {

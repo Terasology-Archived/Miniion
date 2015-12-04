@@ -19,7 +19,6 @@ package org.terasology.miniion.components.actions;
 import org.terasology.entitySystem.Component;
 
 /**
- * @author Immortius
  */
 public class OpenUiActionComponent implements Component {
     public String uiwindowid;

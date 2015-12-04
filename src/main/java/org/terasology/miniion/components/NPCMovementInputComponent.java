@@ -19,7 +19,6 @@ import org.terasology.entitySystem.Component;
 import org.terasology.math.geom.Vector3f;
 
 /**
- * @author mkienenb
  */
 public final class NPCMovementInputComponent implements Component {
 
