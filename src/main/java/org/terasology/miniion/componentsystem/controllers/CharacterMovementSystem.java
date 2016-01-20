@@ -51,7 +51,7 @@ public class CharacterMovementSystem implements UpdateSubscriberSystem {
             CharacterComponent characterComp = entity.getComponent(CharacterComponent.class);
 
             entity.send(new CharacterMoveInputEvent(inputSequenceNumber++,
-                    characterComp.pitch, characterComp.yaw,
+                    0, 0,
                     characterMovementComponent.directionToMove,
                     characterMovementComponent.runningRequested,
                     characterMovementComponent.jumpingRequested, (long) delta));
