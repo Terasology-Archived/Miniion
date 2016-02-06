@@ -3,8 +3,7 @@
         "name" : "oreo book",
         "icon" : "miniion:minionicon16#oreominionbook",
         "usage" : "ON_USER",
-        "consumedOnUse" : false,
-        "renderWithIcon" : false
+        "consumedOnUse" : false
     },    
     "Inventory": {
       "itemSlots": [
