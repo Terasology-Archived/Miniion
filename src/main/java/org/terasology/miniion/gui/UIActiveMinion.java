@@ -19,7 +19,7 @@
 //import javax.vecmath.Vector4f;
 //
 //import org.lwjgl.input.Keyboard;
-//import org.terasology.asset.Assets;
+//import org.terasology.utilities.Assets;
 //import org.terasology.engine.CoreRegistry;
 //import org.terasology.entitySystem.entity.EntityManager;
 //import org.terasology.entitySystem.entity.EntityRef;

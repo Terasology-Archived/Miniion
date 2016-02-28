@@ -16,7 +16,7 @@
 //package org.terasology.miniion.gui;
 //
 //import org.lwjgl.input.Keyboard;
-//import org.terasology.asset.Assets;
+//import org.terasology.utilities.Assets;
 //import org.terasology.entitySystem.entity.EntityManager;
 //import org.terasology.entitySystem.entity.EntityRef;
 //import org.terasology.engine.CoreRegistry;

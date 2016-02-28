@@ -22,7 +22,7 @@
 //
 //import javax.vecmath.Vector2f;
 //
-//import org.terasology.asset.Assets;
+//import org.terasology.utilities.Assets;
 //import org.terasology.entitySystem.systems.ComponentSystem;
 //import org.terasology.math.Vector2i;
 //import org.terasology.miniion.minionenum.MinionMessagePriority;
