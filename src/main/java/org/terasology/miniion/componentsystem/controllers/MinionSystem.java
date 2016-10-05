@@ -53,7 +53,7 @@ import org.terasology.rendering.logic.SkeletalMeshComponent;
 public class MinionSystem extends BaseComponentSystem {
 
     private static final Logger logger = LoggerFactory.getLogger(MinionSystem.class);
-    
+
     @In
     private LocalPlayer localPlayer;
     @In
@@ -98,12 +98,12 @@ public class MinionSystem extends BaseComponentSystem {
             logger.warn(uri + " could not be created and given to player.");
             item.destroy();
         }
-            
+
     }
 
     /**
      * Ugly way to retrieve a name from a prefab
-     * 
+     *
      * @return a ":" seperated string, with name and flavor text.
      */
     public static String getName() {
@@ -161,7 +161,7 @@ public class MinionSystem extends BaseComponentSystem {
     /**
      * The active minion, to be commanded by the minion command item etc uses a
      * slightly different texture to indicate selection
-     * 
+     *
      * @param minion
      *            : the new active minion entity
      */
@@ -188,7 +188,7 @@ public class MinionSystem extends BaseComponentSystem {
 
     /**
      * returns the currently active minion
-     * 
+     *
      * @return : the currently active minion
      */
     public static EntityRef getActiveMinion() {
