@@ -372,7 +372,6 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
     private boolean isReachable(EntityRef minionEntity, Vector3i targetLocation) {
         // TODO: This method is going to require a lot more work
         // TODO: All of these need to be done with a pathfinding algorithm, but here's a temporary placeholder
-
         boolean reachable = true;
 
 
@@ -380,9 +379,11 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
 
         boolean surrounded = true;
         Vector3i[] cardinalNeighborLocations = getCardinalNeighborLocations(targetLocation);
+
         for (Vector3i neighborLocation : cardinalNeighborLocations) {
-            Block tmpblock = worldProvider.getBlock(targetLocation);
-            if (tmpblock.isPenetrable()) {
+            Block tmpblock = worldProvider.getBlock(neighborLocation);
+
+            if (tmpblock.isPenetrable()) {              ///this does not work properly
                 surrounded = false;
             }
         }
@@ -887,6 +888,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
                 .getComponent(CharacterMovementComponent.class);
         if ((movementInput != null) && (chracterMovement.grounded)) {
             movementInput.jumpingRequested = true;
+            logger.warn("#toomchsugar#####");
             entity.saveComponent(movementInput);
         }
     }

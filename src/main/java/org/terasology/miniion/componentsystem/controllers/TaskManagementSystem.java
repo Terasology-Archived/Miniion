@@ -115,6 +115,7 @@ public class TaskManagementSystem extends BaseComponentSystem {
                 }
             }
         }
+
         assignableTaskComponent.nextSubtaskCoordinatesToAssign = new Vector3i(areaMin);
 
         BlockSelectionComponent blockSelectionComponent = new BlockSelectionComponent();
@@ -160,6 +161,8 @@ public class TaskManagementSystem extends BaseComponentSystem {
         
         AssignedTaskComponent assignedTaskComponent = createAssignedTaskComponent(assignableTaskComponentEntity);
         minionEntity.addComponent(assignedTaskComponent);
+
+
     }
 
     private boolean hasAssignableSubtask(AssignableTaskComponent assignableTaskComponent) {
@@ -179,28 +182,43 @@ public class TaskManagementSystem extends BaseComponentSystem {
     }
 
     public void finishedTask(EntityRef entity, AssignedTaskComponent assignedTaskComponent) {
+
+        logger.warn("finishedtask funct, tasktatus: " + assignedTaskComponent.taskStatusType.name());
         EntityRef assignableTaskEntity = assignedTaskComponent.assignableTaskEntity;
         if (TaskStatusType.COMPLETED == assignedTaskComponent.taskStatusType) {
             markAsCompleted(assignableTaskEntity, assignedTaskComponent);
+            logger.warn("FINISHED A TASK");
             boolean allDone = isTaskCompleted(assignableTaskEntity, assignedTaskComponent);
             if (allDone) {
                 assignableTaskEntity.destroy();
             }
         } else {
-            markAsAvailable(assignableTaskEntity, assignedTaskComponent);
+            if(TaskStatusType.ASSIGNED == assignedTaskComponent.taskStatusType){//peti
+                markAsAssigned(assignableTaskEntity,assignedTaskComponent); //peti
+                logger.warn("Assigned task reassigned, not made available again");
+            }
+            else {
+                markAsAvailable(assignableTaskEntity, assignedTaskComponent);
+            }
         }
     }
 
     private AssignedTaskComponent createAssignedTaskComponent(EntityRef assignableTaskEntity) {
         AssignableTaskComponent assignableTaskComponent = assignableTaskEntity.getComponent(AssignableTaskComponent.class);
+
         AssignedTaskComponent assignedTaskComponent = new AssignedTaskComponent();
 
         assignedTaskComponent.assignableTaskEntity = assignableTaskEntity;
         assignedTaskComponent.subtaskCoordinates = getNextAvailableSubtaskCoordinates(assignableTaskEntity, assignedTaskComponent);
 
+
+
+
+
         assignedTaskComponent.assignedTaskType = assignableTaskComponent.assignedTaskType;
         assignedTaskComponent.taskStatusType = TaskStatusType.ASSIGNED;
         assignedTaskComponent.targetLocation = new Vector3i(assignedTaskComponent.subtaskCoordinates);
+
 
         markAsAssigned(assignableTaskEntity, assignedTaskComponent);
         
@@ -225,10 +243,14 @@ public class TaskManagementSystem extends BaseComponentSystem {
         Vector3i firstCoordinates = assignableTaskComponent.nextSubtaskCoordinatesToAssign;
         Vector3i areaMin = assignableTaskComponent.area.min();
         Vector3i areaSize = assignableTaskComponent.area.size();
+
         Vector3i nextAvailableSubtaskCoordinates = null;
         int[] xLoopedRangeArray = getLoopedRangeArray(firstCoordinates.x, areaMin.x, areaMin.x + areaSize.x);
         int[] yLoopedRangeArray = getLoopedRangeArray(firstCoordinates.y, areaMin.y, areaMin.y + areaSize.y);
         int[] zLoopedRangeArray = getLoopedRangeArray(firstCoordinates.z, areaMin.z, areaMin.z + areaSize.z);
+       // nashdebug
+
+
         for (int x: xLoopedRangeArray) {
             for (int y: yLoopedRangeArray) {
                 for (int z: zLoopedRangeArray) {
@@ -236,6 +258,9 @@ public class TaskManagementSystem extends BaseComponentSystem {
                     // but then continue on to the next coordinate so we can start there next time
                     if (null == nextAvailableSubtaskCoordinates) {
                         TaskStatusType taskStatusType = getTaskStatusType(assignableTaskComponent, x, y, z);
+//                        if(TaskStatusType.ASSIGNED ==taskStatusType){
+//                            nextAvailableSubtaskCoordinates = new Vector3i(x,y,z);
+//                        }
                         if (TaskStatusType.AVAILABLE == taskStatusType) {
                             nextAvailableSubtaskCoordinates = new Vector3i(x, y, z);
                         }
@@ -291,5 +316,6 @@ public class TaskManagementSystem extends BaseComponentSystem {
         Vector3i subtaskCoordinates = assignedTaskComponent.subtaskCoordinates;
         AssignableTaskComponent assignableTaskComponent = assignableTaskEntity.getComponent(AssignableTaskComponent.class);
         setTaskStatusType(assignableTaskComponent, subtaskCoordinates.x, subtaskCoordinates.y, subtaskCoordinates.z, statusType);
+
     }
 }
