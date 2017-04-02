@@ -375,7 +375,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
         boolean reachable = true;
 
 
-        // Not reachable if surrounded by dirt and we can't burrow/ghost
+        // Not reachable if surrounded by dirt and we can't burrow/ghost -
 
         boolean surrounded = true;
         Vector3i[] cardinalNeighborLocations = getCardinalNeighborLocations(targetLocation);
