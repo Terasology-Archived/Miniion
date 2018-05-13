@@ -381,9 +381,10 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
         boolean surrounded = true;
         Vector3i[] cardinalNeighborLocations = getCardinalNeighborLocations(targetLocation);
         for (Vector3i neighborLocation : cardinalNeighborLocations) {
-            Block tmpblock = worldProvider.getBlock(targetLocation);
+            Block tmpblock = worldProvider.getBlock(neighborLocation);
             if (tmpblock.isPenetrable()) {
                 surrounded = false;
+                break;
             }
         }
         if (surrounded) {
@@ -531,7 +532,7 @@ public class RevisedSimpleMinionAISystem extends BaseComponentSystem implements 
                             Block newBlock = getBlockForTerraformBlockType(terraformFinalBlockType);
                             worldProvider.setBlock(assignedTaskComponent.targetLocation, newBlock);
                             ai.craftprogress = 0;
-                            assignedTaskComponent.taskStatusType = TaskStatusType.COMPLETED;
+                            assignedTaskComponent.taskStatusType = TaskStatusType.AVAILABLE;
                             endTask(minionEntity, ai, animcomp);
                         }
                     } else {
